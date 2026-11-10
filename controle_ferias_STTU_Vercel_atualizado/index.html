@@ -83,7 +83,7 @@
         <div class="toolbar"><div class="year-block"><label for="year">Ano liberado para escolha</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
         <div class="stats"><div class="stat"><small>Vagas com prazo aberto</small><strong id="stat-open">—</strong></div><div class="stat"><small>Vagas já ocupadas</small><strong id="stat-taken">—</strong></div><div class="stat"><small>Seu planejamento</small><strong id="stat-selected">0 <em>de 2 períodos</em></strong></div></div>
         <div class="section-title"><h2>Calendário de vagas</h2><div class="rule"></div></div>
-        <p class="caption">Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas exatas ainda serão definidas pela administração</strong>; por isso, aparecem somente 1º e 2º período de cada mês. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.</p>
+        <p class="caption">Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas serão exibidas quando definidas pela administração</strong>. Enquanto isso, o sistema indicará "Datas a definir" para cada período. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.</p>
         <div id="calendar-error" class="alert hidden" role="alert"></div>
         <div id="months" class="month-grid" aria-label="Meses e vagas disponíveis"></div>
         <div id="selection-error" class="alert hidden" role="alert"></div>
@@ -187,7 +187,12 @@
     function screen(n) { for (const name of ['entry','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
-    function titlePeriod(x) {return nomes[x.mes-1]+' · '+x.periodo+'º período (15 dias; datas a definir)';}
+    function dateBR(v){return v&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(8,10)+'/'+v.slice(5,7)+'/'+v.slice(0,4):'';}
+    function periodDates(m,p){
+      const info=state.periodos.find(v=>v.mes===Number(m)&&v.periodo===Number(p));
+      return info?.data_inicio&&info?.data_fim?(dateBR(info.data_inicio)+' a '+dateBR(info.data_fim)):'Datas a definir';
+    }
+    function titlePeriod(x) {return nomes[x.mes-1]+' · '+x.periodo+'º período (15 dias; '+periodDates(x.mes,x.periodo)+')';}
     function matriculaNormalizada(s){return s.toUpperCase().replace(/[^A-Z0-9]/g,'');}
     const demoKey = ano => 'sttu-demo-ferias-'+ano;
     function getDemo() { try {return JSON.parse(demoStore.getItem(demoKey(state.ano))||'[]');} catch{return [];} }
@@ -273,7 +278,7 @@
           btn.disabled=!data||globalEsgotada||cotaEsgotada||fechado||bloqueado;btn.setAttribute('aria-pressed',String(selected));
           const top=document.createElement('span');top.className='slot-top';
           const label=document.createElement('strong');label.textContent=p+'º período';
-          const date=document.createElement('small');date.className='slot-date';date.textContent='15 dias · datas a definir';label.append(date);
+          const date=document.createElement('small');date.className='slot-date';date.textContent='15 dias · '+periodDates(m,p);label.append(date);
           const badge=document.createElement('span');badge.className='slot-badge';badge.textContent=bloqueado?'Indisponível':fechado?'Prazo encerrado':cotaEsgotada?'Limite por Função/Turno excedido':globalEsgotada?'Esgotado':selected?'✓ Selecionado':extraChefe?'Insp Chefe · vaga extra':remaining+' '+(remaining===1?'vaga':'vagas');
           top.append(label,badge);
           const bar=document.createElement('span');bar.className='track';const prog=document.createElement('span');prog.style.width=(data?.capacidade?Math.max(0,remaining)/Number(data.capacidade)*100:0)+'%';bar.append(prog);btn.append(top,bar);
