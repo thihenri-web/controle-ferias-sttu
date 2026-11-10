@@ -13,19 +13,22 @@ export default async function handler(req,res) {
     const rows=await sql`
       WITH calendario AS (
         SELECT m AS mes, p AS periodo,
-          CASE WHEN ${ano}::integer = 2027 AND m = 1
-            THEN DATE '2026-12-31'
-            ELSE make_date(${ano}::integer,m,1) - 45 END AS data_limite
-        FROM generate_series(1,12) AS m CROSS JOIN generate_series(1,2) AS p
-        WHERE m NOT IN (6,12) AND (m <> 2 OR p=1)
+          CASE WHEN ${ano}::integer=2027 AND m=1 THEN DATE '2026-12-31'
+               ELSE make_date(${ano}::integer,m,1)-45 END AS data_limite,
+          (m NOT IN (6,12) AND (m<>2 OR p=1)) AS liberacao_padrao
+        FROM generate_series(1,12) m CROSS JOIN generate_series(1,2) p
       )
-      SELECT c.mes,c.periodo,coalesce(v.ocupadas,0)::integer AS ocupadas,
-        (10-coalesce(v.ocupadas,0))::integer AS restantes,
+      SELECT c.mes,c.periodo,COALESCE(v.ocupadas,0)::integer AS ocupadas,
+        COALESCE(cfg.capacidade,10)::integer AS capacidade,
+        (COALESCE(cfg.capacidade,10)-COALESCE(v.ocupadas,0))::integer AS restantes,
+        COALESCE(cfg.liberado,c.liberacao_padrao) AS habilitado,
         to_char(c.data_limite,'YYYY-MM-DD') AS limite,
-        ((now() AT TIME ZONE 'America/Fortaleza')::date <= c.data_limite) AS aberto
-      FROM calendario c LEFT JOIN sttu_ferias_vagas v
-        ON v.ano=${ano} AND v.mes=c.mes AND v.periodo=c.periodo
+        (COALESCE(cfg.liberado,c.liberacao_padrao) AND
+          (now() AT TIME ZONE 'America/Fortaleza')::date<=c.data_limite) AS aberto
+      FROM calendario c
+      LEFT JOIN sttu_ferias_periodos_config cfg ON cfg.ano=${ano} AND cfg.mes=c.mes AND cfg.periodo=c.periodo
+      LEFT JOIN sttu_ferias_vagas v ON v.ano=${ano} AND v.mes=c.mes AND v.periodo=c.periodo
       ORDER BY c.mes,c.periodo`;
-    return res.status(200).json({ano,capacidade:10,capacidadeTotal:190,periodos:rows});
-  } catch (e) {console.error('Vagas:',e);return res.status(503).json({erro:'Não foi possível consultar as vagas. Execute o schema_atualizacao_admin.sql no Neon.'});}
+    return res.status(200).json({ano,capacidadeMaxima:30,capacidadeTotal:rows.filter(r=>r.habilitado).reduce((sum,r)=>sum+Number(r.capacidade),0),periodos:rows});
+  } catch (e) {console.error('Vagas:',e);return res.status(503).json({erro:'Não foi possível consultar as vagas. Execute a migração schema_atualizacao_periodos_flexiveis.sql no Neon.'});}
 }

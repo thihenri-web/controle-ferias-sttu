@@ -59,7 +59,7 @@
           <div class="eyebrow">Planejamento anual · STTU</div>
           <h1>Suas férias, <span>bem planejadas.</span></h1>
           <p class="lead">Identifique-se para consultar as vagas disponíveis e selecionar <strong>dois períodos de 15 dias de férias</strong>, obrigatoriamente em <strong>meses diferentes</strong>.</p>
-          <div class="intro-points"><span>Campanha inicial: 2027</span><span>10 meses disponíveis</span><span>2 períodos de 15 dias</span><span>10 vagas por período</span></div>
+          <div class="intro-points"><span>Campanha inicial: 2027</span><span>Meses definidos pela administração</span><span>2 períodos de 15 dias</span><span>Vagas ajustáveis pela administração</span></div>
         </div>
         <form id="entry-form" class="panel" novalidate>
           <div class="panel-kicker">Etapa 01 de 02</div>
@@ -81,9 +81,9 @@
       <section id="step-selection" class="hidden" aria-label="Escolha dos períodos de férias">
         <div class="topline"><div><div class="eyebrow">Etapa 02 de 02 · Calendário anual</div><h1>Escolha seus períodos de férias</h1><p id="welcome">Selecione dois períodos de 15 dias em meses diferentes.</p></div><button id="back" type="button" class="outline">← Alterar dados</button></div>
         <div class="toolbar"><div class="year-block"><label for="year">Ano liberado para escolha</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
-        <div class="stats"><div class="stat"><small>Vagas com prazo aberto</small><strong id="stat-open">—<em>de 190 vagas</em></strong></div><div class="stat"><small>Vagas já ocupadas</small><strong id="stat-taken">—</strong></div><div class="stat"><small>Seu planejamento</small><strong id="stat-selected">0 <em>de 2 períodos</em></strong></div></div>
+        <div class="stats"><div class="stat"><small>Vagas com prazo aberto</small><strong id="stat-open">—</strong></div><div class="stat"><small>Vagas já ocupadas</small><strong id="stat-taken">—</strong></div><div class="stat"><small>Seu planejamento</small><strong id="stat-selected">0 <em>de 2 períodos</em></strong></div></div>
         <div class="section-title"><h2>Calendário de vagas</h2><div class="rule"></div></div>
-        <p class="caption">Cada escolha corresponde a <strong>15 dias corridos</strong>: 1º período (01 a 15) ou 2º período (16 a 30). <strong>Fevereiro</strong> oferece apenas o 1º período; <strong>junho e dezembro</strong> não estão disponíveis. Nos meses com 31 dias, o dia 31 não integra os períodos apresentados. Cada mês aceita solicitações <strong>somente até 45 dias antes do dia 1º</strong> (inclusive). <strong>Exceção: janeiro/2027 até 31/12/2026.</strong> Meses com prazo encerrado permanecem visíveis, mas não podem ser escolhidos. Anos seguintes exigem liberação da administração. Os saldos são conferidos novamente na confirmação.</p>
+        <p class="caption">Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas exatas ainda serão definidas pela administração</strong>; por isso, aparecem somente 1º e 2º período de cada mês. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.</p>
         <div id="calendar-error" class="alert hidden" role="alert"></div>
         <div id="months" class="month-grid" aria-label="Meses e vagas disponíveis"></div>
         <div id="selection-error" class="alert hidden" role="alert"></div>
@@ -100,11 +100,8 @@
   <script>
     'use strict';
     const nomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    const mesesDisponiveis=[1,2,3,4,5,7,8,9,10,11];
-    const periodosDoMes=mes=>mes===2?[1]:[1,2];
-    const datasPeriodo=p=>p===1?'01 a 15':'16 a 30';
-    const periodosValidos=Array.from(mesesDisponiveis,mes=>periodosDoMes(mes).map(periodo=>({mes,periodo}))).flat();
-    const capacidadeTotal=periodosValidos.length*10;
+    const mesesDisponiveis=Array.from({length:12},(_,i)=>i+1);
+    const periodosDoMes=()=>[1,2];
     const el = id => document.getElementById(id);
     const DEMO = new URLSearchParams(window.location.search).get('demo') === '1';
     const demoStore = (() => { const memory = new Map(); return { getItem(k) { try { return localStorage.getItem(k); } catch { return memory.get(k) ?? null; } }, setItem(k,v) { memory.set(k, String(v)); try { localStorage.setItem(k,v); } catch {} } }; })();
@@ -187,19 +184,18 @@
       if(ano===2027&&mes===1)return '2026-12-31';
       const d=new Date(Date.UTC(ano,mes-1,1));d.setUTCDate(d.getUTCDate()-45);return d.toISOString().slice(0,10);
     }
-    const formatoData=s=>String(s).split('-').reverse().join('/');
     function screen(n) { for (const name of ['entry','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
-    function titlePeriod(x) {return nomes[x.mes-1]+' · '+x.periodo+'º período ('+datasPeriodo(x.periodo)+')';}
+    function titlePeriod(x) {return nomes[x.mes-1]+' · '+x.periodo+'º período (15 dias; datas a definir)';}
     function matriculaNormalizada(s){return s.toUpperCase().replace(/[^A-Z0-9]/g,'');}
     const demoKey = ano => 'sttu-demo-ferias-'+ano;
     function getDemo() { try {return JSON.parse(demoStore.getItem(demoKey(state.ano))||'[]');} catch{return [];} }
     async function consultar() {
       if (DEMO) {
-        const data=getDemo();return { capacidade:10,periodos:periodosValidos.map(({mes,periodo})=>{
+        const data=getDemo();return { capacidade:10,periodos:mesesDisponiveis.flatMap(mes=>periodosDoMes().map(periodo=>({mes,periodo}))).map(({mes,periodo})=>{
           const ocupadas=data.reduce((n,s)=>n+(s.selecoes.some(z=>z.mes===mes&&z.periodo===periodo)?1:0),0);
-          const limite=limiteMes(state.ano,mes);return {mes,periodo,ocupadas,restantes:Math.max(0,10-ocupadas),limite,aberto:dataLocal()<=limite};
+          const limite=limiteMes(state.ano,mes);const habilitado=![6,12].includes(mes)&&(mes!==2||periodo===1);return {mes,periodo,ocupadas,capacidade:10,restantes:Math.max(0,10-ocupadas),limite,habilitado,aberto:habilitado&&dataLocal()<=limite};
         })};
       }
       const r=await fetch('/api/periodos?ano='+encodeURIComponent(state.ano),{cache:'no-store'});
@@ -211,8 +207,8 @@
       if(DEMO){
         const all=getDemo(); const m=matriculaNormalizada(payload.matricula);
         if(all.some(r=>matriculaNormalizada(r.matricula)===m)) throw Error('Já existe solicitação desta matrícula neste ano (demonstração).');
-        if(payload.selecoes.length!==2||payload.selecoes[0].mes===payload.selecoes[1].mes||payload.selecoes.some(s=>!periodosValidos.some(p=>p.mes===s.mes&&p.periodo===s.periodo))) throw Error('Seleção inválida: são dois períodos de 15 dias em meses distintos, sem junho ou dezembro.');
         const atual=await consultar();
+        if(payload.selecoes.length!==2||payload.selecoes[0].mes===payload.selecoes[1].mes||payload.selecoes.some(s=>!atual.periodos.some(p=>p.mes===s.mes&&p.periodo===s.periodo&&p.habilitado))) throw Error('Escolha dois períodos liberados em meses diferentes.');
         if(payload.selecoes.some(s=>{const p=atual.periodos.find(a=>a.mes===s.mes&&a.periodo===s.periodo);return !p||p.restantes===0||!p.aberto;})) throw Error('Uma das vagas acabou de se esgotar.');
         const solicitacao={id:Math.floor(Date.now()/1000),ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes};
         all.push({...payload});demoStore.setItem(demoKey(state.ano),JSON.stringify(all));return {solicitacao};
@@ -256,34 +252,36 @@
         const box=document.createElement('article');box.className='month';
         const head=document.createElement('div');head.className='month-header';
         const name=document.createElement('span');name.className='month-title';name.textContent=nomes[m-1];
-        const num=document.createElement('span');num.className='month-num';num.textContent=String(m).padStart(2,'0')+' / 12';head.append(name,num);
+        head.append(name);
         const available=document.createElement('div');available.className='month-available';
         const slotBox=document.createElement('div');slotBox.className='slots';
         const entries=state.periodos.filter(x=>x.mes===m);
         const mesAberto=entries.some(x=>x.aberto);
+        const periodosLiberados=entries.filter(x=>x.habilitado);
         if(entries.length&&!mesAberto)box.classList.add('closed-month');
-        available.textContent=entries.length?(entries.reduce((n,x)=>n+Number(x.restantes),0)+' de '+(periodosDoMes(m).length*10)+' vagas restantes · '+(mesAberto?'Prazo até '+formatoData(entries[0].limite):'Prazo encerrado')):'Aguardando disponibilidade';
+        available.textContent=!periodosLiberados.length?'Nenhum período liberado':(periodosLiberados.reduce((n,x)=>n+Number(x.restantes),0)+' vagas restantes · '+(mesAberto?'Recebendo solicitações':'Prazo encerrado'));
         for(const p of periodosDoMes(m)){
           const data=entries.find(x=>x.periodo===p);
           const remaining=data?Number(data.restantes):0;
           const selected=state.escolhidos.some(s=>s.mes===m&&s.periodo===p);
-          const fechado=data&&!data.aberto;
-          const btn=document.createElement('button');btn.type='button';btn.className='slot'+(selected?' selected':'')+(remaining===0?' full':'')+(fechado?' closed':'');
-          btn.disabled=!data||remaining===0||fechado;btn.setAttribute('aria-pressed',String(selected));
+          const bloqueado=data&&!data.habilitado;
+          const fechado=data&&!data.aberto&&!bloqueado;
+          const btn=document.createElement('button');btn.type='button';btn.className='slot'+(selected?' selected':'')+(remaining===0&&data?.habilitado?' full':'')+((fechado||bloqueado)?' closed':'');
+          btn.disabled=!data||remaining===0||fechado||bloqueado;btn.setAttribute('aria-pressed',String(selected));
           const top=document.createElement('span');top.className='slot-top';
           const label=document.createElement('strong');label.textContent=p+'º período';
-          const date=document.createElement('small');date.className='slot-date';date.textContent=datasPeriodo(p)+' · 15 dias';label.append(date);
-          const badge=document.createElement('span');badge.className='slot-badge';badge.textContent=fechado?'Prazo encerrado':remaining===0?'Esgotado':(selected?'✓ Selecionado':remaining+' '+(remaining===1?'vaga':'vagas'));
+          const date=document.createElement('small');date.className='slot-date';date.textContent='15 dias · datas a definir';label.append(date);
+          const badge=document.createElement('span');badge.className='slot-badge';badge.textContent=bloqueado?'Indisponível':fechado?'Prazo encerrado':remaining===0?'Esgotado':(selected?'✓ Selecionado':remaining+' '+(remaining===1?'vaga':'vagas'));
           top.append(label,badge);
-          const bar=document.createElement('span');bar.className='track';const prog=document.createElement('span');prog.style.width=remaining*10+'%';bar.append(prog);btn.append(top,bar);
-          btn.setAttribute('aria-label',`${nomes[m-1]}, ${p}º período, ${datasPeriodo(p)}, ${remaining} vagas restantes${fechado?', prazo encerrado':''}${selected?', selecionado':''}`);
+          const bar=document.createElement('span');bar.className='track';const prog=document.createElement('span');prog.style.width=(data?.capacidade?Math.max(0,remaining)/Number(data.capacidade)*100:0)+'%';bar.append(prog);btn.append(top,bar);
+          btn.setAttribute('aria-label',`${nomes[m-1]}, ${p}º período de 15 dias, datas a definir, ${bloqueado?'indisponível':remaining+' vagas restantes'}${fechado?', prazo encerrado':''}${selected?', selecionado':''}`);
           btn.addEventListener('click',()=>toggle(m,p));slotBox.append(btn);
           if(data){taken+=Number(data.ocupadas);if(data.aberto)open+=remaining;}
         }
         box.append(head,available,slotBox);root.append(box);
       }
       el('stat-open').textContent=state.periodos.length?String(open):'—';
-      const availableInfo=document.createElement('em');availableInfo.textContent='de '+capacidadeTotal+' vagas';el('stat-open').appendChild(availableInfo);
+      const availableInfo=document.createElement('em');availableInfo.textContent='em '+state.periodos.filter(x=>x.habilitado).length+' períodos liberados';el('stat-open').appendChild(availableInfo);
       el('stat-taken').textContent=state.periodos.length?String(taken):'—';
     }
     function toggle(m,p){

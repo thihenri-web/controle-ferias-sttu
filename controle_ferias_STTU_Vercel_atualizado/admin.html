@@ -19,6 +19,21 @@ main{max-width:1320px;margin:auto;padding:27px 20px 90px}h1{font-size:clamp(1.7r
 label{display:block;font-weight:700;font-size:.82rem;color:#d9e3ed;margin-bottom:7px}.input{background:#0c1621;border:1px solid #465468;border-radius:10px;padding:11px 12px;color:#f2f5f8;width:100%;min-width:0}.input::placeholder{color:#8293a5}.field{margin:16px 0}.filters{display:grid;grid-template-columns:130px 180px 1fr 135px 125px;gap:12px;align-items:end;margin-top:18px}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.between{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.stat{background:var(--surface);border:1px solid var(--line);padding:17px 18px;border-radius:13px}.stat label{margin:0;color:var(--muted)}.stat strong{font-size:2rem;font-weight:850;letter-spacing:-.05em}
 .month-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:14px 0 32px}.month{border:1px solid #3b4858;background:#17212c;color:var(--text);border-radius:13px;padding:14px;text-align:left;min-height:133px}.month:hover,.month.active{border-color:var(--gold);background:#2a2a2c}.month-head{display:flex;justify-content:space-between;gap:6px;font-weight:780}.month small{color:var(--muted);font-size:.75rem}.month .meter{margin:9px 0 7px;height:5px;background:#344657;overflow:hidden;border-radius:8px}.month .meter i{display:block;height:100%;background:var(--green)}.month .line{font-size:.78rem;color:#d9e3ef;display:flex;justify-content:space-between}.month.closed{opacity:.67}.month.closed .meter i{background:#df7777}
+.period-admin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 10px}
+.config-month{border:1px solid var(--line);border-radius:13px;background:#101a24;padding:14px}
+.config-month h3{margin:0 0 12px;font-size:1rem}
+.config-line{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #293846}
+.config-line:first-of-type{border-top:0}
+.config-line strong{font-size:.87rem;display:block}.config-line small{display:block;color:var(--muted);font-size:.74rem}
+.config-actions{display:flex;align-items:center;gap:8px}
+.config-capacity{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+.config-capacity label{font-size:.76rem;margin:0;color:var(--muted);white-space:nowrap}
+.config-capacity .input{width:70px;text-align:center;padding:6px 7px;font-weight:750}
+.config-capacity button{white-space:nowrap}
+.config-capacity .config-help{font-size:.71rem;color:var(--muted);width:100%}
+.config-indicator{color:#a8f0cd;font-size:.72rem;font-weight:750}.config-indicator.off{color:#ffbdc3}
+@media(max-width:1050px){.period-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:630px){.period-admin-grid{grid-template-columns:1fr}}
 .section{margin-top:28px}.section-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}table{border-collapse:collapse;width:100%;min-width:930px}th{background:#202e3a;color:#d6e1ed;font-size:.8rem;text-align:left}td,th{padding:13px 12px;border-bottom:1px solid #2c3844;vertical-align:top}tbody tr:last-child td{border-bottom:0}td{font-size:.86rem}td strong{font-weight:750}.tag{font-size:.72rem;background:#354455;color:#f4f6fa;border-radius:5px;padding:3px 7px;white-space:nowrap}.tag.good{background:#1e4d3e;color:#b8ffdd}.tag.off{background:#51323a;color:#ffced3}.empty{padding:25px;color:var(--muted);text-align:center}
 .year-admin{display:grid;grid-template-columns:minmax(220px,1fr) 155px 160px auto;align-items:end;gap:14px}.audit-wrap{margin-top:22px}.admin-warning{background:#242720;border:1px solid #706137;color:#f5e4ad;border-radius:12px;padding:14px 17px;font-size:.85rem;margin:18px 0}
 footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-size:.8rem}.busy{text-align:center;padding:14px;color:var(--muted)}
@@ -50,7 +65,7 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
         <div><label for="year">Ano</label><select class="input" id="year"></select></div>
         <div><label for="month">Mês</label><select class="input" id="month"></select></div>
         <div class="search-field"><label for="search">Nome completo ou matrícula</label><input class="input" id="search" placeholder="Pesquise qualquer parte do nome ou matrícula" maxlength="120"></div>
-        <div><label for="period">Período</label><select class="input" id="period"><option value="0">Ambos</option><option value="1">1º · 01–15</option><option value="2">2º · 16–30</option></select></div>
+        <div><label for="period">Período</label><select class="input" id="period"><option value="0">Ambos</option><option value="1">1º período</option><option value="2">2º período</option></select></div>
         <button type="submit" class="btn primary">Pesquisar</button>
       </form>
     </div>
@@ -58,10 +73,16 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
       <div class="stat"><label>Vagas ocupadas no ano</label><strong id="occupied">—</strong></div>
       <div class="stat"><label>Vagas restantes no ano</label><strong id="available">—</strong></div>
       <div class="stat"><label>Solicitações encontradas</label><strong id="count">—</strong></div>
-      <div class="stat"><label>Períodos liberados</label><strong>19</strong></div>
+      <div class="stat"><label>Períodos liberados</label><strong id="enabled-periods">—</strong></div>
     </div>
-    <div class="section-bar"><h2>Ocupação por mês</h2><span class="note">Vagas por período: 10 · 15 dias cada</span></div>
+    <div class="section-bar"><h2>Ocupação por mês</h2><span class="note">Vagas definidas pela administração · 15 dias por período</span></div>
     <div id="months" class="month-grid"></div>
+    <section class="section card" aria-labelledby="config-title">
+      <div class="section-bar"><h2 id="config-title">Períodos e limite de vagas por mês</h2><span class="tag">Configuração anual</span></div>
+      <p>Defina individualmente o 1º e o 2º período de cada um dos 12 meses e o limite de vagas de cada período (de 1 a 30). Ao liberar um período, ele aparece no formulário dos servidores, respeitado o prazo de 45 dias. Ao bloquear, novas escolhas ficam impedidas, mas os pedidos já registrados permanecem válidos. Não há datas específicas de início e fim definidas neste calendário.</p>
+      <div class="admin-warning">Exemplo: configurar janeiro, 1º período, com 8 vagas e o 2º com 10. Também é possível liberar junho e bloquear outro mês. O limite não pode ser inferior ao número de vagas já ocupadas. As alterações são gravadas no Neon e registradas no histórico.</div>
+      <div id="period-config" class="period-admin-grid" aria-label="Alterar períodos de férias por mês"></div>
+    </section>
     <section class="section"><div class="section-bar"><h2>Solicitações dos servidores</h2><button type="button" id="export" class="btn">↓ Exportar lista CSV</button></div>
       <div class="table-wrap"><table><thead><tr><th>Protocolo</th><th>Servidor / Matrícula</th><th>Período 1</th><th>Período 2</th><th>Registro</th><th>Ação</th></tr></thead><tbody id="records"></tbody></table></div><div id="records-empty" class="empty hidden">Nenhuma solicitação encontrada para os filtros.</div>
     </section>
@@ -73,8 +94,8 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
         <button id="apply-year" class="btn primary" type="button">Aplicar liberação</button><div id="year-info" class="note"></div>
       </div>
     </section>
-    <section class="section"><div class="section-bar"><h2>Histórico de cancelamentos</h2><button class="btn" id="audit-refresh" type="button">Consultar histórico</button></div>
-      <div id="audit-content" class="note">Clique em “Consultar histórico” para visualizar cancelamentos do ano selecionado.</div>
+    <section class="section"><div class="section-bar"><h2>Histórico administrativo</h2><button class="btn" id="audit-refresh" type="button">Consultar histórico</button></div>
+      <div id="audit-content" class="note">Clique em “Consultar histórico” para visualizar cancelamentos e alterações de capacidade do ano selecionado.</div>
     </section>
     <div class="admin-warning">Atenção: cancelar uma solicitação devolve ambas as vagas e deixa registro de auditoria. O pedido não é uma concessão formal de férias. Nome e matrícula, isoladamente, não autenticam a identidade dos servidores.</div>
   </section>
@@ -84,7 +105,7 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
 'use strict';
 const $=id=>document.getElementById(id);
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const ALLOWED=[1,2,3,4,5,7,8,9,10,11];
+const ALLOWED=Array.from({length:12},(_,i)=>i+1);
 const state={ano:2027,mes:0,periodo:0,busca:'',records:[],vagas:[],anos:[],busy:false};
 const show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
 function notify(t,ok=false){const e=$('status');e.textContent=t;show('status',Boolean(t));e.classList.toggle('ok',ok);}
@@ -100,21 +121,78 @@ function opts(items,selected){
 function setOptions(id,items,selected){const s=$(id);s.replaceChildren(...Array.from(opts(items,selected).children));s.value=String(selected);}
 const fmt=(x)=>MONTHS[x-1]||'—';
 const span=(text,className)=>{const e=document.createElement('span');if(className)e.className=className;e.textContent=text;return e;};
-const period=(m,p)=>`${fmt(m)} · ${p}º período (${p===1?'01–15':'16–30'})`;
+const period=(m,p)=>`${fmt(m)} · ${p}º período (15 dias; datas a definir)`;
 function renderMonths(){
   const root=$('months');root.replaceChildren();
   for(const mes of ALLOWED){
     const entries=state.vagas.filter(x=>x.mes===mes);
-    const occupied=entries.reduce((a,x)=>a+x.ocupadas,0),max=entries.length*10;
-    const closed=entries.length&&!entries.some(x=>x.aberto);
+    const enabled=entries.filter(x=>x.habilitado);
+    const occupied=entries.reduce((a,x)=>a+x.ocupadas,0),activeOccupied=enabled.reduce((a,x)=>a+x.ocupadas,0),max=enabled.reduce((a,x)=>a+Number(x.capacidade),0);
+    const closed=!enabled.some(x=>x.aberto);
     const box=document.createElement('button');box.type='button';box.className='month'+(state.mes===mes?' active':'')+(closed?' closed':'');
-    const head=document.createElement('div');head.className='month-head';head.append(span(fmt(mes)),span(String(occupied)+'/'+max));box.append(head);
-    const meter=document.createElement('div');meter.className='meter';const line=document.createElement('i');line.style.width=(max?occupied/max*100:0)+'%';meter.append(line);box.append(meter);
-    for(const x of entries){const row=document.createElement('div');row.className='line';row.append(span(x.periodo+'º período'),span(x.ocupadas+'/10 ocupadas'));box.append(row);}
-    const foot=document.createElement('small');foot.textContent=closed?'Prazo encerrado':entries.length?'Prazo até '+entries[0].limite.split('-').reverse().join('/'):'Sem dados';box.append(foot);
+    const head=document.createElement('div');head.className='month-head';head.append(span(fmt(mes)),span(occupied+' ocupadas'));box.append(head);
+    const meter=document.createElement('div');meter.className='meter';const line=document.createElement('i');line.style.width=(max?activeOccupied/max*100:0)+'%';meter.append(line);box.append(meter);
+    for(const x of entries){const row=document.createElement('div');row.className='line';row.append(span(x.periodo+'º período'),span(x.habilitado?(`${x.ocupadas}/${x.capacidade} ocupadas · ${x.restantes} livres`):('Bloqueado · limite '+x.capacidade)));box.append(row);}
+    const foot=document.createElement('small');foot.textContent=!enabled.length?'Nenhum período liberado':closed?'Prazo encerrado':enabled.length+' período(s) liberado(s)';box.append(foot);
     box.title='Mostrar servidores com férias em '+fmt(mes);
     box.addEventListener('click',()=>{$('month').value=String(mes);state.mes=mes;load();});root.append(box);
   }
+}
+function renderPeriodSettings(){
+  const root=$('period-config');root.replaceChildren();
+  for(let mes=1;mes<=12;mes++){
+    const card=document.createElement('div');card.className='config-month';
+    const heading=document.createElement('h3');heading.textContent=fmt(mes);card.append(heading);
+    for(let periodo=1;periodo<=2;periodo++){
+      const p=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
+      const line=document.createElement('div');line.className='config-line';
+      const desc=document.createElement('div');const label=document.createElement('strong');label.textContent=periodo+'º período · 15 dias';
+      const note=document.createElement('small');note.textContent=p?`${p.ocupadas} de ${p.capacidade} vagas ocupadas · ${p.restantes} restantes`:'Carregando';desc.append(label,note);
+      const actions=document.createElement('div');actions.className='config-actions';
+      const flag=span(p?.habilitado?'Liberado':'Bloqueado','config-indicator'+(!p?.habilitado?' off':''));
+      const button=document.createElement('button');button.type='button';button.className='btn mini'+(p?.habilitado?' danger':'');
+      button.textContent=p?.habilitado?'Bloquear':'Liberar';button.disabled=!p||state.busy;
+      button.setAttribute('aria-label',`${p?.habilitado?'Bloquear':'Liberar'} ${periodo}º período de ${fmt(mes)} de ${state.ano}`);
+      button.addEventListener('click',()=>changePeriod(p));actions.append(flag,button);
+      const cap=document.createElement('div');cap.className='config-capacity';
+      const capLabel=document.createElement('label');capLabel.textContent='Limite de vagas:';
+      const capInput=document.createElement('input');capInput.className='input';capInput.type='number';
+      capInput.min=String(Math.max(1,p?.ocupadas||0));capInput.max='30';capInput.step='1';
+      capInput.value=String(p?.capacidade??10);capInput.disabled=!p||state.busy;
+      capInput.setAttribute('aria-label',`Limite de vagas do ${periodo}º período de ${fmt(mes)} de ${state.ano}`);
+      const save=document.createElement('button');save.type='button';save.className='btn mini';save.textContent='Salvar vagas';
+      save.disabled=!p||state.busy;save.addEventListener('click',()=>changeCapacity(p,capInput.value));
+      const help=document.createElement('small');help.className='config-help';help.textContent=`Mínimo: ${Math.max(1,p?.ocupadas||0)} · Máximo: 30. Para zerar, use Bloquear.`;
+      cap.append(capLabel,capInput,save,help);
+      desc.append(cap);line.append(desc,actions);card.append(line);
+    }
+    root.append(card);
+  }
+}
+async function changePeriod(p){
+  if(!p||state.busy)return;
+  const liberado=!p.habilitado;
+  const msg=liberado?`LIBERAR o ${p.periodo}º período de ${fmt(p.mes)}/${state.ano} para novas solicitações?`:
+   `BLOQUEAR o ${p.periodo}º período de ${fmt(p.mes)}/${state.ano}?\n\nOs ${p.ocupadas} registros existentes serão mantidos; apenas novas escolhas ficarão proibidas.`;
+  if(!confirm(msg))return;
+  state.busy=true;renderPeriodSettings();notify('Salvando alteração de disponibilidade...');
+  try{
+    await req('/api/admin-periodos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,mes:p.mes,periodo:p.periodo,liberado})});
+    state.busy=false;await load();notify(`${fmt(p.mes)} · ${p.periodo}º período ${liberado?'liberado':'bloqueado'} para novas escolhas.`,true);
+  }catch(e){state.busy=false;renderPeriodSettings();notify(e.message);}
+}
+async function changeCapacity(p,raw){
+  if(!p||state.busy)return;
+  const capacidade=Number(raw);
+  if(!Number.isInteger(capacidade)||capacidade<1||capacidade>30){notify('Informe um número inteiro de 1 a 30 vagas.');return;}
+  if(capacidade<Number(p.ocupadas)){notify(`Este período já tem ${p.ocupadas} vagas ocupadas. Não é possível reduzir abaixo disso.`);return;}
+  if(capacidade===Number(p.capacidade)){notify('O limite de vagas já está definido como '+capacidade+'.',true);return;}
+  if(!confirm(`Alterar o limite do ${p.periodo}º período de ${fmt(p.mes)}/${state.ano} de ${p.capacidade} para ${capacidade} vagas?\n\nO período já possui ${p.ocupadas} solicitação(ões); elas serão preservadas.`))return;
+  state.busy=true;renderPeriodSettings();notify('Salvando novo limite de vagas...');
+  try{
+    await req('/api/admin-capacidade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,mes:p.mes,periodo:p.periodo,capacidade})});
+    state.busy=false;await load();notify(`${fmt(p.mes)} · ${p.periodo}º período: capacidade atualizada para ${capacidade} vagas.`,true);
+  }catch(e){state.busy=false;renderPeriodSettings();notify(e.message);}
 }
 function renderRecords(){
   const root=$('records');root.replaceChildren();show('records-empty',!state.records.length);
@@ -138,15 +216,16 @@ async function load(){
     state.records=data.solicitacoes;state.vagas=data.vagas;state.anos=data.anos;
     $('title-year').textContent=state.ano;
     $('occupied').textContent=data.vagas.reduce((a,x)=>a+x.ocupadas,0);
-    $('available').textContent=data.vagas.reduce((a,x)=>a+x.restantes,0);
+    $('available').textContent=data.vagas.filter(x=>x.habilitado).reduce((a,x)=>a+x.restantes,0);
+    $('enabled-periods').textContent=data.vagas.filter(x=>x.habilitado).length;
     $('count').textContent=data.solicitacoes.length;
-    const ylist=[...new Set([2027,...data.anos.filter(x=>x.liberado).map(x=>x.ano)])].sort((a,b)=>a-b);
+    const ylist=[...new Set([2027,...Array.from({length:8},(_,i)=>2028+i),...data.anos.map(x=>x.ano)])].sort((a,b)=>a-b);
     setOptions('year',ylist.map(y=>[y,String(y)]),state.ano);
     const mg=$('manage-year').value||'2028';
     setOptions('manage-year',Array.from({length:8},(_,i)=>[2028+i,String(2028+i)]),mg);
-    updateYearInfo();renderMonths();renderRecords();notify('Consulta atualizada.',true);
+    updateYearInfo();renderMonths();renderPeriodSettings();renderRecords();notify('Consulta atualizada.',true);
   }catch(e){notify(e.message);}
-  finally{state.busy=false;$('refresh').disabled=false;}
+  finally{state.busy=false;$('refresh').disabled=false;renderPeriodSettings();}
 }
 function updateYearInfo(){const y=Number($('manage-year').value),found=state.anos.find(x=>x.ano===y);$('year-info').textContent=found?.liberado?'Liberado':'Bloqueado até autorização';$('year-status').value=found?.liberado?'true':'false';}
 async function cancel(s){
@@ -168,10 +247,20 @@ async function audit(){
   const root=$('audit-content');root.replaceChildren();root.append(span('Consultando histórico...','muted'));
   try{
     const b=await req('/api/admin-auditoria?ano='+encodeURIComponent(state.ano));root.replaceChildren();
-    if(!b.registros.length){root.append(span('Nenhum cancelamento registrado neste ano.','muted'));return;}
-    const table=document.createElement('table');table.style.minWidth='660px';const body=document.createElement('tbody');
-    for(const s of b.registros){const tr=document.createElement('tr');for(const t of ['#'+s.solicitacao_id,s.nome_completo+' · '+s.matricula,period(s.mes_1,s.periodo_1)+' / '+period(s.mes_2,s.periodo_2),s.registrada_em,s.motivo]){const td=document.createElement('td');td.textContent=t;tr.append(td);}body.append(tr);}
-    table.append(body);const wrap=document.createElement('div');wrap.className='table-wrap';wrap.append(table);root.append(wrap);
+    const cancelHeading=document.createElement('h3');cancelHeading.textContent='Cancelamentos';root.append(cancelHeading);
+    if(!b.registros.length)root.append(span('Nenhum cancelamento registrado neste ano.','muted'));
+    else{
+      const table=document.createElement('table');table.style.minWidth='660px';const body=document.createElement('tbody');
+      for(const s of b.registros){const tr=document.createElement('tr');for(const t of ['#'+s.solicitacao_id,s.nome_completo+' · '+s.matricula,period(s.mes_1,s.periodo_1)+' / '+period(s.mes_2,s.periodo_2),s.registrada_em,s.motivo]){const td=document.createElement('td');td.textContent=t;tr.append(td);}body.append(tr);}
+      table.append(body);const wrap=document.createElement('div');wrap.className='table-wrap';wrap.append(table);root.append(wrap);
+    }
+    const capacityHeading=document.createElement('h3');capacityHeading.textContent='Alterações no limite de vagas';capacityHeading.style.marginTop='20px';root.append(capacityHeading);
+    if(!b.alteracoes_capacidade?.length)root.append(span('Nenhuma alteração de capacidade neste ano.','muted'));
+    else{
+      const table=document.createElement('table');table.style.minWidth='580px';const body=document.createElement('tbody');
+      for(const s of b.alteracoes_capacidade){const tr=document.createElement('tr');for(const value of [fmt(s.mes)+' · '+s.periodo+'º período',s.capacidade_antes+' → '+s.capacidade_depois+' vagas',s.ocupadas_no_momento+' ocupadas',s.alterado_em]){const td=document.createElement('td');td.textContent=value;tr.append(td);}body.append(tr);}
+      table.append(body);const wrap=document.createElement('div');wrap.className='table-wrap';wrap.append(table);root.append(wrap);
+    }
   }catch(e){root.textContent=e.message;}
 }
 $('login-form').addEventListener('submit',async e=>{

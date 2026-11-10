@@ -1,17 +1,30 @@
-ATUALIZAÇÃO DO CADASTRO DE SERVIDORES — SISTEMA STTU 2027
+STTU 2027 - CAPACIDADE DE VAGAS EDITÁVEL POR PERÍODO
 
-1) No Neon (SQL Editor, branch main e banco neondb), execute o arquivo
-   schema_atualizacao_admin_e_servidores.sql.
-   Ele mantém as solicitações anteriores e cria o cadastro de 114 servidores.
-2) Clique em Run. Confirme que todos os comandos foram executados sem erro.
-3) Teste com: SELECT count(*) FROM sttu_ferias_servidores WHERE ativo=TRUE;
-   O resultado esperado é 114.
-4) Descompacte este ZIP. No GitHub, substitua os arquivos dentro do MESMO
-   diretório que a Vercel usa como Root Directory. Use index.html e admin.html
-   na raiz, api/ (minúsculas), lib/ e assets/.
-5) Faça commit. Aguarde a implantação Production (ou Deployments > Redeploy).
-6) Teste /api/servidores e a página inicial, buscando um nome por matrícula.
-7) Faça solicitações de teste somente em ambiente de testes, se possível.
+1. NEON (faça backup se houver dados reais):
+   - Abra SQL Editor, branch main / banco neondb.
+   - Execute SOMENTE schema_atualizacao_periodos_e_vagas.sql.
+   - Esse SQL contém a migração de períodos flexíveis e a nova capacidade editável.
+   - Os 114 servidores e as reservas existentes são preservados.
+   - Verifique em consulta separada:
+     SELECT mes, periodo, liberado, capacidade FROM sttu_ferias_periodos_config WHERE ano=2027 ORDER BY mes, periodo;
+   - Esperado: 24 linhas, capacidade inicial 10 para cada período.
 
-Importante: DATABASE_URL e senhas administrativas ficam na Vercel, nunca no GitHub.
-O cadastro padroniza as escolhas, mas não autentica a identidade do servidor.
+2. GITHUB:
+   - Extraia o ZIP; envie os ARQUIVOS extraídos para a MESMA pasta do site já publicada.
+   - Preserve api/, lib/, assets/, index.html, admin.html, package.json e vercel.json na raiz do projeto.
+   - Confirme o commit; não envie o ZIP fechado nem crie subpastas extras.
+
+3. VERCEL:
+   - Aguarde Deployments -> Ready. Acesse o link de produção.
+   - Não altere DATABASE_URL nem ADMIN_PASSWORD ou ADMIN_SESSION_SECRET.
+
+4. TESTE:
+   - Em /admin.html, vá a 'Períodos e limite de vagas por mês'.
+   - Em Janeiro - 1º período, altere 10 para 20 e clique Salvar vagas.
+   - Veja se o painel e a página pública passam a mostrar 20 vagas.
+   - Restaure para 10 se era só teste.
+   - Reduções inferiores à quantidade de reservas já existentes são bloqueadas.
+   - Registros antigos nunca são apagados automaticamente.
+
+Capacidade aceita: de 1 a 30; padrão inicial 10. Para tirar um período da oferta use Bloquear.
+Prazo de 45 dias e as regras de dois meses diferentes permanecem.

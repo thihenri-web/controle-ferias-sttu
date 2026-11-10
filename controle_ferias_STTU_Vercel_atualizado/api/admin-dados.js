@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import { requireAdmin, validYear } from '../lib/admin-auth.js';
-const MONTHS=[1,2,3,4,5,7,8,9,10,11];
+const MONTHS=[1,2,3,4,5,6,7,8,9,10,11,12];
 export default async function handler(req,res){
   if(!requireAdmin(req,res))return;
   if(req.method!=='GET')return res.status(405).json({erro:'Método não permitido.'});
@@ -25,18 +25,23 @@ export default async function handler(req,res){
              position(lower(${busca}::text) in lower(COALESCE(c.matricula_exibicao,'')))>0)
          ORDER BY s.criada_em DESC,s.id DESC LIMIT 500`,
       sql`WITH calendario AS (
-           SELECT m AS mes,p AS periodo,
-             CASE WHEN ${ano}::integer=2027 AND m=1 THEN DATE '2026-12-31'
-                  ELSE make_date(${ano}::integer,m,1)-45 END AS data_limite
-           FROM generate_series(1,12) AS m CROSS JOIN generate_series(1,2) AS p
-           WHERE m NOT IN (6,12) AND (m<>2 OR p=1))
-           SELECT c.mes,c.periodo,COALESCE(v.ocupadas,0)::integer AS ocupadas,
-             (10-COALESCE(v.ocupadas,0))::integer AS restantes,
-             to_char(c.data_limite,'YYYY-MM-DD') AS limite,
-             ((now() AT TIME ZONE 'America/Fortaleza')::date<=c.data_limite) AS aberto
-           FROM calendario c LEFT JOIN sttu_ferias_vagas v
-             ON v.ano=${ano} AND v.mes=c.mes AND v.periodo=c.periodo
-           ORDER BY c.mes,c.periodo`,
+        SELECT m AS mes, p AS periodo,
+          CASE WHEN ${ano}::integer=2027 AND m=1 THEN DATE '2026-12-31'
+               ELSE make_date(${ano}::integer,m,1)-45 END AS data_limite,
+          (m NOT IN (6,12) AND (m<>2 OR p=1)) AS liberacao_padrao
+        FROM generate_series(1,12) m CROSS JOIN generate_series(1,2) p
+      )
+      SELECT c.mes,c.periodo,COALESCE(v.ocupadas,0)::integer AS ocupadas,
+        COALESCE(cfg.capacidade,10)::integer AS capacidade,
+        (COALESCE(cfg.capacidade,10)-COALESCE(v.ocupadas,0))::integer AS restantes,
+        COALESCE(cfg.liberado,c.liberacao_padrao) AS habilitado,
+        to_char(c.data_limite,'YYYY-MM-DD') AS limite,
+        (COALESCE(cfg.liberado,c.liberacao_padrao) AND
+          (now() AT TIME ZONE 'America/Fortaleza')::date<=c.data_limite) AS aberto
+      FROM calendario c
+      LEFT JOIN sttu_ferias_periodos_config cfg ON cfg.ano=${ano} AND cfg.mes=c.mes AND cfg.periodo=c.periodo
+      LEFT JOIN sttu_ferias_vagas v ON v.ano=${ano} AND v.mes=c.mes AND v.periodo=c.periodo
+      ORDER BY c.mes,c.periodo`,
       sql`SELECT ano,liberado FROM sttu_ferias_anos ORDER BY ano`
     ]);
     const total=solicitacoes.length;

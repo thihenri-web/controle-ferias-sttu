@@ -1,139 +1,92 @@
-# STTU · Cadastro de servidores e férias 2027
+# STTU — Controle de férias 2027 · Períodos e vagas administráveis
 
+Projeto para **Vercel + Neon**, com o cadastro existente de 114 servidores. Este pacote é uma **atualização do projeto atual**, não requer criação de outro projeto, banco ou senha.
 
-## NOVO: Seleção por cadastro oficial de servidores
+## O que mudou
 
-A tela inicial agora tem um campo pesquisável para selecionar **NOME - MATRÍCULA**, sem digitação livre. A relação de **114 servidores** foi transcrita da imagem enviada. Nomes visualmente truncados no quadro foram conservados como estão escritos; a matrícula é a chave única. O exemplo explícito do usuário de `THIAGO HENRIQUE FERREIRA DA SILVA - 60.275-2` foi usado com nome completo.
+**Regra atualizada:** o administrador pode configurar **de 1 a 30 vagas em cada período**. Todos os períodos começam com **10 vagas por padrão**. Não é permitido reduzir abaixo da quantidade já ocupada. O ajuste é independente por mês, período e ano.
 
-- A lista é fornecida pelo endpoint `GET /api/servidores`, a partir da tabela `sttu_ferias_servidores` no Neon.
-- O servidor seleciona um único item; ambos os dados são carregados juntos.
-- A função SQL verifica que a matrícula **está na relação ativa** e que o nome coincide com o cadastro. Não basta alterar o navegador para cadastrar matrícula desconhecida.
-- As solicitações já registradas permanecem no banco; a atualização não as apaga.
-- A área administrativa exibe a matrícula formatada para registros encontrados no cadastro.
+- As telas dos servidores **não mostram mais datas fixas de início/fim**. Os cards mostram apenas **1º período** e **2º período**, cada um com **15 dias** e datas a definir.
+- Saiu a numeração decorativa dos meses (`01 / 12`, `03 / 12` etc.).
+- A área administrativa mostra **todos os 12 meses**, com botão **Liberar/Bloquear** e campo **Limite de vagas** para cada um dos dois períodos mensais. O administrador pode reduzir 10 para 8 ou aumentar até 30.
+- A administração pode, por exemplo, liberar **junho · 1º período**, bloquear **maio · 2º período** e definir **janeiro · 1º período com 8 vagas**. A quantidade de períodos liberados e de vagas é recalculada automaticamente.
+- Ao bloquear um período, o sistema impede **novas escolhas** nele, **sem cancelar os pedidos antigos**. A alteração fica registrada em tabela de auditoria do Neon.
+- A configuração é **por ano**. Os anos futuros só aparecem aos servidores quando liberados na administração.
+- A regra de **45 dias de antecedência do primeiro dia do mês** continua ativa. Exceção: janeiro de 2027 até 31/12/2026. Essa regra é independente das datas específicas dos 15 dias, que ainda serão definidas.
+- A capacidade inicial é **10 vagas por período**, editável de **1 a 30**, **dois períodos obrigatórios em meses diferentes**, matrícula pré-cadastrada, uma solicitação por matrícula/ano e consulta administrativa por mês/servidor.
 
-### SQL para atualizar a instalação existente
+**Situação inicial de 2027:** 19 períodos liberados (10 vagas cada), com junho e dezembro sem períodos, e fevereiro com apenas o 1º. Esses são **padrões iniciais editáveis** pelo administrador, não restrições fixas.
 
-Para atualizar o banco de produção que você já usa, execute **`schema_atualizacao_admin_e_servidores.sql`** no SQL Editor do Neon, antes de publicar os novos arquivos. Esse script inclui toda a migração administrativa anterior **e** o cadastro, pode ser executado novamente sem excluir reservas, e substitui a função de reserva para validar os servidores cadastrados. Se você já instalou a versão administrativa anterior, pode executar apenas `schema_atualizacao_servidores.sql`.
+- O sistema **não aceita uma capacidade menor que a ocupação atual**. Um período com 7 solicitações pode ser ajustado para qualquer número de 7 a 30 vagas; para menos de 7, é preciso cancelar solicitações antes.
+- O registro de reserva respeita a capacidade personalizada **diretamente no Neon**, incluindo solicitações simultâneas. A migração também amplia a antiga restrição de ocupação da tabela `sttu_ferias_vagas` (antes limitada fisicamente a 10) para 30.
+- Ajustes de capacidade ficam registrados em **Histórico administrativo**.
 
-Confira a relação:
+## ATUALIZAÇÃO DO SEU SISTEMA JÁ PUBLICADO — ORDEM EXATA
+
+### 1. Neon — executar APENAS o novo SQL combinado
+
+1. Entre em https://console.neon.tech/ e abra o projeto conectado à Vercel.
+2. Abra **SQL Editor**, branch **main** e banco **neondb** (confira os nomes no seu projeto).
+3. Faça um backup / branch de segurança se já houver solicitações reais.
+4. Abra no Bloco de Notas **`schema_atualizacao_periodos_e_vagas.sql`** (neste pacote). Esse SQL já contém a atualização dos períodos flexíveis e a nova função de capacidade, independentemente de você já ter executado a migração anterior.
+5. Copie todo o código, cole em uma **nova consulta** no Neon e clique **Run**.
+6. Confira que os comandos terminaram sem erros.
+
+**Não rode novamente** `schema.sql`, `schema_atualizacao_admin_e_servidores.sql`, `schema_atualizacao_periodos_flexiveis.sql` nem a lista antiga de servidores. O arquivo `schema_atualizacao_capacidades.sql` é uma alternativa menor para quem JÁ executou a migração anterior; você não precisa executá-lo junto ao combinado. Os 114 servidores e as vagas já cadastradas são preservados.
+
+Verificação opcional no SQL Editor (consulta nova, separada):
 
 ```sql
-SELECT count(*) AS servidores_ativos FROM sttu_ferias_servidores WHERE ativo=TRUE;
+SELECT mes, periodo, liberado, capacidade
+FROM sttu_ferias_periodos_config
+WHERE ano = 2027
+ORDER BY mes, periodo;
 ```
 
-O resultado esperado é **114**. Confira o endpoint `https://SEU-SITE.vercel.app/api/servidores` após o deploy. O formulário não ficará operacional sem a migração e o endpoint. Não retire a pasta `api` do nível do `index.html`.
+Devem retornar **24 linhas** (12 meses × 2 períodos), com `capacidade = 10` inicialmente em todos os períodos; os 19 liberados inicialmente podem mudar pela administração. O total pode mudar quando o administrador fizer alterações.
 
-**Proteção de dados:** nome e matrícula são exibidos aos usuários do formulário, conforme solicitado. A seleção de um nome não autentica o servidor. Antes da publicação institucional, avalie identificação individual (SSO ou confirmação vinculada ao cadastro), controle de acesso à relação e adequação às regras internas/LGPD.
+### 2. GitHub — substituir os arquivos do projeto existente
 
----
-# STTU · Controle de férias 2027 — versão com administração e travas de prazo
+1. Extraia o ZIP no Windows.
+2. No GitHub, entre no repositório atual `controle-ferias-sttu`.
+3. Abra a pasta configurada como **Root Directory** da Vercel (nas configurações anteriores: `controle_ferias_STTU_Vercel_atualizado`).
+4. Envie **o conteúdo** da pasta extraída (não envie o ZIP nem crie outra subpasta), preservando `index.html`, `admin.html`, `api/`, `lib/`, `assets/` no mesmo nível.
+5. Confirme **Commit changes**. Observe se foi criado o arquivo novo **`api/admin-periodos.js`** e **`api/admin-capacidade.js`**. A pasta `api` deve ser minúscula.
 
-Este é o projeto **completo** da Vercel (HTML + funções Node.js + Neon). Ele **atualiza** o sistema que você já publicou: não é necessário criar um novo projeto Vercel ou um novo banco Neon.
+### 3. Vercel — publicar
 
-## Regras aplicadas
+1. Abra o projeto existente em https://vercel.com/dashboard.
+2. Na aba **Deployments**, confira a nova implantação da branch principal e o status **Ready**.
+3. Se não houver nova implantação, abra os detalhes e verifique a origem GitHub. Não altere o Root Directory se o site já funciona.
+4. **Não é preciso cadastrar senhas novamente**: `DATABASE_URL`, `ADMIN_PASSWORD` e `ADMIN_SESSION_SECRET` já estão configuradas para Production.
 
-- Início da campanha: **2027**. Inicialmente **somente 2027** aparece para o servidor.
-- Anos **2028 em diante** somente aparecem após liberação na área administrativa. A restrição é verificada também no banco.
-- Cada matrícula faz **uma única solicitação por ano**, com **dois períodos de 15 dias em meses diferentes**.
-- **10 vagas por período**. Junho e dezembro não participam; fevereiro possui somente o período 01–15; demais meses autorizados têm períodos 01–15 e 16–30.
-- Cada mês fecha para novas solicitações **a partir do dia seguinte à data-limite**. Data-limite = **dia 1º do mês menos 45 dias corridos**. O último dia de prazo ainda é permitido. As datas são calculadas no horário de **Natal/RN (America/Fortaleza)**.
-- **Exceção:** janeiro/2027 pode ser escolhido até **31/12/2026**, inclusive. Não é possível fazer solicitação de janeiro após o início do próprio mês.
-- A contagem de vagas e as validações de prazo e ano são feitas **no banco Neon**, mesmo se alguém tentar chamar a API manualmente.
-- Administrador consulta reservas por **mês, período, nome completo ou matrícula**, exporta CSV para Excel, pode **cancelar** com motivo e devolução das duas vagas e **libera/bloqueia anos futuros**.
-- Login administrativo protegido por senha na Vercel, cookie assinado com expiração em 8h e limitação de tentativas por IP.
+### 4. Verificação funcional
 
-### Prazos para férias de 2027
+1. Acesse `https://SEU-SITE.vercel.app/admin.html` e entre com a senha administrativa atual (não é necessário trocar senhas).
+2. Confira a nova seção **Disponibilidade dos períodos por mês**. Ela deve mostrar 12 meses × 2 períodos.
+3. Teste, por exemplo, a liberação do **1º período de junho** e confirme a mudança. Observe o total de períodos liberados passar de 19 para 20. Se não quiser manter, bloqueie novamente para retornar a 19.
+4. Na área administrativa, altere **janeiro · 1º período de 10 para 8** e confirme no painel que aparecem 8 vagas e na página do servidor também. Caso tenha feito teste, restaure o limite para 10. Você também pode testar aumentar para 20, até o máximo de 30. Se o período tiver mais de 8 solicitações, o sistema deverá impedir a redução.
+5. Na página dos servidores, atualize a página e confirme que junho responde ao comando administrativo. As datas específicas e a numeração `01 / 12` não devem aparecer.
+6. Teste a busca por um servidor cadastrado. Evite gravar pedidos fictícios na produção.
 
-| Mês | Último dia para solicitar |
-| --- | --- |
-| Janeiro | 31/12/2026 (exceção) |
-| Fevereiro | 18/12/2026 |
-| Março | 15/01/2027 |
-| Abril | 15/02/2027 |
-| Maio | 17/03/2027 |
-| Junho | Não disponível |
-| Julho | 17/05/2027 |
-| Agosto | 17/06/2027 |
-| Setembro | 18/07/2027 |
-| Outubro | 17/08/2027 |
-| Novembro | 17/09/2027 |
-| Dezembro | Não disponível |
+## Arquivos principais
 
-**Observação:** As regras refletem a interpretação de que as inscrições encerram-se 45 dias antes do **primeiro dia do mês escolhido**, não do primeiro dia de cada período.
+- `index.html` — página dos servidores com calendário sem datas específicas.
+- `admin.html` — área administrativa e controles individuais de períodos.
+- `api/periodos.js` — disponibilidades e capacidade calculadas do banco.
+- `api/admin-dados.js` — dados de consulta e configuração para administração.
+- `api/admin-periodos.js` — alteração autenticada de cada período.
+- `api/admin-capacidade.js` — alteração autenticada da lotação por período, com validação transacional.
+- `api/solicitar.js` — recebe solicitações e usa validações do banco.
+- `schema_atualizacao_periodos_e_vagas.sql` — **migração combinada recomendada para esta atualização**.
+- `schema_atualizacao_capacidades.sql` — migração apenas de capacidade, se os períodos flexíveis já estiverem implementados.
+- `schema.sql` — estrutura completa para **banco novo**, não use no banco existente.
 
-## Implantação no projeto já existente (ordem recomendada)
+## Observações
 
-### 1. Configure duas variáveis na Vercel
-
-No painel da Vercel, abra o projeto de férias, clique em **Settings → Environment Variables** e adicione, ambas para **Production**:
-
-- `ADMIN_PASSWORD` — senha exclusiva com pelo menos **8 caracteres** (recomendamos 12 ou mais para maior segurança). Você escolhe a senha e não deve colocá-la no código nem enviar por mensagem.
-- `ADMIN_SESSION_SECRET` — chave aleatória de **pelo menos 32 caracteres** (ideal: 64 caracteres hexadecimais gerados com gerador criptográfico). Não reutilize a senha administrativa.
-
-Marque ambas como **Sensitive** (se essa opção estiver disponível). A variável `DATABASE_URL` já existe e **não precisa ser alterada**. Não coloque as senhas no GitHub.
-
-### 2. Atualize o banco Neon, **sem excluir dados**
-
-1. Acesse o Neon e abra seu projeto conectado à Vercel.
-2. No menu **SQL Editor**, selecione a branch de produção (`main`/`primary`, conforme seu projeto) e a base usada pela Vercel (`neondb`, se esse for o nome).
-3. Faça um backup ou snapshot antes da alteração, quando disponível em seu plano.
-4. Abra o arquivo **`schema_atualizacao_admin.sql`** desta pasta em um editor de texto.
-5. Copie todo o conteúdo, cole no SQL Editor e clique **Run**.
-6. Confira que todos os comandos foram concluídos sem erros. O script **não apaga solicitações existentes**; apenas cria tabelas administrativas e atualiza a função de reservas.
-
-⚠️ Como você **já criou** as tabelas básicas anteriormente, execute **`schema_atualizacao_admin.sql`**, não um script antigo. O arquivo `schema.sql` incluído aqui é uma **instalação completa** para um banco novo.
-
-### 3. Atualize os arquivos no **mesmo repositório GitHub**
-
-1. Descompacte o ZIP e entre na pasta com os arquivos.
-2. No GitHub, vá ao repositório `controle-ferias-sttu` e entre na **mesma pasta que a Vercel utiliza como Root Directory**, possivelmente `controle_ferias_STTU_Vercel_atualizado` (dependendo de como você o configurou).
-3. Substitua os arquivos existentes e adicione os novos. Faça o **Commit**. É preciso preservar corretamente a estrutura abaixo; `api` e `assets` devem ficar em minúsculas.
-4. Se a Vercel já estiver conectada ao repositório, o novo commit costuma iniciar o deploy automaticamente. Se necessário, abra **Deployments → Redeploy**. Não mude o Root Directory se ele já está funcionando.
-
-```text
-[pasta configurada como Root Directory]
-  index.html
-  admin.html                 ← novo
-  api/
-    solicitar.js
-    periodos.js
-    anos.js                 ← novo
-    admin-login.js          ← novo
-    admin-dados.js          ← novo
-    admin-anos.js           ← novo
-    admin-cancelar.js       ← novo
-    admin-auditoria.js      ← novo
-  lib/
-    admin-auth.js           ← novo
-  assets/
-    brasao-sttu.jpg         ← brasão exato enviado por você
-  package.json
-  vercel.json
-  schema.sql
-  schema_atualizacao_admin.sql
-  README.md
-```
-
-**Não publique somente o ZIP nem coloque a pasta inteira dentro de outra pasta da raiz sem adaptar o Root Directory.** O `index.html` e `admin.html` devem estar no mesmo nível que `api/`.
-
-### 4. Testes após o deploy
-
-- `https://SEU-SITE.vercel.app/api/anos` deve retornar `{"anos":[2027]}` enquanto nenhum ano futuro estiver liberado.
-- `https://SEU-SITE.vercel.app/api/periodos?ano=2027` deve retornar 19 períodos com os campos `restantes`, `limite` e `aberto`.
-- `https://SEU-SITE.vercel.app/api/periodos?ano=2028` deve retornar uma mensagem de **ano não liberado** (403).
-- `https://SEU-SITE.vercel.app/admin.html` deve abrir a página de login. Entre usando a senha `ADMIN_PASSWORD` configurada na Vercel.
-- No painel, clique em um **mês** para listar servidores do mês, pesquise por matrícula, exporte a lista CSV e teste a liberação de 2028 **somente quando desejar abrir a campanha desse ano**.
-- Teste cancelamentos de preferência em um banco de testes. Na produção, cancele apenas reservas identificadas corretamente; a exclusão é definitiva mas fica registrada no histórico administrativo e devolve as vagas.
-
-### 5. Teste específico de prazo
-
-O banco usa a data local de Natal-RN. Exemplo: março de 2027 pode ser solicitado até **15/01/2027**, inclusive, mas não em **16/01/2027**. Janeiro/2027 pode ser selecionado até 31/12/2026, independentemente de 45 dias. A tela pública mostra a data limite em cada mês.
-
-## Limitações / cuidados
-
-- A área administrativa usa **uma senha compartilhada** (modelo inicial), não contas individuais. Para uso institucional mais rigoroso, recomendamos identidade individual de administradores com permissões e trilha de autoria.
-- O servidor ainda se identifica apenas por **nome e matrícula**, o que **não comprova sua identidade**. Antes de disponibilizar a todos, providencie autenticação oficial de servidores e política de proteção de dados.
-- A área administrativa é uma **consulta e controle de solicitações**, não a homologação legal de férias.
-- Não divulgue `DATABASE_URL`, `ADMIN_PASSWORD` nem `ADMIN_SESSION_SECRET`. Não inclua credenciais em prints e nunca as envie ao GitHub.
-- Datas de encerramento são aplicadas apenas a novos registros. Reservas feitas anteriormente são preservadas para revisão administrativa.
-- `?demo=1` é demonstração local. Não registra vagas no banco de produção.
+- A escolha continua exigindo dois **meses diferentes**, mesmo que um mesmo mês tenha dois períodos liberados.
+- O bloqueio de um período com solicitações existentes impede novas escolhas, mas não devolve vagas. Para devolver vagas, é necessário um cancelamento administrativo da solicitação específica, conforme o sistema atual.
+- Os saldos de vagas e o bloqueio dos períodos são validados **também no Neon**, não apenas no HTML.
+- O calendário **não define datas específicas** de início e fim do gozo dos 15 dias. O prazo administrativo dos 45 dias foi preservado conforme solicitado anteriormente.
+- Nome e matrícula não comprovam identidade; antes do uso institucional amplo, é recomendado autenticar os servidores e adotar práticas de proteção de dados pessoais.
+- A conexão com seu Neon/Vercel de produção não pode ser testada pelo pacote local; faça os testes descritos depois da publicação.
