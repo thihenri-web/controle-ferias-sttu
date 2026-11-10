@@ -20,6 +20,9 @@ export default async function handler(req,res) {
       )
       SELECT c.mes,c.periodo,COALESCE(v.ocupadas,0)::integer AS ocupadas,
         COALESCE(cfg.capacidade,10)::integer AS capacidade,
+        to_char(cfg.data_inicio,'YYYY-MM-DD') AS data_inicio,
+        to_char(cfg.data_fim,'YYYY-MM-DD') AS data_fim,
+
         (COALESCE(cfg.capacidade,10)-COALESCE(v.ocupadas,0))::integer AS restantes,
         COALESCE(cfg.liberado,c.liberacao_padrao) AS habilitado,
         to_char(c.data_limite,'YYYY-MM-DD') AS limite,

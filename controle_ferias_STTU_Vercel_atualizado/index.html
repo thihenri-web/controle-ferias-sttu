@@ -83,7 +83,7 @@
         <div class="toolbar"><div class="year-block"><label for="year">Ano liberado para escolha</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
         <div class="stats"><div class="stat"><small>Vagas com prazo aberto</small><strong id="stat-open">—</strong></div><div class="stat"><small>Vagas já ocupadas</small><strong id="stat-taken">—</strong></div><div class="stat"><small>Seu planejamento</small><strong id="stat-selected">0 <em>de 2 períodos</em></strong></div></div>
         <div class="section-title"><h2>Calendário de vagas</h2><div class="rule"></div></div>
-        <p class="caption">Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas exatas ainda serão definidas pela administração</strong>; por isso, aparecem somente 1º e 2º período de cada mês. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.</p>
+        <p class="caption">Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas dos períodos serão exibidas quando cadastradas pela administração</strong>. Enquanto não forem informadas, aparecerá “Datas a definir”. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.</p>
         <div id="calendar-error" class="alert hidden" role="alert"></div>
         <div id="months" class="month-grid" aria-label="Meses e vagas disponíveis"></div>
         <div id="selection-error" class="alert hidden" role="alert"></div>
@@ -95,7 +95,7 @@
         <div class="confirmation"><div class="checkmark" aria-hidden="true">✓</div><div class="eyebrow" style="margin-top:21px">Solicitação registrada</div><h1>Escolhas recebidas com sucesso.</h1><p style="color:#b9c6d2">A solicitação foi registrada no sistema. Guarde o número de protocolo para conferência.</p><div id="receipt" class="receipt"></div><div class="actions"><button id="print" class="outline" type="button">Imprimir comprovante</button><button id="another" class="primary" type="button">Encerrar e voltar ao início</button></div><p class="micro">O registro não substitui a aprovação formal de férias pela administração.</p></div>
       </section>
     </main>
-    <footer class="footer"><span>STTU · Secretaria Municipal de Mobilidade Urbana · Natal/RN</span><span>Controle de férias · Uso institucional</span></footer>
+    <footer class="footer"><span>STTU · Secretaria Municipal de Mobilidade Urbana · Natal/RN</span><span>Desenvolvido por THIAGO HENRIQUE FERREIRA DA SILVA</span><span>Controle de férias · Uso institucional</span></footer>
   </div>
   <script>
     'use strict';
@@ -187,7 +187,9 @@
     function screen(n) { for (const name of ['entry','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
-    function titlePeriod(x) {return nomes[x.mes-1]+' · '+x.periodo+'º período (15 dias; datas a definir)';}
+    function dataBR(iso){if(!iso)return null;const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);return match?`${match[3]}/${match[2]}/${match[1]}`:null;}
+    function periodoDatas(p){return p?.data_inicio&&p?.data_fim?`${dataBR(p.data_inicio)} a ${dataBR(p.data_fim)}`:'Datas a definir';}
+    function titlePeriod(x) {const p=state.periodos.find(q=>q.mes===x.mes&&q.periodo===x.periodo);return nomes[x.mes-1]+' · '+x.periodo+'º período (15 dias; '+periodoDatas(p)+')';}
     function matriculaNormalizada(s){return s.toUpperCase().replace(/[^A-Z0-9]/g,'');}
     const demoKey = ano => 'sttu-demo-ferias-'+ano;
     function getDemo() { try {return JSON.parse(demoStore.getItem(demoKey(state.ano))||'[]');} catch{return [];} }
@@ -270,11 +272,11 @@
           btn.disabled=!data||remaining===0||fechado||bloqueado;btn.setAttribute('aria-pressed',String(selected));
           const top=document.createElement('span');top.className='slot-top';
           const label=document.createElement('strong');label.textContent=p+'º período';
-          const date=document.createElement('small');date.className='slot-date';date.textContent='15 dias · datas a definir';label.append(date);
+          const date=document.createElement('small');date.className='slot-date';date.textContent='15 dias · '+periodoDatas(data);label.append(date);
           const badge=document.createElement('span');badge.className='slot-badge';badge.textContent=bloqueado?'Indisponível':fechado?'Prazo encerrado':remaining===0?'Esgotado':(selected?'✓ Selecionado':remaining+' '+(remaining===1?'vaga':'vagas'));
           top.append(label,badge);
           const bar=document.createElement('span');bar.className='track';const prog=document.createElement('span');prog.style.width=(data?.capacidade?Math.max(0,remaining)/Number(data.capacidade)*100:0)+'%';bar.append(prog);btn.append(top,bar);
-          btn.setAttribute('aria-label',`${nomes[m-1]}, ${p}º período de 15 dias, datas a definir, ${bloqueado?'indisponível':remaining+' vagas restantes'}${fechado?', prazo encerrado':''}${selected?', selecionado':''}`);
+          btn.setAttribute('aria-label',`${nomes[m-1]}, ${p}º período de 15 dias, ${periodoDatas(data)}, ${bloqueado?'indisponível':remaining+' vagas restantes'}${fechado?', prazo encerrado':''}${selected?', selecionado':''}`);
           btn.addEventListener('click',()=>toggle(m,p));slotBox.append(btn);
           if(data){taken+=Number(data.ocupadas);if(data.aberto)open+=remaining;}
         }

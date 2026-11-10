@@ -1,3 +1,15 @@
+# Atualização de datas administrativas — STTU 2027
+
+**ATUALIZAÇÃO DO PROJETO EXISTENTE.** Os dois novos arquivos importantes são `schema_atualizacao_datas_periodos.sql` e `api/admin-datas.js`.
+
+Leia `README_ATUALIZACAO_DATAS.txt` para a ordem segura de publicação (Neon → GitHub → Vercel).
+
+A administração pode agora cadastrar, editar e limpar as datas de cada período de 15 dias. As datas são opcionais: sem cadastro, o site exibe **Datas a definir**. A inclusão ou alteração preserva solicitações anteriores e registra histórico. O prazo de 45 dias permanece contado desde o dia 1º do mês.
+
+O rodapé das duas páginas mostra **Desenvolvido por THIAGO HENRIQUE FERREIRA DA SILVA**.
+
+---
+
 # STTU — Controle de férias 2027 · Períodos e vagas administráveis
 
 Projeto para **Vercel + Neon**, com o cadastro existente de 114 servidores. Este pacote é uma **atualização do projeto atual**, não requer criação de outro projeto, banco ou senha.
