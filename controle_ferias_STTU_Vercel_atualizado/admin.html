@@ -296,7 +296,7 @@ function exportCSV(){
 async function audit(){
   const root=$('audit-content');root.replaceChildren();root.append(span('Consultando histórico...','muted'));
   try{
-    const b=await req('/api/admin-auditoria?ano='+encodeURIComponent(state.ano));root.replaceChildren();
+    const b=await req('/api/admin-dados?visao=auditoria&ano='+encodeURIComponent(state.ano));root.replaceChildren();
     const cancelHeading=document.createElement('h3');cancelHeading.textContent='Cancelamentos';root.append(cancelHeading);
     if(!b.registros.length)root.append(span('Nenhum cancelamento registrado neste ano.','muted'));
     else{
