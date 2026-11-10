@@ -7,10 +7,12 @@ const mensagens = {
   'PRAZO_ENCERRADO': 'O prazo de escolha de um dos meses terminou (45 dias de antecedência do dia 1º). Janeiro de 2027 é exceção até 31/12/2026.',
   'NOME_INVALIDO': 'Digite seu nome completo.',
   'MATRICULA_INVALIDA': 'Matrícula inválida.',
+  'FUNCAO_NAO_CADASTRADA': 'Função/Turno não cadastrada para esta matrícula. Procure a administração.',
   'SERVIDOR_NAO_CADASTRADO': 'Matrícula não encontrada na relação oficial de servidores.',
   'DADOS_DIVERGENTES': 'Nome e matrícula não correspondem ao cadastro. Atualize a página e selecione novamente.',
   'PERIODOS_INVALIDOS': 'Escolha dois períodos de 15 dias em meses diferentes.',
   'JA_SOLICITADO': 'Já existe uma solicitação para esta matrícula neste ano.',
+  'LIMITE_FUNCAO_TURNO': 'Limite por Função/Turno excedido',
   'PERIODO_ESGOTADO': 'Uma das vagas foi preenchida. Atualize as opções e escolha outro período.'
 };
 
@@ -44,7 +46,7 @@ export default async function handler(req, res) {
     return res.status(201).json({ sucesso: true, solicitacao: result[0].solicitacao });
   } catch (e) {
     const code = Object.keys(mensagens).find(c => String(e.message || '').includes(c));
-    if (code) return res.status(['JA_SOLICITADO','PERIODO_ESGOTADO','PRAZO_ENCERRADO','ANO_BLOQUEADO','PERIODO_BLOQUEADO'].includes(code) ? 409 : 400).json({ erro: mensagens[code], codigo: code });
+    if (code) return res.status(['LIMITE_FUNCAO_TURNO','JA_SOLICITADO','PERIODO_ESGOTADO','PRAZO_ENCERRADO','ANO_BLOQUEADO','PERIODO_BLOQUEADO'].includes(code) ? 409 : 400).json({ erro: mensagens[code], codigo: code });
     console.error('Erro ao registrar férias:', e);
     return res.status(503).json({ erro: 'Não foi possível registrar a solicitação. Verifique a conexão e tente novamente.' });
   }

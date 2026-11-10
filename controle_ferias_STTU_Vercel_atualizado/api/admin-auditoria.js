@@ -7,7 +7,7 @@ export default async function handler(req,res){
   if(!validYear(ano))return res.status(400).json({erro:'Ano inválido.'});
   try{
     const sql=neon(process.env.DATABASE_URL);
-    const [rows,capacidades,datas]=await Promise.all([
+    const [rows,capacidades,cotas]=await Promise.all([
       sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,
       to_char(registrada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em
       FROM sttu_ferias_auditoria a WHERE ano=${ano} ORDER BY a.registrada_em DESC LIMIT 500`,
@@ -15,15 +15,10 @@ export default async function handler(req,res){
         to_char(alterado_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS alterado_em
         FROM sttu_ferias_capacidades_auditoria WHERE ano=${ano}
         ORDER BY alterado_em DESC LIMIT 200`,
-      sql`SELECT ano,mes,periodo,
-        to_char(inicio_antes,'DD/MM/YYYY') AS inicio_antes,
-        to_char(fim_antes,'DD/MM/YYYY') AS fim_antes,
-        to_char(inicio_depois,'DD/MM/YYYY') AS inicio_depois,
-        to_char(fim_depois,'DD/MM/YYYY') AS fim_depois,
+      sql`SELECT mes,periodo,funcao_turno,limite_antes,limite_depois,
         to_char(alterado_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS alterado_em
-        FROM sttu_ferias_datas_auditoria WHERE ano=${ano}
-        ORDER BY alterado_em DESC LIMIT 200`
+        FROM sttu_ferias_cotas_auditoria WHERE ano=${ano} ORDER BY alterado_em DESC LIMIT 200`
     ]);
-    return res.status(200).json({registros:rows,alteracoes_capacidade:capacidades,alteracoes_datas:datas});
+    return res.status(200).json({registros:rows,alteracoes_capacidade:capacidades,alteracoes_cotas:cotas});
   }catch(e){console.error('Auditoria admin:',e);return res.status(503).json({erro:'Não foi possível consultar cancelamentos.'});}
 }

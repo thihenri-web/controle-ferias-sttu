@@ -8,7 +8,7 @@ export default async function handler(req,res){
   try{
     const sql=neon(process.env.DATABASE_URL);
     const servidores=await sql`
-      SELECT nome_completo AS nome, matricula_exibicao AS matricula
+      SELECT nome_completo AS nome, matricula_exibicao AS matricula, funcao_turno
       FROM sttu_ferias_servidores
       WHERE ativo=TRUE
       ORDER BY nome_completo, matricula_exibicao`;
