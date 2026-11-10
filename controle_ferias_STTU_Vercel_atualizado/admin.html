@@ -16,7 +16,7 @@ header{border-bottom:1px solid var(--line);display:flex;align-items:center;gap:1
 .btn:hover,.headerbuttons a:hover{background:#293949}.btn.primary{background:var(--red);border-color:var(--red);color:#fff}.btn.danger{background:#46262b;border-color:#8d4048;color:#ffb7bc}.btn.mini{font-size:.75rem;padding:6px 10px}.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 main{max-width:1320px;margin:auto;padding:27px 20px 90px}h1{font-size:clamp(1.7rem,3vw,2.5rem);letter-spacing:-.04em;line-height:1.2;margin:0 0 6px}h2{font-size:1.18rem;margin:0}p{color:var(--muted);margin:7px 0 16px}.muted{color:var(--muted)}.hidden{display:none!important}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}.login{max-width:520px;margin:54px auto;padding:30px}.login h1{font-size:1.9rem}.note{font-size:.83rem;color:var(--muted)}.notice{border-radius:10px;padding:12px 14px;border:1px solid #795045;background:#302127;color:#ffcbc3;margin:13px 0;font-size:.88rem}.notice.ok{background:#173328;border-color:#337757;color:#a2f1c9}
-label{display:block;font-weight:700;font-size:.82rem;color:#d9e3ed;margin-bottom:7px}.input{background:#0c1621;border:1px solid #465468;border-radius:10px;padding:11px 12px;color:#f2f5f8;width:100%;min-width:0}.input::placeholder{color:#8293a5}.field{margin:16px 0}.filters{display:grid;grid-template-columns:130px 180px 1fr 135px 125px;gap:12px;align-items:end;margin-top:18px}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.between{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+label{display:block;font-weight:700;font-size:.82rem;color:#d9e3ed;margin-bottom:7px}.input{background:#0c1621;border:1px solid #465468;border-radius:10px;padding:11px 12px;color:#f2f5f8;width:100%;min-width:0}.input::placeholder{color:#8293a5}.field{margin:16px 0}.filters{display:grid;grid-template-columns:180px 1fr 135px 125px;gap:12px;align-items:end;margin-top:18px}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.between{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.stat{background:var(--surface);border:1px solid var(--line);padding:17px 18px;border-radius:13px}.stat label{margin:0;color:var(--muted)}.stat strong{font-size:2rem;font-weight:850;letter-spacing:-.05em}
 .month-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:14px 0 32px}.month{border:1px solid #3b4858;background:#17212c;color:var(--text);border-radius:13px;padding:14px;text-align:left;min-height:133px}.month:hover,.month.active{border-color:var(--gold);background:#2a2a2c}.month-head{display:flex;justify-content:space-between;gap:6px;font-weight:780}.month small{color:var(--muted);font-size:.75rem}.month .meter{margin:9px 0 7px;height:5px;background:#344657;overflow:hidden;border-radius:8px}.month .meter i{display:block;height:100%;background:var(--green)}.month .line{font-size:.78rem;color:#d9e3ef;display:flex;justify-content:space-between}.month.closed{opacity:.67}.month.closed .meter i{background:#df7777}
 .period-admin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 10px}
@@ -42,15 +42,15 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
 .admin-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding:10px 0 16px;margin:10px 0 8px;white-space:nowrap}
 .tab-button{background:#172430;border:1px solid var(--line);color:var(--muted);font-weight:780;border-radius:12px;padding:11px 14px;white-space:nowrap}
 .tab-button.active{background:#3c3020;border-color:var(--gold);color:#f7e1a4}.tab-pane>.section:first-child{margin-top:8px}
-.registry-filters{display:grid;grid-template-columns:1.5fr 200px auto auto;gap:12px;align-items:end;margin:14px 0 20px}
+.registry-filters{display:grid;grid-template-columns:115px minmax(210px,1.5fr) 200px auto auto;gap:12px;align-items:end;margin:14px 0 20px}
 .quota-controls{display:grid;grid-template-columns:220px 250px;gap:14px;margin:20px 0}
 .quota-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .quota-item{border:1px solid #3d4c5e;border-radius:12px;background:#101a25;padding:13px}
 .quota-item .quota-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;font-weight:800;margin-bottom:9px}
 .quota-item .quota-body{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.quota-item input{max-width:88px}
 .quota-item .sub{font-size:.79rem;color:var(--muted);margin-top:7px}
-@media(max-width:820px){.quota-grid{grid-template-columns:1fr}.registry-filters{grid-template-columns:1fr 1fr}.registry-filters>div:first-child{grid-column:1/-1}}
-@media(max-width:540px){.quota-controls{grid-template-columns:1fr}.registry-filters{grid-template-columns:1fr}.registry-filters>div:first-child{grid-column:auto}}
+@media(max-width:820px){.quota-grid{grid-template-columns:1fr}.registry-filters{grid-template-columns:1fr 1fr}.registry-filters>div:nth-child(2){grid-column:1/-1}}
+@media(max-width:540px){.quota-controls{grid-template-columns:1fr}.registry-filters{grid-template-columns:1fr}.registry-filters>div:nth-child(2){grid-column:auto}}
 </style>
 </head>
 <body>
@@ -69,20 +69,20 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
     <p class="note">Caso não exista senha configurada, consulte o README do pacote: variáveis ADMIN_PASSWORD e ADMIN_SESSION_SECRET na Vercel.</p>
   </section>
   <section id="dashboard" class="hidden">
-    <div class="between"><div><div class="suptitle">Gestão de férias · Natal/RN</div><h1>Controle de férias <span id="title-year">2027</span></h1><p>Cadastro oficial, consultas por mês, cotas de Função/Turno e períodos administráveis.</p></div><button class="btn" id="refresh" type="button">↻ Atualizar dados</button></div>
+    <div class="between"><div><div class="suptitle">Gestão de férias · Natal/RN</div><h1>Controle de férias <span id="title-year">2027</span></h1><p>Relatórios de servidores e de ocupação por mês, cotas de Função/Turno e períodos administráveis.</p></div><button class="btn" id="refresh" type="button">↻ Atualizar dados</button></div>
     <div id="status" class="notice hidden" role="status"></div>
     <nav class="admin-tabs" aria-label="Funções da área administrativa" role="tablist">
-      <button class="tab-button active" data-tab="servidores" role="tab" aria-selected="true">Servidores</button>
-      <button class="tab-button" data-tab="mensal" role="tab" aria-selected="false">Consulta mensal</button>
+      <button class="tab-button active" data-tab="relatorios" role="tab" aria-selected="true">Relatórios</button>
       <button class="tab-button" data-tab="cotas" role="tab" aria-selected="false">Vagas por Função/Turno</button>
       <button class="tab-button" data-tab="periodos" role="tab" aria-selected="false">Períodos e vagas</button>
       <button class="tab-button" data-tab="anos" role="tab" aria-selected="false">Liberação de anos</button>
       <button class="tab-button" data-tab="historico" role="tab" aria-selected="false">Histórico</button>
     </nav>
-    <div class="tab-pane" id="tab-servidores" role="tabpanel">
+    <div class="tab-pane" id="tab-relatorios" role="tabpanel">
       <section class="section card"><div class="section-bar"><h2>Pesquisa e listagem dos servidores</h2><span class="tag" id="registry-count">114 no cadastro</span></div>
         <p>Relação oficial do PDF, com matrícula no padrão 00.000-0, Função/Turno e escolhas registradas no ano selecionado.</p>
         <form id="registry-filter" class="registry-filters">
+          <div><label for="year">Ano</label><select class="input" id="year"></select></div>
           <div><label for="registry-search">Nome ou matrícula</label><input id="registry-search" class="input" placeholder="Pesquisar servidor" maxlength="120"></div>
           <div><label for="registry-role">Função/Turno</label><select class="input" id="registry-role"></select></div>
           <button class="btn primary" type="submit">Pesquisar</button>
@@ -90,11 +90,8 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
         </form>
         <div class="table-wrap"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Situação</th></tr></thead><tbody id="registry-records"></tbody></table></div>
       </section>
-    </div>
-    <div class="tab-pane hidden" id="tab-mensal" role="tabpanel">
-      <div class="card"><div class="section-bar"><h2>Consulta por mês</h2><span class="note">Clique em um mês para filtrar solicitações</span></div>
+      <div class="card section"><div class="section-bar"><h2>Consulta mensal</h2><span class="note">O ano é selecionado no filtro de servidores acima · clique em um mês para filtrar</span></div>
         <form class="filters" id="filters">
-          <div><label for="year">Ano</label><select class="input" id="year"></select></div>
           <div><label for="month">Mês</label><select class="input" id="month"></select></div>
           <div class="search-field"><label for="search">Nome ou matrícula</label><input class="input" id="search" maxlength="120" placeholder="Pesquisar"></div>
           <div><label for="period">Período</label><select class="input" id="period"><option value="0">Ambos</option><option value="1">1º período</option><option value="2">2º período</option></select></div>
@@ -155,7 +152,7 @@ const $=id=>document.getElementById(id);
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const ALLOWED=Array.from({length:12},(_,i)=>i+1);
 const GROUPS=['Manhã','Adm','Insp','Noite','COTT','Tarde','Corujão','Insp Chefe'];
-const state={ano:2027,mes:0,periodo:0,busca:'',records:[],vagas:[],anos:[],cotas:[],ocupacao_funcao:[],registry:[],activeTab:'servidores',busy:false};
+const state={ano:2027,mes:0,periodo:0,busca:'',records:[],vagas:[],anos:[],cotas:[],ocupacao_funcao:[],registry:[],activeTab:'relatorios',busy:false};
 const show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
 function notify(t,ok=false){const e=$('status');e.textContent=t;show('status',Boolean(t));e.classList.toggle('ok',ok);}
 async function req(url,opts={}){
@@ -184,7 +181,7 @@ function renderMonths(){
     for(const x of entries){const row=document.createElement('div');row.className='line';row.append(span(x.periodo+'º período'),span(x.habilitado?(`${x.normais}/${x.capacidade} normais · ${x.chefes||0} extras · ${x.restantes} livres`):('Bloqueado · limite '+x.capacidade)));box.append(row);}
     const foot=document.createElement('small');foot.textContent=!enabled.length?'Nenhum período liberado':closed?'Prazo encerrado':enabled.length+' período(s) liberado(s)';box.append(foot);
     box.title='Mostrar servidores com férias em '+fmt(mes);
-    box.addEventListener('click',()=>{activateTab('mensal');$('month').value=String(mes);state.mes=mes;load();});root.append(box);
+    box.addEventListener('click',()=>{activateTab('relatorios');$('month').value=String(mes);state.mes=mes;load();});root.append(box);
   }
 }
 function renderPeriodSettings(){
@@ -321,7 +318,7 @@ async function audit(){
 function activateTab(tab){
   state.activeTab=tab;
   for(const btn of document.querySelectorAll('[data-tab]')){const active=btn.dataset.tab===tab;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));}
-  for(const name of ['servidores','mensal','cotas','periodos','anos','historico'])show('tab-'+name,name===tab);
+  for(const name of ['relatorios','cotas','periodos','anos','historico'])show('tab-'+name,name===tab);
   if(tab==='historico')audit();
 }
 async function loadRegistry(){
@@ -403,7 +400,7 @@ async function changeQuota(mes,periodo,funcao,raw){
  }catch(e){state.busy=false;renderCotas();notify(e.message);}
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));
-$('registry-filter').addEventListener('submit',e=>{e.preventDefault();loadRegistry();});
+$('registry-filter').addEventListener('submit',e=>{e.preventDefault();if(state.ano!==Number($('year').value))load();else loadRegistry();});
 $('registry-export').addEventListener('click',exportRegistry);
 $('quota-month').addEventListener('change',renderCotas);
 $('quota-filter').addEventListener('change',renderCotas);
@@ -422,7 +419,7 @@ $('audit-refresh').addEventListener('click',audit);
 $('apply-year').addEventListener('click',async()=>{
   const ano=Number($('manage-year').value),liberado=$('year-status').value==='true';
   if(!confirm(`${liberado?'LIBERAR':'BLOQUEAR'} o ano ${ano} para solicitações dos servidores?`))return;
-  try{await req('/api/admin-anos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano,liberado})});await load();notify(`Ano ${ano} ${liberado?'liberado':'bloqueado'} com sucesso.`,true);}
+  try{await req('/api/admin-dados?acao=anos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano,liberado})});await load();notify(`Ano ${ano} ${liberado?'liberado':'bloqueado'} com sucesso.`,true);}
   catch(e){notify(e.message);}
 });
 setOptions('month',[[0,'Todos os meses'],...ALLOWED.map(n=>[n,fmt(n)])],0);
