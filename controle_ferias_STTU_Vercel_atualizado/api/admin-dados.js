@@ -2,6 +2,7 @@ import {neon} from '@neondatabase/serverless';
 import {requireAdmin,validYear} from '../lib/admin-auth.js';
 export default async function handler(req,res){
  if(!requireAdmin(req,res))return;
+ if(req.query?.visao==='auditoria')return handleAuditoria(req,res);
  if(req.method!=='GET')return res.status(405).json({erro:'Método não permitido.'});
  const ano=Number(req.query.ano??2027),mes=Number(req.query.mes??0),periodo=Number(req.query.periodo??0);
  const busca=String(req.query.busca||'').trim().slice(0,120);
@@ -59,3 +60,28 @@ export default async function handler(req,res){
   return res.status(200).json({ano,mes,periodo,solicitacoes,vagas,anos,cotas,ocupacao_funcao,contagem:solicitacoes.length});
  }catch(e){console.error('Admin dados:',e);return res.status(503).json({erro:'Falha na consulta. Execute a migração Função/Turno no Neon.'});}
 }
+
+// Consulta de auditoria compartilha esta função para respeitar o limite Hobby da Vercel.
+async function handleAuditoria(req,res){
+  if(!requireAdmin(req,res))return;
+  if(req.method!=='GET')return res.status(405).json({erro:'Método não permitido.'});
+  const ano=Number(req.query.ano??2027);
+  if(!validYear(ano))return res.status(400).json({erro:'Ano inválido.'});
+  try{
+    const sql=neon(process.env.DATABASE_URL);
+    const [rows,capacidades,cotas]=await Promise.all([
+      sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,
+      to_char(registrada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em
+      FROM sttu_ferias_auditoria a WHERE ano=${ano} ORDER BY a.registrada_em DESC LIMIT 500`,
+      sql`SELECT ano,mes,periodo,capacidade_antes,capacidade_depois,ocupadas_no_momento,
+        to_char(alterado_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS alterado_em
+        FROM sttu_ferias_capacidades_auditoria WHERE ano=${ano}
+        ORDER BY alterado_em DESC LIMIT 200`,
+      sql`SELECT mes,periodo,funcao_turno,limite_antes,limite_depois,
+        to_char(alterado_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS alterado_em
+        FROM sttu_ferias_cotas_auditoria WHERE ano=${ano} ORDER BY alterado_em DESC LIMIT 200`
+    ]);
+    return res.status(200).json({registros:rows,alteracoes_capacidade:capacidades,alteracoes_cotas:cotas});
+  }catch(e){console.error('Auditoria admin:',e);return res.status(503).json({erro:'Não foi possível consultar cancelamentos.'});}
+}
+
