@@ -173,6 +173,21 @@ function setOptions(id,items,selected){const s=$(id);s.replaceChildren(...Array.
 const fmt=(x)=>MONTHS[x-1]||'—';
 const span=(text,className)=>{const e=document.createElement('span');if(className)e.className=className;e.textContent=text;return e;};
 const formatDate=iso=>iso&&/^\d{4}-\d{2}-\d{2}$/.test(iso)?iso.slice(8,10)+'/'+iso.slice(5,7)+'/'+iso.slice(0,4):'';
+// Para férias de 15 dias, a data inicial também é contada: fim = início + 14 dias.
+function isoPlusDays(iso,days){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso||''))return '';
+  const d=new Date(iso+'T00:00:00Z');
+  if(!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==iso)return '';
+  d.setUTCDate(d.getUTCDate()+days);
+  return d.toISOString().slice(0,10);
+}
+// Sobreposição inclusiva: 01-15 e 11-25 compartilham cinco dias (11,12,13,14,15).
+function overlapDays(iniA,fimA,iniB,fimB){
+  if(!iniA||!fimA||!iniB||!fimB)return 0;
+  const start=Math.max(Date.parse(iniA+'T00:00:00Z'),Date.parse(iniB+'T00:00:00Z'));
+  const end=Math.min(Date.parse(fimA+'T00:00:00Z'),Date.parse(fimB+'T00:00:00Z'));
+  return Math.max(0,Math.floor((end-start)/86400000)+1);
+}
 const dateLabel=(data)=>data?.data_inicio&&data?.data_fim?(formatDate(data.data_inicio)+' a '+formatDate(data.data_fim)):'Datas a definir';
 const period=(m,p)=>{const x=state.vagas.find(v=>v.mes===Number(m)&&v.periodo===Number(p));return `${fmt(m)} · ${p}º período (15 dias; ${dateLabel(x)})`;};
 function renderMonths(){
@@ -225,8 +240,22 @@ function renderPeriodSettings(){
         caption.textContent=lbl;const input=document.createElement('input');
         input.type='date';input.className='input';input.value=current||'';
         input.disabled=!p||state.busy;input.setAttribute('aria-label',`${lbl} do ${periodo}º período de ${fmt(mes)} de ${state.ano}`);
+        if(id==='inicio'){
+          // Impede selecionar inícios que fariam os 15 dias ultrapassarem o mês.
+          const maxStart=new Date(Date.UTC(state.ano,mes,0));
+          maxStart.setUTCDate(maxStart.getUTCDate()-14);
+          input.min=`${state.ano}-${String(mes).padStart(2,'0')}-01`;
+          input.max=maxStart.toISOString().slice(0,10);
+        }else{
+          caption.textContent='Data final (calculada automaticamente)';
+          input.readOnly=true;
+          input.title='Calculada automaticamente: data inicial mais 14 dias';
+        }
         field.append(caption,input);dates.append(field);datesInput.push(input);
       }
+      const syncFinalDate=()=>{datesInput[1].value=datesInput[0].value?isoPlusDays(datesInput[0].value,14):'';};
+      datesInput[0].addEventListener('input',syncFinalDate);
+      datesInput[0].addEventListener('change',syncFinalDate);
       desc.append(dates);
       const dateActions=document.createElement('div');dateActions.className='config-date-actions';
       const saveDates=document.createElement('button');saveDates.type='button';saveDates.className='btn mini primary';
@@ -237,7 +266,7 @@ function renderPeriodSettings(){
       unsetDates.addEventListener('click',()=>changeDates(p,'',''));
       dateActions.append(saveDates,unsetDates);desc.append(dateActions);
       const helpDates=document.createElement('small');helpDates.className='config-help';
-      helpDates.textContent='15 dias consecutivos dentro do mês. Não pode coincidir com o outro período.';desc.append(helpDates);
+      helpDates.textContent='A data final será preenchida automaticamente (+14 dias). São permitidos até 5 dias de sobreposição com o outro período do mês.';desc.append(helpDates);
       line.append(desc,actions);card.append(line);
     }
     root.append(card);
@@ -266,6 +295,11 @@ async function changeDates(p,inicio,fim){
        Math.round((end-start)/86400000)!==14){
       notify('Selecione exatamente 15 dias consecutivos dentro do mês escolhido.');return;
     }
+  }
+  if(inicio){
+    const outro=state.vagas.find(x=>x.mes===p.mes&&x.periodo!==p.periodo);
+    const dias=overlapDays(inicio,fim,outro?.data_inicio,outro?.data_fim);
+    if(dias>5){notify(`Há ${dias} dias de sobreposição com o outro período. O máximo permitido é 5.`);return;}
   }
   if((p.data_inicio||'')===inicio&&(p.data_fim||'')===fim){notify('As datas já estão configuradas assim.',true);return;}
   const atual=dateLabel(p);
