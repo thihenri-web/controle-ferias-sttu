@@ -1,0 +1,243 @@
+
+-- ATUALIZAÇÃO DA RELAÇÃO DE SERVIDORES STTU
+-- Fonte: relação enviada na conversa, mantendo a grafia publicada (incluindo
+-- abreviações por corte na imagem); nome Thiago expandido conforme exemplo textual do solicitante.
+-- Compatível com bancos que já têm solicitações; não exclui solicitações nem vagas.
+-- Matrícula como chave única, normalizada sem ponto ou hífen para corresponder aos pedidos existentes.
+CREATE TABLE IF NOT EXISTS sttu_ferias_servidores (
+  matricula VARCHAR(32) PRIMARY KEY,
+  matricula_exibicao VARCHAR(32) NOT NULL,
+  nome_completo VARCHAR(180) NOT NULL,
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  atualizado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS sttu_ferias_servidores_nome_idx
+  ON sttu_ferias_servidores(nome_completo);
+
+INSERT INTO sttu_ferias_servidores (matricula,matricula_exibicao,nome_completo)
+VALUES
+  ('430714','43.071-4','ADRIANA GOMES DA SILVA'),
+  ('430790','43.079-0','ADRIANO ANDRE GUEDES COSTA'),
+  ('499919','49.991-9','ADRIANO NASCIMENTO DA FONSECA'),
+  ('431516','43.151-6','AFRANIO MEDEIROS DA COSTA'),
+  ('431273','43.127-3','AGRICIO BELCHIOR BANDEIRA NETT'),
+  ('620955','62.095-5','AILTON ANDRADE'),
+  ('621005','62.100-5','ALCINEIDE JUSTO SIQUEIRA'),
+  ('625493','62.549-3','ALDREY LUIS MORAIS DA SILVA'),
+  ('430803','43.080-3','ALDRIN MAGNO DANTAS SIQUEIRA'),
+  ('431991','43.199-1','ALESSANDRA DORA DA SILVA COSTA'),
+  ('499536','49.953-6','ALEXANDRA BARROS DO NASCIMENTO'),
+  ('619477','61.947-7','ALEXANDRE MAGNO FREITAS COSMO'),
+  ('430722','43.072-2','ALEX SANDRO NASCIMENTO BARBOSA'),
+  ('499951','49.995-1','ALISSON EMANOEL DE OLIVEIRA FA'),
+  ('430731','43.073-1','ALLAN ARAUJO DE MEDEIROS'),
+  ('645450','64.545-0','ALYENE PATRICIA C B ALVES'),
+  ('638021','63.802-1','ANDERSON RODRIGO DO NASCIMENTO'),
+  ('430854','43.085-4','ANDRE ALVES DE OLIVEIRA'),
+  ('003875','00.387-5','ANDRE CORCINO DE LIMA FILHO'),
+  ('620971','62.097-1','ANDREA CASTRO GALVAO'),
+  ('617105','61.710-5','ANDREZA CABRAL CAMARA NUNES'),
+  ('602337','60.233-7','ANNE CAROLLINE MACEDO DE ARAUJ'),
+  ('431028','43.102-8','BARBARA KALYANA DOS SANTOS GOMES ALVES'),
+  ('430773','43.077-3','CARLOS EUBER DE FREITAS NEVES'),
+  ('431508','43.150-8','CARLYLE CAMARA DOS SANTOS'),
+  ('430846','43.084-6','CARMOZINA REGIA DE MELO DANTAS'),
+  ('431010','43.101-0','CAROLINA DE CASSIA DEFENTE'),
+  ('430960','43.096-0','CHIARA LUCIA DE GUSMAO GONCALVES'),
+  ('628735','62.873-5','CRISTIANE DE MACEDO E SILVA'),
+  ('430901','43.090-1','DANIEL ALBUQUERQUE EMERENCIANO'),
+  ('600725','60.072-5','DANIELLE PEREIRA DE OLIVEIRA'),
+  ('722457','72.245-7','DANILO CLAUDIO LIRA DOS SANTOS'),
+  ('600903','60.090-3','DENILSON ARAUJO DA COSTA'),
+  ('004171','00.417-1','EDILSON FERREIRA DOS SANTOS'),
+  ('499862','49.986-2','EDINASIO COSTA SOARES'),
+  ('455709','45.570-9','EDIA PAULA MAIA'),
+  ('004693','00.469-3','EDSON SIQUEIRA DE LIMA'),
+  ('431982','43.198-2','ELIZABETE RANYELA MORAIS DE MO'),
+  ('005185','00.518-5','EVALDO FELIX FERREIRA'),
+  ('600661','60.066-1','FERNANDA FREITAS DE HOLANDA'),
+  ('652474','65.247-4','FRANZ BIAGGIO FULCO GAAG'),
+  ('430862','43.086-2','GENALDO AZEVEDO DA TRINDADE'),
+  ('003751','00.375-1','HAILSON CABRAL NASCIMENTO'),
+  ('654205','65.420-5','HARLLEY CAMPOS MARQUES'),
+  ('430978','43.097-8','HEITOR RODRIGUES DE LIMA'),
+  ('499528','49.952-8','HEMERSON MELO DA SILVA TORQUATO'),
+  ('499501','49.950-1','HERANDY DE ARAUJO CABRAL'),
+  ('431494','43.149-4','HERQUILES LIMA DOS SANTOS'),
+  ('430986','43.098-6','HEWERTON MOURA DA SILVA'),
+  ('600345','60.034-5','ISABELA SILVA NICACIO DE BRITO'),
+  ('004316','00.431-6','IVAN DE CARVALHO MEDEIROS'),
+  ('621510','62.151-0','IVES SILVA DE SOUZA'),
+  ('621897','62.189-7','JARDEL BEZERRA DE ANDRADE'),
+  ('628263','62.826-3','JARDS MEDEIROS DE OLIVEIRA'),
+  ('629197','62.919-7','JEFERSON STANLEY DA SILVA'),
+  ('004821','00.482-1','JOAO BATISTA MONTEIRO DE AQUINO'),
+  ('499943','49.994-3','JOAO BATISTA ROCHA FILHO'),
+  ('003832','00.383-2','JOAO CLAUDIO DE OLIVEIRA DE FARIA'),
+  ('430706','43.070-6','JOAO MARIA ALMEIDA DE MOURA'),
+  ('432016','43.201-6','JOAO MARIA MACEDO DA ROCHA'),
+  ('430820','43.082-0','JOAO PAULO DE OLIVEIRA'),
+  ('622532','62.253-2','JOAO WILLAMS DA SILVA'),
+  ('624314','62.431-4','JORGE LUIZ BARROS DO NASCIMENT'),
+  ('621919','62.191-9','JORGE LUIZ SIQUEIRA DE OLIVEIR'),
+  ('427667','42.766-7','JOSE ALBERTO FREIRE DA COSTA'),
+  ('499854','49.985-4','JOSE EUDES BEZERRA'),
+  ('430838','43.083-8','JOSE GONCALVES MANGABEIRA DE MEDEIROS'),
+  ('624161','62.416-1','JOSE ROOSEVELT MEDEIROS JUNIOR'),
+  ('600687','60.068-7','JOSEMAR DA SILVA DAMASCENO'),
+  ('431524','43.152-4','JOSEMAR TAVARES CAMARA JUNIOR'),
+  ('003867','00.386-7','JOSENILSON TEIXEIRA DE SOUZA'),
+  ('430765','43.076-5','KASTEEN CARLOS DE AQUINO E SIL'),
+  ('498254','49.825-4','KLEBER SILVESTRE LUSTOSA'),
+  ('430781','43.078-1','LAILTON RIBEIRO DA COSTA'),
+  ('645427','64.542-7','LEONARDO BATISTA DE S SILVA'),
+  ('431222','43.122-2','LEONARDO DA SILVEIRA LUCENA'),
+  ('499897','49.989-7','MADSON LIMA CAVALCANTI DE OLIV'),
+  ('706655','70.665-5','MARA LUCIA BARROS DE SOUZA'),
+  ('619523','61.952-3','MARCELO BATISTA DE ANDRADE'),
+  ('600733','60.073-3','MARCELO FRANCA DA SILVA'),
+  ('621846','62.184-6','MARCELO ZAEROSON LINS DE MEDEI'),
+  ('499510','49.951-0','MARCILIO DE OLIVEIRA RODRIGUES'),
+  ('681598','68.159-8','MARCIO JOSE DA SILVA'),
+  ('458333','45.833-3','MARCIO JOSE SA DANTAS LUZ'),
+  ('432008','43.200-8','MARIA DE LOURDES DA SILVA FILH'),
+  ('431125','43.112-5','MARYANE CRISTINA LOPES PEREIRA DA ROCHA'),
+  ('620921','62.092-1','MIGUEL ANGELO DE SANTANA'),
+  ('623687','62.368-7','NADIJANA MARIA DAMASCENO VALLE'),
+  ('602370','60.237-0','NAOMI SUASSUNA DOS SANTOS'),
+  ('499498','49.949-8','NEUZELIDES PRISCILLA SILVA AND'),
+  ('430811','43.081-1','NEWDEMBERG FERREIRA GALVAO'),
+  ('600644','60.064-4','NEWTON DE SOUZA PEREIRA FILHO'),
+  ('459909','45.990-9','PATRICIA CRISTINA CAVALCANTE'),
+  ('002496','00.249-6','RAIMUNDO NONATO DE MEDEIROS NETO'),
+  ('621498','62.149-8','RAPHAELLE CAVALCANTE RIBEIRO D'),
+  ('622508','62.250-8','REGINA VICENCIA CRISPIM'),
+  ('499927','49.992-7','RITA DE CASSIA SILVA'),
+  ('001848','00.184-8','ROBSON LUIZ DE AZEVEDO'),
+  ('043871','04.387-1','RODRIGO COSTA'),
+  ('628255','62.825-5','RONALDO MARINHO DE SOUZA'),
+  ('622575','62.257-5','RONALDO TEIXEIRA DE ARAUJO'),
+  ('001376','00.137-6','ROSENBERG PEREIRA'),
+  ('617121','61.712-1','SANDRA DA SILVA BEZERRIL BACEL'),
+  ('431541','43.154-1','SARAH POLLYANA DIAS DOS SANTOS'),
+  ('001929','00.192-9','SEVERINO FERNANDES MAIA'),
+  ('633861','63.386-1','SYBELLE DE ARAUJO DANTAS'),
+  ('499901','49.990-1','TALITHA LOUISE FORTUNATO BEZER'),
+  ('638030','63.803-0','THALES GALVAO DE ARAUJO'),
+  ('499889','49.988-9','THALLES THIAGO MEDEIROS DE SOUZA'),
+  ('430757','43.075-7','THIAGO DE LIRA BEZERRA'),
+  ('602752','60.275-2','THIAGO HENRIQUE FERREIRA DA SILVA'),
+  ('619558','61.955-8','VANESSA GALDINO DA SILVA'),
+  ('705632','70.563-2','WANDERCLEY SILVA NEVES'),
+  ('623679','62.367-9','WANDRE WAGNER DA SILVA')
+ON CONFLICT (matricula) DO UPDATE
+SET matricula_exibicao=EXCLUDED.matricula_exibicao,
+    nome_completo=EXCLUDED.nome_completo,
+    ativo=TRUE,
+    atualizado_em=now();
+
+-- Aplicar nome e matrícula do cadastro também na função do banco.
+CREATE OR REPLACE FUNCTION sttu_registrar_ferias(
+    p_ano INTEGER, p_nome TEXT, p_matricula TEXT,
+    p_mes_1 INTEGER, p_periodo_1 INTEGER,
+    p_mes_2 INTEGER, p_periodo_2 INTEGER
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_nome TEXT := btrim(coalesce(p_nome, ''));
+  v_matricula TEXT := upper(regexp_replace(coalesce(p_matricula, ''), '[^a-zA-Z0-9]', '', 'g'));
+  v_matricula_exibicao TEXT;
+  v_id BIGINT;
+  v_primeiro_mes INTEGER;
+  v_primeiro_periodo INTEGER;
+  v_segundo_mes INTEGER;
+  v_segundo_periodo INTEGER;
+  v_hoje DATE := (now() AT TIME ZONE 'America/Fortaleza')::date;
+  v_limite_1 DATE;
+  v_limite_2 DATE;
+  v_liberado BOOLEAN;
+BEGIN
+  IF p_ano NOT BETWEEN 2027 AND 2100 THEN
+    RAISE EXCEPTION 'ANO_INVALIDO';
+  END IF;
+  SELECT liberado INTO v_liberado FROM sttu_ferias_anos WHERE ano = p_ano FOR SHARE;
+  IF v_liberado IS DISTINCT FROM TRUE THEN
+    RAISE EXCEPTION 'ANO_BLOQUEADO';
+  END IF;
+  IF char_length(v_nome) < 5 OR char_length(v_nome) > 180 OR position(' ' in v_nome) = 0 THEN
+    RAISE EXCEPTION 'NOME_INVALIDO';
+  END IF;
+  IF char_length(v_matricula) < 3 OR char_length(v_matricula) > 32 THEN
+    RAISE EXCEPTION 'MATRICULA_INVALIDA';
+  END IF;
+  -- A relação oficial determina o nome e a matrícula.
+  -- A conferência ocorre no servidor, e não apenas no navegador.
+  SELECT s.nome_completo,s.matricula_exibicao INTO v_nome,v_matricula_exibicao
+  FROM sttu_ferias_servidores AS s
+  WHERE s.matricula=v_matricula AND s.ativo=TRUE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'SERVIDOR_NAO_CADASTRADO'; END IF;
+  IF btrim(coalesce(p_nome,'')) <> v_nome THEN
+    RAISE EXCEPTION 'DADOS_DIVERGENTES';
+  END IF;
+
+  IF p_mes_1 NOT BETWEEN 1 AND 12 OR p_mes_2 NOT BETWEEN 1 AND 12
+     OR p_mes_1 IN (6,12) OR p_mes_2 IN (6,12)
+     OR (p_mes_1 = 2 AND p_periodo_1 <> 1)
+     OR (p_mes_2 = 2 AND p_periodo_2 <> 1)
+     OR p_periodo_1 NOT IN (1,2) OR p_periodo_2 NOT IN (1,2)
+     OR p_mes_1 = p_mes_2 THEN
+    RAISE EXCEPTION 'PERIODOS_INVALIDOS';
+  END IF;
+
+  -- Último dia em que a escolha é admitida (inclusive): primeiro dia menos 45 dias.
+  v_limite_1 := make_date(p_ano, p_mes_1, 1) - 45;
+  v_limite_2 := make_date(p_ano, p_mes_2, 1) - 45;
+  -- Exceção exclusiva para o lançamento inicial de janeiro de 2027.
+  IF p_ano = 2027 AND p_mes_1 = 1 THEN v_limite_1 := DATE '2026-12-31'; END IF;
+  IF p_ano = 2027 AND p_mes_2 = 1 THEN v_limite_2 := DATE '2026-12-31'; END IF;
+  IF v_hoje > v_limite_1 OR v_hoje > v_limite_2 THEN
+    RAISE EXCEPTION 'PRAZO_ENCERRADO';
+  END IF;
+
+  INSERT INTO sttu_ferias_vagas (ano, mes, periodo)
+    SELECT p_ano, m, p
+    FROM generate_series(1,12) AS m CROSS JOIN generate_series(1,2) AS p
+    WHERE m NOT IN (6,12) AND (m <> 2 OR p = 1)
+    ON CONFLICT DO NOTHING;
+
+  INSERT INTO sttu_ferias_solicitacoes
+    (ano, nome_completo, matricula, mes_1, periodo_1, mes_2, periodo_2)
+    VALUES (p_ano, v_nome, v_matricula, p_mes_1, p_periodo_1, p_mes_2, p_periodo_2)
+    ON CONFLICT (ano, matricula) DO NOTHING
+    RETURNING id INTO v_id;
+  IF v_id IS NULL THEN RAISE EXCEPTION 'JA_SOLICITADO'; END IF;
+
+  IF p_mes_1 < p_mes_2 THEN
+    v_primeiro_mes := p_mes_1; v_primeiro_periodo := p_periodo_1;
+    v_segundo_mes := p_mes_2; v_segundo_periodo := p_periodo_2;
+  ELSE
+    v_primeiro_mes := p_mes_2; v_primeiro_periodo := p_periodo_2;
+    v_segundo_mes := p_mes_1; v_segundo_periodo := p_periodo_1;
+  END IF;
+
+  UPDATE sttu_ferias_vagas SET ocupadas = ocupadas + 1
+  WHERE ano = p_ano AND mes = v_primeiro_mes AND periodo = v_primeiro_periodo AND ocupadas < 10;
+  IF NOT FOUND THEN RAISE EXCEPTION 'PERIODO_ESGOTADO'; END IF;
+  UPDATE sttu_ferias_vagas SET ocupadas = ocupadas + 1
+  WHERE ano = p_ano AND mes = v_segundo_mes AND periodo = v_segundo_periodo AND ocupadas < 10;
+  IF NOT FOUND THEN RAISE EXCEPTION 'PERIODO_ESGOTADO'; END IF;
+
+  RETURN jsonb_build_object(
+    'id', v_id, 'ano', p_ano, 'nome', v_nome, 'matricula', v_matricula_exibicao,
+    'escolhas', jsonb_build_array(
+      jsonb_build_object('mes',p_mes_1,'periodo',p_periodo_1),
+      jsonb_build_object('mes',p_mes_2,'periodo',p_periodo_2)
+    )
+  );
+END;
+$$;
+
+-- Conferência opcional (executar em consulta separada):
+-- SELECT count(*) AS total_servidores FROM sttu_ferias_servidores WHERE ativo=TRUE;

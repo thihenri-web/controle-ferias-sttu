@@ -14,7 +14,7 @@
     .layout{max-width:1220px;margin:auto;padding:20px 22px 96px}.header{display:flex;align-items:center;gap:17px;padding:16px 0 22px;border-bottom:1px solid var(--line)}
     .logo{width:70px;height:70px;object-fit:contain;background:#f7f8fa;border-radius:16px;padding:5px;box-shadow:0 5px 23px rgba(0,0,0,.23)}
     .brand-small{font-weight:800;letter-spacing:.11em;font-size:.77rem;color:var(--accent2);text-transform:uppercase}.brand-title{font-size:clamp(1.08rem,2vw,1.35rem);font-weight:780;margin:3px 0 0;line-height:1.27}.brand-sub{font-size:.83rem;color:var(--muted);margin-top:3px}
-    .header-right{margin-left:auto;background:#202b37;border:1px solid #354353;padding:7px 13px;border-radius:999px;font-size:.78rem;color:#dbe5f0;white-space:nowrap}
+    .header-admin{margin-left:auto;color:#f4cc71;border:1px solid #57482f;border-radius:10px;text-decoration:none;padding:10px 12px;font-weight:700;font-size:.82rem;white-space:nowrap}.header-admin:hover{background:#302819}.header-right{margin-left:0;background:#202b37;border:1px solid #354353;padding:7px 13px;border-radius:999px;font-size:.78rem;color:#dbe5f0;white-space:nowrap}
     .demo-banner{background:#3c3015;color:#fff3ce;border:1px solid #8e6e20;padding:11px 16px;border-radius:13px;margin-top:20px;font-size:.89rem}
     .intro{display:grid;grid-template-columns:1fr 450px;gap:38px;align-items:center;min-height:570px;padding:66px 0 44px}.eyebrow{font-size:.83rem;font-weight:750;letter-spacing:.13em;text-transform:uppercase;color:var(--accent2)}
     h1{font-size:clamp(2.3rem,5vw,4.05rem);line-height:1.08;letter-spacing:-.053em;margin:17px 0 21px;max-width:650px}h1 span{color:#f1bf53}h2{letter-spacing:-.024em;line-height:1.18}
@@ -29,13 +29,19 @@
     .status-text{margin-left:auto;color:#aebac7;font-size:.81rem;padding:13px 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:19px 0 30px}.stat{border:1px solid var(--line);background:var(--surface);padding:18px 21px;border-radius:15px}.stat small{color:#aeb9c6;font-weight:650}.stat strong{font-size:1.88rem;display:block;margin-top:5px;letter-spacing:-.04em}.stat strong em{font-size:.89rem;font-style:normal;color:var(--muted);font-weight:500;margin-left:8px}
     .section-title{display:flex;align-items:center;gap:12px;margin:28px 0 15px}.section-title h2{font-size:1.28rem;margin:0}.section-title .rule{height:1px;background:var(--line);flex:1}.caption{color:var(--muted);font-size:.84rem;margin:-3px 0 18px}
     .month-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.month{background:var(--surface);border:1px solid #33404e;border-radius:16px;overflow:hidden;transition:.15s ease}.month:hover{border-color:#5a6879}.month-header{padding:16px 16px 10px;display:flex;justify-content:space-between;gap:10px;align-items:center}.month-title{font-weight:820;font-size:1.07rem}.month-num{font-weight:750;color:#8394a8;font-size:.75rem}.month-available{color:#a3b2c1;font-size:.74rem;padding:0 16px 11px}
-    .slots{display:grid;gap:8px;padding:0 11px 12px}.slot{min-width:0;border:1px solid #354452;border-radius:10px;background:#1e2935;color:#edf4f9;text-align:left;padding:12px 12px 10px;transition:.16s ease}.slot:not(:disabled):hover{border-color:var(--accent2);background:#26323d}.slot.selected{border-color:var(--accent2);background:#3b3425;box-shadow:inset 0 0 0 1px #d2a84d}.slot.full{opacity:.49;background:#151e27}.slot-top{display:flex;justify-content:space-between;align-items:center;gap:6px}.slot strong{font-size:.86rem}.slot-date{display:block;font-size:.72rem;line-height:1.5;color:#b2bfcd;font-weight:500;padding-top:2px}.slot.selected .slot-date{color:#f3dca6}.slot-badge{color:#fff;background:#344353;font-size:.75rem;padding:3px 7px;border-radius:6px;white-space:nowrap;font-weight:740}.slot.selected .slot-badge{background:var(--accent2);color:#32260b}.slot.full .slot-badge{background:#4d3034}.track{display:block;height:4px;background:#3b4957;border-radius:4px;margin-top:12px;overflow:hidden}.track span{display:block;height:100%;background:var(--green);border-radius:4px}.slot.full .track span{background:#dd5f66}.slot.selected .track span{background:var(--accent2)}
+    .slots{display:grid;gap:8px;padding:0 11px 12px}.slot{min-width:0;border:1px solid #354452;border-radius:10px;background:#1e2935;color:#edf4f9;text-align:left;padding:12px 12px 10px;transition:.16s ease}.slot:not(:disabled):hover{border-color:var(--accent2);background:#26323d}.slot.selected{border-color:var(--accent2);background:#3b3425;box-shadow:inset 0 0 0 1px #d2a84d}.slot.full{opacity:.49;background:#151e27}.slot.closed{opacity:.54;background:#161c26;border-color:#4e5262}.slot.closed .slot-badge{background:#57433b;color:#ffe0b0}.month.closed-month{border-color:#4d4b49}.slot-top{display:flex;justify-content:space-between;align-items:center;gap:6px}.slot strong{font-size:.86rem}.slot-date{display:block;font-size:.72rem;line-height:1.5;color:#b2bfcd;font-weight:500;padding-top:2px}.slot.selected .slot-date{color:#f3dca6}.slot-badge{color:#fff;background:#344353;font-size:.75rem;padding:3px 7px;border-radius:6px;white-space:nowrap;font-weight:740}.slot.selected .slot-badge{background:var(--accent2);color:#32260b}.slot.full .slot-badge{background:#4d3034}.track{display:block;height:4px;background:#3b4957;border-radius:4px;margin-top:12px;overflow:hidden}.track span{display:block;height:100%;background:var(--green);border-radius:4px}.slot.full .track span{background:#dd5f66}.slot.selected .track span{background:var(--accent2)}
     .summary{position:sticky;bottom:12px;z-index:20;margin-top:24px;border:1px solid #5a4b39;border-radius:18px;padding:17px 20px;background:#20262b;box-shadow:0 15px 48px rgba(0,0,0,.56);display:flex;align-items:center;gap:22px;justify-content:space-between;backdrop-filter:blur(12px)}.sumlabel{color:var(--accent2);font-weight:800;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase}.sumtext{font-size:.85rem;color:#aab8c6;margin:4px 0 0}.chips{display:flex;gap:9px;flex-wrap:wrap;margin-top:8px}.chip{border:1px solid #526174;background:#2a3744;border-radius:8px;font-size:.82rem;padding:6px 11px;color:#f1f5f9;font-weight:730}.chip.empty{border-style:dashed;color:#8997a6;background:transparent}.summary .primary{width:240px;flex-shrink:0}.summary .primary .busy{display:none}.summary .primary.loading .busy{display:inline}.summary .primary.loading .idle{display:none}
     .notice{margin-top:26px;padding:17px 18px;background:#161f28;border:1px solid #32414e;border-radius:13px;color:#a9b7c6;font-size:.83rem}.footer{border-top:1px solid var(--line);padding:19px 0;color:#8592a4;font-size:.8rem;margin-top:42px;display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap}
     .confirmation{max-width:670px;margin:64px auto;background:var(--surface);border:1px solid #365343;border-radius:22px;padding:34px;box-shadow:0 25px 60px #0005}.checkmark{width:59px;height:59px;border-radius:50%;background:#1b4839;color:#70efb4;font-size:2rem;display:grid;place-items:center}.confirmation h1{font-size:2.1rem}.receipt{border:1px solid #344453;border-radius:15px;background:#101821;padding:19px 22px;margin:26px 0}.receipt-line{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #2a3541}.receipt-line:last-child{border-bottom:0}.receipt-line span{color:var(--muted)}.receipt-line strong{text-align:right;overflow-wrap:anywhere}.actions{display:flex;gap:10px}.actions .primary{width:auto;flex:1}.actions .outline{flex:1}
     @media(max-width:1070px){.intro{grid-template-columns:1fr 410px;gap:20px}.month-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:820px){.intro{grid-template-columns:1fr;min-height:0;padding:45px 0}.intro-text{max-width:710px}.panel{max-width:670px}.month-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.summary{gap:10px}}
-    @media(max-width:570px){.layout{padding:12px 14px 100px}.logo{width:59px;height:59px}.header{gap:10px}.brand-sub{display:none}.header-right{display:none}.intro{padding:36px 0 25px}.panel{padding:23px 18px}.intro-points span{font-size:.76rem}.topline{margin:29px 0 15px}.topline h1{font-size:1.85rem}.topline .outline{padding:9px;font-size:.8rem}.month-grid{grid-template-columns:1fr;gap:12px}.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:1/-1}.stat{padding:14px}.stat strong{font-size:1.6rem}.status-text{margin:0;width:100%;padding:0}.toolbar{gap:12px}.summary{bottom:7px;padding:12px 13px;flex-direction:column;align-items:stretch}.summary .primary{width:100%}.receipt-line{font-size:.86rem}.actions{flex-direction:column}.confirmation{padding:24px 17px;margin:32px 0}}
+    @media(max-width:570px){.layout{padding:12px 14px 100px}.logo{width:59px;height:59px}.header{gap:10px}.brand-sub{display:none}.header-right{display:none}.header-admin{font-size:.72rem;padding:8px}.intro{padding:36px 0 25px}.panel{padding:23px 18px}.intro-points span{font-size:.76rem}.topline{margin:29px 0 15px}.topline h1{font-size:1.85rem}.topline .outline{padding:9px;font-size:.8rem}.month-grid{grid-template-columns:1fr;gap:12px}.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:1/-1}.stat{padding:14px}.stat strong{font-size:1.6rem}.status-text{margin:0;width:100%;padding:0}.toolbar{gap:12px}.summary{bottom:7px;padding:12px 13px;flex-direction:column;align-items:stretch}.summary .primary{width:100%}.receipt-line{font-size:.86rem}.actions{flex-direction:column}.confirmation{padding:24px 17px;margin:32px 0}}
     @media print{body{background:#fff;color:#111}.header,.footer,#step-entry,#step-selection,.actions,.notice,.demo-banner{display:none!important}.layout{max-width:none;padding:0}.confirmation{box-shadow:none;border:1px solid #aaa;background:#fff;color:#111;margin:0}.receipt{background:#fff;color:#111;border-color:#ccc}.receipt-line span{color:#555}}
+
+    .choose-list{position:relative}.roster-results{position:absolute;z-index:50;top:100%;left:0;right:0;max-height:285px;overflow:auto;background:#0f1c27;border:1px solid #687788;border-radius:12px;box-shadow:0 16px 48px #0009;padding:6px;margin-top:5px}
+    .roster-option{display:block;width:100%;text-align:left;background:transparent;color:#f3f6fa;border:0;border-radius:8px;padding:10px 11px;line-height:1.35}
+    .roster-option:hover,.roster-option:focus-visible{background:#33465a}.roster-option strong{display:block;font-size:.86rem}.roster-option small{color:#c4d3df;font-size:.78rem}
+    .roster-empty{color:#becbda;padding:11px;font-size:.86rem}.chosen-server{border:1px solid #53654c;background:#1c302b;border-radius:12px;padding:12px 14px;margin-top:12px}
+    .chosen-server strong{display:block;font-size:.92rem}.chosen-server span{color:#a9e2c7;font-size:.84rem}.choose-list .input-hint{margin-top:8px}
   </style>
 </head>
 <body>
@@ -43,7 +49,7 @@
     <header class="header">
       <img src="./assets/brasao-sttu.jpg" alt="Brasão da Fiscalização de Mobilidade da STTU Natal/RN" class="logo">
       <div><div class="brand-small">STTU · Natal/RN</div><div class="brand-title">Secretaria Municipal de Mobilidade Urbana</div><div class="brand-sub">Controle anual de solicitação de férias</div></div>
-      <div class="header-right">Sistema de solicitação de férias</div>
+      <a class="header-admin" href="./admin.html">Área administrativa</a><div class="header-right">Sistema de solicitação de férias</div>
     </header>
     <div id="demo-banner" class="demo-banner hidden"><strong>AMBIENTE DE DEMONSTRAÇÃO.</strong> Os registros são simulados neste navegador e não são compartilhados. Para uso real, publique na Vercel com o Neon configurado.</div>
 
@@ -53,26 +59,31 @@
           <div class="eyebrow">Planejamento anual · STTU</div>
           <h1>Suas férias, <span>bem planejadas.</span></h1>
           <p class="lead">Identifique-se para consultar as vagas disponíveis e selecionar <strong>dois períodos de 15 dias de férias</strong>, obrigatoriamente em <strong>meses diferentes</strong>.</p>
-          <div class="intro-points"><span>10 meses disponíveis</span><span>2 períodos de 15 dias</span><span>10 vagas por período</span></div>
+          <div class="intro-points"><span>Campanha inicial: 2027</span><span>10 meses disponíveis</span><span>2 períodos de 15 dias</span><span>10 vagas por período</span></div>
         </div>
         <form id="entry-form" class="panel" novalidate>
           <div class="panel-kicker">Etapa 01 de 02</div>
           <h2>Identificação do servidor</h2>
-          <p class="desc">Preencha os dados abaixo para acessar o calendário de férias.</p>
-          <div class="field"><label for="full-name">Nome completo</label><input id="full-name" name="full-name" autocomplete="name" maxlength="180" required placeholder="Digite seu nome completo"><div class="input-hint">Informe nome e sobrenome.</div></div>
-          <div class="field"><label for="registration">Matrícula funcional</label><input id="registration" name="registration" maxlength="32" required autocomplete="off" placeholder="Digite sua matrícula"><div class="input-hint">Mantenha zeros à esquerda, quando houver.</div></div>
+          <p class="desc">Selecione seu cadastro na relação oficial. Nome e matrícula serão preenchidos automaticamente.</p>
+          <div class="field choose-list" id="roster-field">
+            <label for="roster-search">Selecione seu nome e matrícula</label>
+            <input id="roster-search" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="roster-results" autocomplete="off" placeholder="Clique ou pesquise nome / matrícula" required>
+            <div id="roster-results" class="roster-results hidden" role="listbox" aria-label="Servidores cadastrados"></div>
+            <div class="input-hint" id="roster-help">Clique no campo para abrir a lista ou digite parte do nome ou da matrícula.</div>
+            <div id="chosen-server" class="chosen-server hidden" aria-live="polite"><strong id="chosen-name"></strong><span id="chosen-registration"></span></div>
+          </div>
           <div id="entry-error" class="alert hidden" role="alert"></div>
           <button type="submit" class="primary">Avançar para escolha dos períodos →</button>
-          <div class="micro">As informações serão usadas apenas para identificar sua solicitação. A reserva só é efetivada após a confirmação final.</div>
+          <div class="micro">O cadastro padroniza as informações; a seleção não substitui autenticação de identidade. A reserva só é efetivada após a confirmação final.</div>
         </form>
       </section>
 
       <section id="step-selection" class="hidden" aria-label="Escolha dos períodos de férias">
         <div class="topline"><div><div class="eyebrow">Etapa 02 de 02 · Calendário anual</div><h1>Escolha seus períodos de férias</h1><p id="welcome">Selecione dois períodos de 15 dias em meses diferentes.</p></div><button id="back" type="button" class="outline">← Alterar dados</button></div>
-        <div class="toolbar"><div class="year-block"><label for="year">Ano de referência</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
-        <div class="stats"><div class="stat"><small>Vagas disponíveis no ano</small><strong id="stat-open">—<em>de 190 vagas</em></strong></div><div class="stat"><small>Vagas já ocupadas</small><strong id="stat-taken">—</strong></div><div class="stat"><small>Seu planejamento</small><strong id="stat-selected">0 <em>de 2 períodos</em></strong></div></div>
+        <div class="toolbar"><div class="year-block"><label for="year">Ano liberado para escolha</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
+        <div class="stats"><div class="stat"><small>Vagas com prazo aberto</small><strong id="stat-open">—<em>de 190 vagas</em></strong></div><div class="stat"><small>Vagas já ocupadas</small><strong id="stat-taken">—</strong></div><div class="stat"><small>Seu planejamento</small><strong id="stat-selected">0 <em>de 2 períodos</em></strong></div></div>
         <div class="section-title"><h2>Calendário de vagas</h2><div class="rule"></div></div>
-        <p class="caption">Cada escolha corresponde a <strong>15 dias corridos</strong>: 1º período (01 a 15) ou 2º período (16 a 30). <strong>Fevereiro</strong> oferece apenas o 1º período; <strong>junho e dezembro</strong> não estão disponíveis. Nos meses com 31 dias, o dia 31 não integra os períodos apresentados. Os saldos são conferidos novamente na confirmação.</p>
+        <p class="caption">Cada escolha corresponde a <strong>15 dias corridos</strong>: 1º período (01 a 15) ou 2º período (16 a 30). <strong>Fevereiro</strong> oferece apenas o 1º período; <strong>junho e dezembro</strong> não estão disponíveis. Nos meses com 31 dias, o dia 31 não integra os períodos apresentados. Cada mês aceita solicitações <strong>somente até 45 dias antes do dia 1º</strong> (inclusive). <strong>Exceção: janeiro/2027 até 31/12/2026.</strong> Meses com prazo encerrado permanecem visíveis, mas não podem ser escolhidos. Anos seguintes exigem liberação da administração. Os saldos são conferidos novamente na confirmação.</p>
         <div id="calendar-error" class="alert hidden" role="alert"></div>
         <div id="months" class="month-grid" aria-label="Meses e vagas disponíveis"></div>
         <div id="selection-error" class="alert hidden" role="alert"></div>
@@ -97,11 +108,86 @@
     const el = id => document.getElementById(id);
     const DEMO = new URLSearchParams(window.location.search).get('demo') === '1';
     const demoStore = (() => { const memory = new Map(); return { getItem(k) { try { return localStorage.getItem(k); } catch { return memory.get(k) ?? null; } }, setItem(k,v) { memory.set(k, String(v)); try { localStorage.setItem(k,v); } catch {} } }; })();
-    const state = { nome:'',matricula:'',ano:0,periodos:[],escolhidos:[],loading:false,intervalo:null };
+    const state = { nome:'',matricula:'',ano:2027,periodos:[],escolhidos:[],loading:false,intervalo:null };
+    let servidores=[];
+    let servidorSelecionado=null;
+    const demoServidores=[{"nome":"ADRIANA GOMES DA SILVA","matricula":"43.071-4"},{"nome":"ADRIANO ANDRE GUEDES COSTA","matricula":"43.079-0"},{"nome":"ADRIANO NASCIMENTO DA FONSECA","matricula":"49.991-9"},{"nome":"AFRANIO MEDEIROS DA COSTA","matricula":"43.151-6"},{"nome":"AGRICIO BELCHIOR BANDEIRA NETT","matricula":"43.127-3"},{"nome":"AILTON ANDRADE","matricula":"62.095-5"},{"nome":"ALCINEIDE JUSTO SIQUEIRA","matricula":"62.100-5"},{"nome":"ALDREY LUIS MORAIS DA SILVA","matricula":"62.549-3"},{"nome":"ALDRIN MAGNO DANTAS SIQUEIRA","matricula":"43.080-3"},{"nome":"ALESSANDRA DORA DA SILVA COSTA","matricula":"43.199-1"},{"nome":"ALEXANDRA BARROS DO NASCIMENTO","matricula":"49.953-6"},{"nome":"ALEXANDRE MAGNO FREITAS COSMO","matricula":"61.947-7"},{"nome":"ALEX SANDRO NASCIMENTO BARBOSA","matricula":"43.072-2"},{"nome":"ALISSON EMANOEL DE OLIVEIRA FA","matricula":"49.995-1"},{"nome":"ALLAN ARAUJO DE MEDEIROS","matricula":"43.073-1"},{"nome":"ALYENE PATRICIA C B ALVES","matricula":"64.545-0"},{"nome":"ANDERSON RODRIGO DO NASCIMENTO","matricula":"63.802-1"},{"nome":"ANDRE ALVES DE OLIVEIRA","matricula":"43.085-4"},{"nome":"ANDRE CORCINO DE LIMA FILHO","matricula":"00.387-5"},{"nome":"ANDREA CASTRO GALVAO","matricula":"62.097-1"},{"nome":"ANDREZA CABRAL CAMARA NUNES","matricula":"61.710-5"},{"nome":"ANNE CAROLLINE MACEDO DE ARAUJ","matricula":"60.233-7"},{"nome":"BARBARA KALYANA DOS SANTOS GOMES ALVES","matricula":"43.102-8"},{"nome":"CARLOS EUBER DE FREITAS NEVES","matricula":"43.077-3"},{"nome":"CARLYLE CAMARA DOS SANTOS","matricula":"43.150-8"},{"nome":"CARMOZINA REGIA DE MELO DANTAS","matricula":"43.084-6"},{"nome":"CAROLINA DE CASSIA DEFENTE","matricula":"43.101-0"},{"nome":"CHIARA LUCIA DE GUSMAO GONCALVES","matricula":"43.096-0"},{"nome":"CRISTIANE DE MACEDO E SILVA","matricula":"62.873-5"},{"nome":"DANIEL ALBUQUERQUE EMERENCIANO","matricula":"43.090-1"},{"nome":"DANIELLE PEREIRA DE OLIVEIRA","matricula":"60.072-5"},{"nome":"DANILO CLAUDIO LIRA DOS SANTOS","matricula":"72.245-7"},{"nome":"DENILSON ARAUJO DA COSTA","matricula":"60.090-3"},{"nome":"EDILSON FERREIRA DOS SANTOS","matricula":"00.417-1"},{"nome":"EDINASIO COSTA SOARES","matricula":"49.986-2"},{"nome":"EDIA PAULA MAIA","matricula":"45.570-9"},{"nome":"EDSON SIQUEIRA DE LIMA","matricula":"00.469-3"},{"nome":"ELIZABETE RANYELA MORAIS DE MO","matricula":"43.198-2"},{"nome":"EVALDO FELIX FERREIRA","matricula":"00.518-5"},{"nome":"FERNANDA FREITAS DE HOLANDA","matricula":"60.066-1"},{"nome":"FRANZ BIAGGIO FULCO GAAG","matricula":"65.247-4"},{"nome":"GENALDO AZEVEDO DA TRINDADE","matricula":"43.086-2"},{"nome":"HAILSON CABRAL NASCIMENTO","matricula":"00.375-1"},{"nome":"HARLLEY CAMPOS MARQUES","matricula":"65.420-5"},{"nome":"HEITOR RODRIGUES DE LIMA","matricula":"43.097-8"},{"nome":"HEMERSON MELO DA SILVA TORQUATO","matricula":"49.952-8"},{"nome":"HERANDY DE ARAUJO CABRAL","matricula":"49.950-1"},{"nome":"HERQUILES LIMA DOS SANTOS","matricula":"43.149-4"},{"nome":"HEWERTON MOURA DA SILVA","matricula":"43.098-6"},{"nome":"ISABELA SILVA NICACIO DE BRITO","matricula":"60.034-5"},{"nome":"IVAN DE CARVALHO MEDEIROS","matricula":"00.431-6"},{"nome":"IVES SILVA DE SOUZA","matricula":"62.151-0"},{"nome":"JARDEL BEZERRA DE ANDRADE","matricula":"62.189-7"},{"nome":"JARDS MEDEIROS DE OLIVEIRA","matricula":"62.826-3"},{"nome":"JEFERSON STANLEY DA SILVA","matricula":"62.919-7"},{"nome":"JOAO BATISTA MONTEIRO DE AQUINO","matricula":"00.482-1"},{"nome":"JOAO BATISTA ROCHA FILHO","matricula":"49.994-3"},{"nome":"JOAO CLAUDIO DE OLIVEIRA DE FARIA","matricula":"00.383-2"},{"nome":"JOAO MARIA ALMEIDA DE MOURA","matricula":"43.070-6"},{"nome":"JOAO MARIA MACEDO DA ROCHA","matricula":"43.201-6"},{"nome":"JOAO PAULO DE OLIVEIRA","matricula":"43.082-0"},{"nome":"JOAO WILLAMS DA SILVA","matricula":"62.253-2"},{"nome":"JORGE LUIZ BARROS DO NASCIMENT","matricula":"62.431-4"},{"nome":"JORGE LUIZ SIQUEIRA DE OLIVEIR","matricula":"62.191-9"},{"nome":"JOSE ALBERTO FREIRE DA COSTA","matricula":"42.766-7"},{"nome":"JOSE EUDES BEZERRA","matricula":"49.985-4"},{"nome":"JOSE GONCALVES MANGABEIRA DE MEDEIROS","matricula":"43.083-8"},{"nome":"JOSE ROOSEVELT MEDEIROS JUNIOR","matricula":"62.416-1"},{"nome":"JOSEMAR DA SILVA DAMASCENO","matricula":"60.068-7"},{"nome":"JOSEMAR TAVARES CAMARA JUNIOR","matricula":"43.152-4"},{"nome":"JOSENILSON TEIXEIRA DE SOUZA","matricula":"00.386-7"},{"nome":"KASTEEN CARLOS DE AQUINO E SIL","matricula":"43.076-5"},{"nome":"KLEBER SILVESTRE LUSTOSA","matricula":"49.825-4"},{"nome":"LAILTON RIBEIRO DA COSTA","matricula":"43.078-1"},{"nome":"LEONARDO BATISTA DE S SILVA","matricula":"64.542-7"},{"nome":"LEONARDO DA SILVEIRA LUCENA","matricula":"43.122-2"},{"nome":"MADSON LIMA CAVALCANTI DE OLIV","matricula":"49.989-7"},{"nome":"MARA LUCIA BARROS DE SOUZA","matricula":"70.665-5"},{"nome":"MARCELO BATISTA DE ANDRADE","matricula":"61.952-3"},{"nome":"MARCELO FRANCA DA SILVA","matricula":"60.073-3"},{"nome":"MARCELO ZAEROSON LINS DE MEDEI","matricula":"62.184-6"},{"nome":"MARCILIO DE OLIVEIRA RODRIGUES","matricula":"49.951-0"},{"nome":"MARCIO JOSE DA SILVA","matricula":"68.159-8"},{"nome":"MARCIO JOSE SA DANTAS LUZ","matricula":"45.833-3"},{"nome":"MARIA DE LOURDES DA SILVA FILH","matricula":"43.200-8"},{"nome":"MARYANE CRISTINA LOPES PEREIRA DA ROCHA","matricula":"43.112-5"},{"nome":"MIGUEL ANGELO DE SANTANA","matricula":"62.092-1"},{"nome":"NADIJANA MARIA DAMASCENO VALLE","matricula":"62.368-7"},{"nome":"NAOMI SUASSUNA DOS SANTOS","matricula":"60.237-0"},{"nome":"NEUZELIDES PRISCILLA SILVA AND","matricula":"49.949-8"},{"nome":"NEWDEMBERG FERREIRA GALVAO","matricula":"43.081-1"},{"nome":"NEWTON DE SOUZA PEREIRA FILHO","matricula":"60.064-4"},{"nome":"PATRICIA CRISTINA CAVALCANTE","matricula":"45.990-9"},{"nome":"RAIMUNDO NONATO DE MEDEIROS NETO","matricula":"00.249-6"},{"nome":"RAPHAELLE CAVALCANTE RIBEIRO D","matricula":"62.149-8"},{"nome":"REGINA VICENCIA CRISPIM","matricula":"62.250-8"},{"nome":"RITA DE CASSIA SILVA","matricula":"49.992-7"},{"nome":"ROBSON LUIZ DE AZEVEDO","matricula":"00.184-8"},{"nome":"RODRIGO COSTA","matricula":"04.387-1"},{"nome":"RONALDO MARINHO DE SOUZA","matricula":"62.825-5"},{"nome":"RONALDO TEIXEIRA DE ARAUJO","matricula":"62.257-5"},{"nome":"ROSENBERG PEREIRA","matricula":"00.137-6"},{"nome":"SANDRA DA SILVA BEZERRIL BACEL","matricula":"61.712-1"},{"nome":"SARAH POLLYANA DIAS DOS SANTOS","matricula":"43.154-1"},{"nome":"SEVERINO FERNANDES MAIA","matricula":"00.192-9"},{"nome":"SYBELLE DE ARAUJO DANTAS","matricula":"63.386-1"},{"nome":"TALITHA LOUISE FORTUNATO BEZER","matricula":"49.990-1"},{"nome":"THALES GALVAO DE ARAUJO","matricula":"63.803-0"},{"nome":"THALLES THIAGO MEDEIROS DE SOUZA","matricula":"49.988-9"},{"nome":"THIAGO DE LIRA BEZERRA","matricula":"43.075-7"},{"nome":"THIAGO HENRIQUE FERREIRA DA SILVA","matricula":"60.275-2"},{"nome":"VANESSA GALDINO DA SILVA","matricula":"61.955-8"},{"nome":"WANDERCLEY SILVA NEVES","matricula":"70.563-2"},{"nome":"WANDRE WAGNER DA SILVA","matricula":"62.367-9"}];
+    function normalizarBusca(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();}
+    function abrirLista(){el('roster-results').classList.remove('hidden');el('roster-search').setAttribute('aria-expanded','true');}
+    function fecharLista(){el('roster-results').classList.add('hidden');el('roster-search').setAttribute('aria-expanded','false');}
+    function mostrarSelecionado(){
+      el('chosen-server').classList.toggle('hidden',!servidorSelecionado);
+      el('chosen-name').textContent=servidorSelecionado?.nome||'';
+      el('chosen-registration').textContent=servidorSelecionado?'Matrícula: '+servidorSelecionado.matricula:'';
+    }
+    function selecionarServidor(s){
+      servidorSelecionado=s;
+      el('roster-search').value=s.nome+' - '+s.matricula;
+      mostrarSelecionado();fecharLista();error('entry-error','');
+    }
+    function renderizarLista(){
+      const query=normalizarBusca(el('roster-search').value);
+      const matches=servidores.filter(s=>normalizarBusca(s.nome+' '+s.matricula+' '+s.matricula.replace(/\D/g,'')).includes(query));
+      const root=el('roster-results');root.replaceChildren();
+      if(!matches.length){const msg=document.createElement('div');msg.className='roster-empty';msg.textContent='Nenhum servidor encontrado nesta relação.';root.append(msg);}
+      for(const s of matches.slice(0,35)){
+        const item=document.createElement('button');item.type='button';item.className='roster-option';item.setAttribute('role','option');
+        const name=document.createElement('strong');name.textContent=s.nome;
+        const matricula=document.createElement('small');matricula.textContent='Matrícula: '+s.matricula;
+        item.append(name,matricula);item.addEventListener('click',()=>selecionarServidor(s));root.append(item);
+      }
+      if(matches.length>35){const hint=document.createElement('div');hint.className='roster-empty';hint.textContent='Mostrando 35 de '+matches.length+'. Digite mais letras para refinar a busca.';root.append(hint);}
+      abrirLista();
+    }
+    async function carregarServidores(){
+      el('roster-help').textContent='Carregando relação de servidores...';
+      try{
+        if(DEMO)servidores=demoServidores;
+        else{
+          const resp=await fetch('/api/servidores',{cache:'no-store'});
+          const data=await resp.json().catch(()=>({}));
+          if(!resp.ok)throw Error(data.erro||'Não foi possível consultar o cadastro.');
+          servidores=Array.isArray(data.servidores)?data.servidores:[];
+        }
+        if(!servidores.length)throw Error('O cadastro de servidores está vazio. Informe a administração.');
+        el('roster-help').textContent='Relação carregada: '+servidores.length+' servidores. Pesquise nome ou matrícula e clique no resultado.';
+      }catch(ex){servidores=[];el('roster-help').textContent='Cadastro indisponível.';error('entry-error',ex.message||'Erro ao carregar a relação.');}
+    }
+    el('roster-search').addEventListener('focus',renderizarLista);
+    el('roster-search').addEventListener('input',()=>{servidorSelecionado=null;mostrarSelecionado();renderizarLista();});
+    el('roster-search').addEventListener('keydown',e=>{
+      if(e.key==='Escape'){fecharLista();}
+      else if(e.key==='ArrowDown'){
+        if(el('roster-results').classList.contains('hidden'))renderizarLista();
+        const primeiro=el('roster-results').querySelector('button');
+        if(primeiro){e.preventDefault();primeiro.focus();}
+      }
+    });
+    document.addEventListener('pointerdown',e=>{if(!el('roster-field').contains(e.target))fecharLista();});
+
     if (DEMO) el('demo-banner').classList.remove('hidden');
-    const agora = new Date().getFullYear();
-    for (let y=agora;y<=agora+3;y++) { const o=document.createElement('option');o.value=y;o.textContent=y;el('year').appendChild(o); }
-    el('year').value=String(agora+1);state.ano=agora+1;
+    async function atualizarAnos(){
+      const anos=DEMO?[2027]:(await (async()=>{
+        const r=await fetch('/api/anos',{cache:'no-store'});
+        const b=await r.json().catch(()=>({}));
+        if(!r.ok)throw Error(b.erro||'Não foi possível consultar os anos liberados.');
+        return b.anos;
+      })());
+      if(!Array.isArray(anos)||!anos.length)throw Error('Não há campanha de férias aberta.');
+      const select=el('year');select.replaceChildren();
+      for(const y of anos){const o=document.createElement('option');o.value=y;o.textContent=String(y);select.append(o);}
+      if(!anos.includes(state.ano))state.ano=anos[0];
+      select.value=String(state.ano);
+    }
+    const dataLocal=()=>{
+      const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Fortaleza',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+      const v=Object.fromEntries(parts.map(x=>[x.type,x.value]));return `${v.year}-${v.month}-${v.day}`;
+    };
+    function limiteMes(ano,mes){
+      if(ano===2027&&mes===1)return '2026-12-31';
+      const d=new Date(Date.UTC(ano,mes-1,1));d.setUTCDate(d.getUTCDate()-45);return d.toISOString().slice(0,10);
+    }
+    const formatoData=s=>String(s).split('-').reverse().join('/');
     function screen(n) { for (const name of ['entry','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
@@ -113,7 +199,7 @@
       if (DEMO) {
         const data=getDemo();return { capacidade:10,periodos:periodosValidos.map(({mes,periodo})=>{
           const ocupadas=data.reduce((n,s)=>n+(s.selecoes.some(z=>z.mes===mes&&z.periodo===periodo)?1:0),0);
-          return {mes,periodo,ocupadas,restantes:Math.max(0,10-ocupadas)};
+          const limite=limiteMes(state.ano,mes);return {mes,periodo,ocupadas,restantes:Math.max(0,10-ocupadas),limite,aberto:dataLocal()<=limite};
         })};
       }
       const r=await fetch('/api/periodos?ano='+encodeURIComponent(state.ano),{cache:'no-store'});
@@ -127,7 +213,7 @@
         if(all.some(r=>matriculaNormalizada(r.matricula)===m)) throw Error('Já existe solicitação desta matrícula neste ano (demonstração).');
         if(payload.selecoes.length!==2||payload.selecoes[0].mes===payload.selecoes[1].mes||payload.selecoes.some(s=>!periodosValidos.some(p=>p.mes===s.mes&&p.periodo===s.periodo))) throw Error('Seleção inválida: são dois períodos de 15 dias em meses distintos, sem junho ou dezembro.');
         const atual=await consultar();
-        if(payload.selecoes.some(s=>{const p=atual.periodos.find(a=>a.mes===s.mes&&a.periodo===s.periodo);return !p||p.restantes===0;})) throw Error('Uma das vagas acabou de se esgotar.');
+        if(payload.selecoes.some(s=>{const p=atual.periodos.find(a=>a.mes===s.mes&&a.periodo===s.periodo);return !p||p.restantes===0||!p.aberto;})) throw Error('Uma das vagas acabou de se esgotar.');
         const solicitacao={id:Math.floor(Date.now()/1000),ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes};
         all.push({...payload});demoStore.setItem(demoKey(state.ano),JSON.stringify(all));return {solicitacao};
       }
@@ -138,9 +224,9 @@
     }
     el('entry-form').addEventListener('submit',async e=>{
       e.preventDefault();error('entry-error','');
-      const nome=el('full-name').value.trim().replace(/\s+/g,' '),matricula=el('registration').value.trim();
-      if(nome.length<5||!nome.includes(' ')){error('entry-error','Informe seu nome completo, incluindo sobrenome.');return;}
-      if(matriculaNormalizada(matricula).length<3){error('entry-error','Informe uma matrícula válida.');return;}
+      if(!servidorSelecionado){error('entry-error','Selecione seu nome e matrícula clicando em um dos resultados da lista.');el('roster-search').focus();return;}
+      const {nome,matricula}=servidorSelecionado;
+      try{await atualizarAnos();}catch(ex){error('entry-error',ex.message||'Erro ao consultar campanhas.');return;}
       state.nome=nome;state.matricula=matricula;
       el('welcome').textContent='Servidor(a): '+state.nome+' · Matrícula: '+state.matricula;
       screen('selection');await carregar();
@@ -157,7 +243,7 @@
       error('calendar-error','');
       try{
         const data=await consultar();state.periodos=data.periodos;
-        state.escolhidos=state.escolhidos.filter(s=>state.periodos.some(x=>x.mes===s.mes&&x.periodo===s.periodo&&x.restantes>0));
+        state.escolhidos=state.escolhidos.filter(s=>state.periodos.some(x=>x.mes===s.mes&&x.periodo===s.periodo&&x.restantes>0&&x.aberto));
         render();updateSelection();
         el('update-status').textContent='Vagas atualizadas às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
       }catch(ex){state.periodos=[];state.escolhidos=[];render();updateSelection();error('calendar-error',ex.message||'Não foi possível obter as vagas.');el('update-status').textContent='Sem conexão com o banco';}
@@ -174,22 +260,25 @@
         const available=document.createElement('div');available.className='month-available';
         const slotBox=document.createElement('div');slotBox.className='slots';
         const entries=state.periodos.filter(x=>x.mes===m);
-        available.textContent=entries.length?entries.reduce((n,x)=>n+Number(x.restantes),0)+' de '+(periodosDoMes(m).length*10)+' vagas restantes':'Aguardando disponibilidade';
+        const mesAberto=entries.some(x=>x.aberto);
+        if(entries.length&&!mesAberto)box.classList.add('closed-month');
+        available.textContent=entries.length?(entries.reduce((n,x)=>n+Number(x.restantes),0)+' de '+(periodosDoMes(m).length*10)+' vagas restantes · '+(mesAberto?'Prazo até '+formatoData(entries[0].limite):'Prazo encerrado')):'Aguardando disponibilidade';
         for(const p of periodosDoMes(m)){
           const data=entries.find(x=>x.periodo===p);
           const remaining=data?Number(data.restantes):0;
           const selected=state.escolhidos.some(s=>s.mes===m&&s.periodo===p);
-          const btn=document.createElement('button');btn.type='button';btn.className='slot'+(selected?' selected':'')+(remaining===0?' full':'');
-          btn.disabled=!data||remaining===0;btn.setAttribute('aria-pressed',String(selected));
+          const fechado=data&&!data.aberto;
+          const btn=document.createElement('button');btn.type='button';btn.className='slot'+(selected?' selected':'')+(remaining===0?' full':'')+(fechado?' closed':'');
+          btn.disabled=!data||remaining===0||fechado;btn.setAttribute('aria-pressed',String(selected));
           const top=document.createElement('span');top.className='slot-top';
           const label=document.createElement('strong');label.textContent=p+'º período';
           const date=document.createElement('small');date.className='slot-date';date.textContent=datasPeriodo(p)+' · 15 dias';label.append(date);
-          const badge=document.createElement('span');badge.className='slot-badge';badge.textContent=remaining===0?'Esgotado':(selected?'✓ Selecionado':remaining+' '+(remaining===1?'vaga':'vagas'));
+          const badge=document.createElement('span');badge.className='slot-badge';badge.textContent=fechado?'Prazo encerrado':remaining===0?'Esgotado':(selected?'✓ Selecionado':remaining+' '+(remaining===1?'vaga':'vagas'));
           top.append(label,badge);
           const bar=document.createElement('span');bar.className='track';const prog=document.createElement('span');prog.style.width=remaining*10+'%';bar.append(prog);btn.append(top,bar);
-          btn.setAttribute('aria-label',`${nomes[m-1]}, ${p}º período, ${datasPeriodo(p)}, ${remaining} vagas restantes${selected?', selecionado':''}`);
+          btn.setAttribute('aria-label',`${nomes[m-1]}, ${p}º período, ${datasPeriodo(p)}, ${remaining} vagas restantes${fechado?', prazo encerrado':''}${selected?', selecionado':''}`);
           btn.addEventListener('click',()=>toggle(m,p));slotBox.append(btn);
-          if(data){taken+=Number(data.ocupadas);open+=remaining;}
+          if(data){taken+=Number(data.ocupadas);if(data.aberto)open+=remaining;}
         }
         box.append(head,available,slotBox);root.append(box);
       }
@@ -201,6 +290,7 @@
       error('selection-error','');
       const idx=state.escolhidos.findIndex(x=>x.mes===m&&x.periodo===p);
       if(idx!==-1){state.escolhidos.splice(idx,1);render();updateSelection();return;}
+      if(!state.periodos.some(x=>x.mes===m&&x.periodo===p&&x.aberto&&x.restantes>0)){error('selection-error','O período está indisponível ou fora do prazo.');return;}
       if(state.escolhidos.some(x=>x.mes===m)){error('selection-error','Escolha o segundo período em outro mês.');return;}
       if(state.escolhidos.length>=2){error('selection-error','Você já escolheu dois períodos. Clique em uma escolha para desmarcá-la antes de selecionar outra.');return;}
       state.escolhidos.push({mes:m,periodo:p});render();updateSelection();
@@ -230,8 +320,10 @@
       pairs.forEach(([l,v])=>{const row=document.createElement('div');row.className='receipt-line';const a=document.createElement('span');a.textContent=l;const b=document.createElement('strong');b.textContent=v;row.append(a,b);root.append(row);});
     }
     el('print').addEventListener('click',()=>window.print());
-    el('another').addEventListener('click',()=>{state.nome='';state.matricula='';state.escolhidos=[];state.periodos=[];el('entry-form').reset();error('entry-error','');error('selection-error','');screen('entry');});
+    el('another').addEventListener('click',()=>{state.nome='';state.matricula='';state.escolhidos=[];state.periodos=[];el('entry-form').reset();servidorSelecionado=null;mostrarSelecionado();fecharLista();error('entry-error','');error('selection-error','');screen('entry');});
     screen('entry');
+    carregarServidores();
+    atualizarAnos().catch(()=>{});
   </script>
 </body>
 </html>
