@@ -33,7 +33,7 @@ export default async function handler(req,res){
       return res.status(200).json(rows[0].resultado);
     }catch(e){
       const msg=String(e.message||'');
-      if(msg.includes('DATAS_SOBREPOSTAS'))return res.status(409).json({erro:'As datas não podem se sobrepor às do outro período do mesmo mês.'});
+      if(msg.includes('DATAS_SOBREPOSICAO_MAIOR_5')||msg.includes('DATAS_SOBREPOSTAS'))return res.status(409).json({erro:'Limite de sobreposição excedido: são permitidos até 5 dias em comum entre os dois períodos do mês.'});
       if(msg.includes('DATAS_15_DIAS_MES')||msg.includes('DATAS_PREENCHIMENTO_INCOMPLETO')||msg.includes('DATAS_INVALIDAS'))
         return res.status(400).json({erro:'Datas inválidas: selecione 15 dias consecutivos dentro do mês.'});
       console.error('Datas do período:',e);
