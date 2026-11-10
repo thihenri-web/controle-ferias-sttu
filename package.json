@@ -1,0 +1,16 @@
+{
+  "name": "controle-ferias-sttu",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Controle de solicitação de férias STTU com vagas compartilhadas",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2"
+  }
+}

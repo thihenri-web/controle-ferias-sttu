@@ -1,0 +1,30 @@
+STTU 2027 - CAPACIDADE DE VAGAS EDITÁVEL POR PERÍODO
+
+1. NEON (faça backup se houver dados reais):
+   - Abra SQL Editor, branch main / banco neondb.
+   - Execute SOMENTE schema_atualizacao_periodos_e_vagas.sql.
+   - Esse SQL contém a migração de períodos flexíveis e a nova capacidade editável.
+   - Os 114 servidores e as reservas existentes são preservados.
+   - Verifique em consulta separada:
+     SELECT mes, periodo, liberado, capacidade FROM sttu_ferias_periodos_config WHERE ano=2027 ORDER BY mes, periodo;
+   - Esperado: 24 linhas, capacidade inicial 10 para cada período.
+
+2. GITHUB:
+   - Extraia o ZIP; envie os ARQUIVOS extraídos para a MESMA pasta do site já publicada.
+   - Preserve api/, lib/, assets/, index.html, admin.html, package.json e vercel.json na raiz do projeto.
+   - Confirme o commit; não envie o ZIP fechado nem crie subpastas extras.
+
+3. VERCEL:
+   - Aguarde Deployments -> Ready. Acesse o link de produção.
+   - Não altere DATABASE_URL nem ADMIN_PASSWORD ou ADMIN_SESSION_SECRET.
+
+4. TESTE:
+   - Em /admin.html, vá a 'Períodos e limite de vagas por mês'.
+   - Em Janeiro - 1º período, altere 10 para 20 e clique Salvar vagas.
+   - Veja se o painel e a página pública passam a mostrar 20 vagas.
+   - Restaure para 10 se era só teste.
+   - Reduções inferiores à quantidade de reservas já existentes são bloqueadas.
+   - Registros antigos nunca são apagados automaticamente.
+
+Capacidade aceita: de 1 a 30; padrão inicial 10. Para tirar um período da oferta use Bloquear.
+Prazo de 45 dias e as regras de dois meses diferentes permanecem.
