@@ -37,6 +37,8 @@ export default async function handler(req,res){
         COALESCE(o.chefes,0)::integer AS chefes,
         COALESCE(o.normais,0)::integer AS normais,
         COALESCE(cfg.capacidade,10)::integer AS capacidade,
+        to_char(cfg.data_inicio,'YYYY-MM-DD') AS data_inicio,
+        to_char(cfg.data_fim,'YYYY-MM-DD') AS data_fim,
         GREATEST(0,COALESCE(cfg.capacidade,10)-COALESCE(o.normais,0))::integer AS restantes,
         COALESCE(cfg.liberado,x.liberacao_padrao) AS habilitado,
         to_char(x.data_limite,'YYYY-MM-DD') AS limite,
