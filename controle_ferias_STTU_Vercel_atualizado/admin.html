@@ -31,6 +31,7 @@ label{display:block;font-weight:700;font-size:.82rem;color:#d9e3ed;margin-bottom
 .config-capacity .input{width:70px;text-align:center;padding:6px 7px;font-weight:750}
 .config-capacity button{white-space:nowrap}
 .config-capacity .config-help{font-size:.71rem;color:var(--muted);width:100%}
+.config-preview{color:#f4d58a!important;font-weight:750;line-height:1.45;margin-top:5px}.config-saved{color:#a2f1c9!important;font-weight:700;margin-top:5px}
 .config-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 8px}
     .config-dates label{font-size:.73rem;margin-bottom:4px}
     .config-dates .input{padding:7px 5px;font-size:.77rem;color-scheme:dark;width:100%}
@@ -234,7 +235,19 @@ function renderPeriodSettings(){
       const p=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
       const line=document.createElement('div');line.className='config-line';
       const desc=document.createElement('div');const label=document.createElement('strong');label.textContent=periodo+'º período · 15 dias';
-      const note=document.createElement('small');note.textContent=p?`${p.normais} vagas normais + ${p.chefes||0} Insp Chefe · ${p.restantes} normais restantes`:'Carregando';desc.append(label,note);
+      const draft=state.quotaDrafts[quotaDraftKey(mes,periodo)];
+      const storedCapacity=Number(p?.capacidade??10);
+      const previewCapacity=Number(draft?.capacidade??storedCapacity);
+      const normale=Number(p?.normais??0),extra=Number(p?.chefes??0);
+      const note=document.createElement('small');
+      note.textContent=p?`${normale} vagas normais ocupadas + ${extra} Insp Chefe (extra) · ${Math.max(0,previewCapacity-normale)} normais restantes${draft?' (PRÉVIA NÃO SALVA)':''}`:'Carregando';
+      if(draft)note.className='config-preview';
+      desc.append(label,note);
+      if(draft){
+        const saved=document.createElement('small');saved.className='config-saved';
+        saved.textContent=`Capacidade confirmada no banco: ${storedCapacity} · Em edição: ${previewCapacity}. Confirme na aba Vagas por Função/Turno.`;
+        desc.append(saved);
+      }
       const actions=document.createElement('div');actions.className='config-actions';
       const flag=span(p?.habilitado?'Liberado':'Bloqueado','config-indicator'+(!p?.habilitado?' off':''));
       const button=document.createElement('button');button.type='button';button.className='btn mini'+(p?.habilitado?' danger':'');
@@ -245,9 +258,9 @@ function renderPeriodSettings(){
       const capLabel=document.createElement('label');capLabel.textContent='Limite de vagas:';
       const capInput=document.createElement('input');capInput.className='input';capInput.type='number';
       capInput.min=String(Math.max(1,p?.normais||0));capInput.max='30';capInput.step='1';
-      capInput.value=String(p?.capacidade??10);capInput.disabled=!p||state.busy;
+      capInput.value=String(previewCapacity);capInput.disabled=!p||state.busy;
       capInput.setAttribute('aria-label',`Limite de vagas do ${periodo}º período de ${fmt(mes)} de ${state.ano}`);
-      const save=document.createElement('button');save.type='button';save.className='btn mini';save.textContent='Salvar vagas';
+      const save=document.createElement('button');save.type='button';save.className='btn mini';save.textContent='Distribuir vagas';
       save.disabled=!p||state.busy;save.addEventListener('click',()=>changeCapacity(p,capInput.value));
       const help=document.createElement('small');help.className='config-help';help.textContent=`Mínimo: ${Math.max(1,p?.normais||0)} · Máximo: 30. Insp Chefe é extra.`;
       cap.append(capLabel,capInput,save,help);
@@ -370,9 +383,10 @@ function changeCapacity(p,raw){
   }
   const origem=rascunho?.valores||cotasAtuais;
   state.quotaDrafts[key]={capacidade,valores:proposeDistribution(p.mes,p.periodo,capacidade,origem)};
+  renderPeriodSettings();
   $('quota-month').value=String(p.mes);
   activateTab('cotas');renderCotas();
-  notify(`Total de ${capacidade} vagas preparado para ${fmt(p.mes)} · ${p.periodo}º período. Confira a distribuição e clique em Salvar. Nenhuma alteração foi gravada ainda.`,true);
+  notify(`PRÉVIA: ${capacidade} vagas para ${fmt(p.mes)} · ${p.periodo}º período. Confira as cotas e clique em 'Confirmar e aplicar' para gravar no Neon.`,false);
   $('tab-cotas').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderRecords(){
@@ -553,6 +567,7 @@ function renderCotas(){
        if(!state.quotaDrafts[key])state.quotaDrafts[key]={capacidade:drafts[periodo].capacidade,valores:{...drafts[periodo].valores}};
        state.quotaDrafts[key].valores[g]=input.value===''?NaN:Number(input.value);
        updateQuotaSummary(mes);
+       renderPeriodSettings();
      });
      const used=document.createElement('small');used.textContent=`${occupiedGroup(mes,periodo,g)} ocupada(s)`;
      inner.append(input,used);td.append(inner);tr.append(td);
@@ -565,7 +580,7 @@ function renderCotas(){
  for(const periodo of [1,2]){
    const card=document.createElement('div');card.className='quota-action-card';
    const info=document.createElement('div');info.className='quota-total';info.id='quota-total-'+periodo;card.append(info);
-   const button=document.createElement('button');button.className='btn primary mini';button.type='button';button.textContent=`Salvar ${periodo}º período`;
+   const button=document.createElement('button');button.className='btn primary mini';button.type='button';button.textContent=`Confirmar e aplicar ${periodo}º período`;
    button.id='quota-save-'+periodo;button.addEventListener('click',()=>saveQuotaPeriod(mes,periodo));card.append(button);actions.append(card);
  }root.append(actions);updateQuotaSummary(mes);
 }
@@ -581,6 +596,9 @@ function updateQuotaSummary(mes){
    value.textContent=valid?`${sum} / ${target} vagas`:'Cota inválida';
    info.append(title,value);
    if(valid&&!good)info.append(span(sum<target?`Faltam ${target-sum}`:`Excedem ${sum-target}`,'tag off'));
+   if(state.quotaDrafts[quotaDraftKey(mes,periodo)]){
+     info.append(span(`PRÉVIA: no banco ainda são ${Number(state.vagas.find(v=>v.mes===mes&&v.periodo===periodo)?.capacidade??10)} vagas. Clique em Confirmar e aplicar para efetivar.`, 'tag off'));
+   }
    const button=$('quota-save-'+periodo);if(button)button.disabled=state.busy||!good;
  }
 }
@@ -603,7 +621,15 @@ Insp Chefe continua extra.`))return;
  try{
    await req('/api/admin-cotas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,mes,periodo,capacidade:d.capacidade,cotas:values})});
    delete state.quotaDrafts[quotaDraftKey(mes,periodo)];state.busy=false;await load();
-   $('quota-month').value=String(mes);renderCotas();notify(`Distribuição de ${fmt(mes)}, ${periodo}º período salva com ${soma} vagas.`,true);
+   $('quota-month').value=String(mes);renderCotas();
+   const confirmado=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
+   if(Number(confirmado?.capacidade)!==Number(d.capacidade)){
+     notify(`O Neon ainda retorna ${confirmado?.capacidade??'—'} vagas. A alteração para ${d.capacidade} não foi confirmada. Consulte os registros da Vercel.`);
+     return;
+   }
+   activateTab('periodos');
+   renderPeriodSettings();
+   notify(`${fmt(mes)} · ${periodo}º período: ${confirmado.capacidade} vagas confirmadas no Neon; ${confirmado.normais} ocupadas normais e ${confirmado.restantes} restantes.`,true);
  }catch(e){state.busy=false;updateQuotaSummary(mes);notify(e.message);}
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));
