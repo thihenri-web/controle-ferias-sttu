@@ -10,6 +10,7 @@ export default async function handler(req,res){
   const rows=await sql`
     SELECT c.nome_completo AS nome,c.matricula_exibicao AS matricula,c.funcao_turno,
       s.id AS protocolo,s.mes_1,s.periodo_1,s.mes_2,s.periodo_2,
+      s.registrado_por_nome,s.registrado_por_email,
       to_char(s.criada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS solicitada_em
     FROM sttu_ferias_servidores c LEFT JOIN sttu_ferias_solicitacoes s ON s.matricula=c.matricula AND s.ano=${ano}
     WHERE c.ativo=TRUE AND (${funcao}::text='' OR c.funcao_turno=${funcao})

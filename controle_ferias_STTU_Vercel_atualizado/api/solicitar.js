@@ -13,7 +13,9 @@ const mensagens = {
   'PERIODOS_INVALIDOS': 'Escolha dois períodos de 15 dias em meses diferentes.',
   'JA_SOLICITADO': 'Já existe uma solicitação para esta matrícula neste ano.',
   'LIMITE_FUNCAO_TURNO': 'Limite por Função/Turno excedido',
-  'PERIODO_ESGOTADO': 'Uma das vagas foi preenchida. Atualize as opções e escolha outro período.'
+  'PERIODO_ESGOTADO': 'Uma das vagas foi preenchida. Atualize as opções e escolha outro período.',
+  'REGISTRANTE_NOME_INVALIDO': 'Informe o nome completo de quem está fazendo a solicitação.',
+  'REGISTRANTE_EMAIL_INVALIDO': 'Informe um e-mail válido de quem está fazendo a solicitação.'
 };
 
 export default async function handler(req, res) {
@@ -26,9 +28,13 @@ export default async function handler(req, res) {
     const b = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     const ano = Number(b.ano), nome = String(b.nome || '').trim();
     const matricula = String(b.matricula || '').trim();
+    const registranteNome = String(b.registrante_nome || '').replace(/\s+/g, ' ').trim();
+    const registranteEmail = String(b.registrante_email || '').trim().toLowerCase();
     const selecoes = b.selecoes;
     if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
       nome.length < 5 || nome.length > 180 || !nome.includes(' ') ||
+      registranteNome.length < 5 || registranteNome.length > 150 || !registranteNome.includes(' ') ||
+      registranteEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registranteEmail) ||
       matricula.replace(/[^a-zA-Z0-9]/g, '').length < 3 ||
       !Array.isArray(selecoes) || selecoes.length !== 2 ||
       selecoes.some(x => !Number.isInteger(x.mes) || !Number.isInteger(x.periodo) || x.mes < 1 || x.mes > 12 || ![1,2].includes(x.periodo)) ||
@@ -37,15 +43,16 @@ export default async function handler(req, res) {
     }
     const sql = neon(process.env.DATABASE_URL);
     const result = await sql`
-      SELECT sttu_registrar_ferias(
+      SELECT sttu_registrar_ferias_com_registrante(
         ${ano}, ${nome}, ${matricula},
         ${selecoes[0].mes}, ${selecoes[0].periodo},
-        ${selecoes[1].mes}, ${selecoes[1].periodo}
+        ${selecoes[1].mes}, ${selecoes[1].periodo},
+        ${registranteNome}, ${registranteEmail}
       ) AS solicitacao
     `;
     return res.status(201).json({ sucesso: true, solicitacao: result[0].solicitacao });
   } catch (e) {
-    const code = Object.keys(mensagens).find(c => String(e.message || '').includes(c));
+    const code = Object.keys(mensagens).sort((a,b) => b.length - a.length).find(c => String(e.message || '').includes(c));
     if (code) return res.status(['LIMITE_FUNCAO_TURNO','JA_SOLICITADO','PERIODO_ESGOTADO','PRAZO_ENCERRADO','ANO_BLOQUEADO','PERIODO_BLOQUEADO'].includes(code) ? 409 : 400).json({ erro: mensagens[code], codigo: code });
     console.error('Erro ao registrar férias:', e);
     return res.status(503).json({ erro: 'Não foi possível registrar a solicitação. Verifique a conexão e tente novamente.' });

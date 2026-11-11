@@ -15,6 +15,7 @@ export default async function handler(req,res){
    sql`SELECT s.id,s.ano,s.nome_completo,COALESCE(c.matricula_exibicao,s.matricula) AS matricula,
        COALESCE(s.funcao_turno,c.funcao_turno,'Não identificado') AS funcao_turno,
        s.mes_1,s.periodo_1,s.mes_2,s.periodo_2,
+       s.registrado_por_nome,s.registrado_por_email,
        to_char(s.criada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS solicitada_em
      FROM sttu_ferias_solicitacoes s LEFT JOIN sttu_ferias_servidores c ON c.matricula=s.matricula
      WHERE s.ano=${ano}
@@ -73,7 +74,7 @@ async function handleAuditoria(req,res){
   try{
     const sql=neon(process.env.DATABASE_URL);
     const [rows,capacidades,cotas,datas]=await Promise.all([
-      sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,
+      sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,registrado_por_nome,registrado_por_email,
       to_char(registrada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em
       FROM sttu_ferias_auditoria a WHERE ano=${ano} ORDER BY a.registrada_em DESC LIMIT 500`,
       sql`SELECT ano,mes,periodo,capacidade_antes,capacidade_depois,ocupadas_no_momento,
