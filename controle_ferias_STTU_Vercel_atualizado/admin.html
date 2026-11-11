@@ -68,6 +68,8 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
 .quota-footer-note{margin:10px 0 0}
 @media(max-width:820px){.registry-filters{grid-template-columns:1fr 1fr}.registry-filters>div:nth-child(2){grid-column:1/-1}}
 @media(max-width:540px){.quota-toolbar{grid-template-columns:1fr}.quota-table th,.quota-table td{padding:8px 5px}.quota-table .q-name{font-size:.79rem}.quota-cell{gap:4px}.quota-cell input{width:62px;padding:6px}.quota-actions{grid-template-columns:1fr}.registry-filters{grid-template-columns:1fr}.registry-filters>div:nth-child(2){grid-column:auto}}
+.registry-placeholder{padding:18px;border:1px dashed #445264;background:#111b26;border-radius:12px;color:var(--muted);font-size:.89rem;margin-top:8px}
+.registry-placeholder strong{color:var(--text)}
 </style>
 </head>
 <body>
@@ -96,16 +98,19 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
       <button class="tab-button" data-tab="historico" role="tab" aria-selected="false">Histórico</button>
     </nav>
     <div class="tab-pane" id="tab-relatorios" role="tabpanel">
-      <section class="section card"><div class="section-bar"><h2>Pesquisa e listagem dos servidores</h2><span class="tag" id="registry-count">114 no cadastro</span></div>
-        <p>Relação oficial do PDF, com matrícula no padrão 00.000-0, Função/Turno e escolhas registradas no ano selecionado.</p>
+      <section class="section card"><div class="section-bar"><h2>Pesquisa de servidores</h2><span class="tag" id="registry-count">Consulta sob demanda</span></div>
+        <p>Pesquise pelo nome, matrícula ou Função/Turno. Para listar os 114 servidores, mantenha <strong>Todas as funções</strong> e clique em <strong>Pesquisar</strong>.</p>
         <form id="registry-filter" class="registry-filters">
           <div><label for="year">Ano</label><select class="input" id="year"></select></div>
           <div><label for="registry-search">Nome ou matrícula</label><input id="registry-search" class="input" placeholder="Pesquisar servidor" maxlength="120"></div>
           <div><label for="registry-role">Função/Turno</label><select class="input" id="registry-role"></select></div>
-          <button class="btn primary" type="submit">Pesquisar</button>
-          <button class="btn" type="button" id="registry-export">Exportar CSV</button>
+          <button class="btn primary" type="submit" id="registry-submit">Pesquisar</button>
+          <button class="btn hidden" type="button" id="registry-export">Exportar CSV</button>
         </form>
-        <div class="table-wrap"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Situação</th></tr></thead><tbody id="registry-records"></tbody></table></div>
+        <div class="registry-placeholder" id="registry-placeholder" role="status">Nenhuma pesquisa realizada. Os servidores serão exibidos somente após clicar em <strong>Pesquisar</strong>.</div>
+        <div class="hidden" id="registry-results">
+          <div class="table-wrap"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Situação</th></tr></thead><tbody id="registry-records"></tbody></table></div>
+        </div>
       </section>
       <div class="card section"><div class="section-bar"><h2>Consulta mensal</h2><span class="note">O ano é selecionado no filtro de servidores acima · clique em um mês para filtrar</span></div>
         <form class="filters" id="filters">
@@ -171,7 +176,7 @@ const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Ago
 const ALLOWED=Array.from({length:12},(_,i)=>i+1);
 const GROUPS=['Manhã','Adm','Insp','Noite','COTT','Tarde','Corujão','Insp Chefe'];
 const QUOTA_GROUPS=GROUPS.filter(g=>g!=='Insp Chefe');
-const state={ano:2027,mes:0,periodo:0,busca:'',records:[],vagas:[],anos:[],cotas:[],ocupacao_funcao:[],registry:[],activeTab:'relatorios',busy:false,quotaDrafts:{}};
+const state={ano:2027,mes:0,periodo:0,busca:'',records:[],vagas:[],anos:[],cotas:[],ocupacao_funcao:[],registry:[],registrySearched:false,activeTab:'relatorios',busy:false,quotaDrafts:{}};
 const show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
 function notify(t,ok=false){const e=$('status');e.textContent=t;show('status',Boolean(t));e.classList.toggle('ok',ok);}
 async function req(url,opts={}){
@@ -390,7 +395,7 @@ async function load(){
     setOptions('year',ylist.map(y=>[y,String(y)]),state.ano);
     const mg=$('manage-year').value||'2028';
     setOptions('manage-year',Array.from({length:8},(_,i)=>[2028+i,String(2028+i)]),mg);
-    updateYearInfo();renderMonths();renderPeriodSettings();renderRecords();renderCotas();await loadRegistry();notify('Consulta atualizada.',true);
+    updateYearInfo();renderMonths();renderPeriodSettings();renderRecords();renderCotas();if(state.registrySearched)await loadRegistry();notify('Consulta atualizada.',true);
   }catch(e){notify(e.message);}
   finally{state.busy=false;$('refresh').disabled=false;renderPeriodSettings();renderCotas();}
 }
@@ -455,19 +460,48 @@ function activateTab(tab){
   for(const name of ['relatorios','cotas','periodos','anos','historico'])show('tab-'+name,name===tab);
   if(tab==='historico')audit();
 }
+function clearRegistryResults(){
+ state.registrySearched=false;
+ state.registry=[];
+ $('registry-count').textContent='Consulta sob demanda';
+ $('registry-records').replaceChildren();
+ $('registry-placeholder').textContent='Nenhuma pesquisa realizada. Selecione os filtros e clique em Pesquisar para visualizar os resultados.';
+ show('registry-placeholder',true);
+ show('registry-results',false);
+ show('registry-export',false);
+}
 async function loadRegistry(){
+ state.registrySearched=true;
+ $('registry-count').textContent='Pesquisando...';
+ $('registry-placeholder').textContent='Consultando servidores...';
+ show('registry-placeholder',true);
+ show('registry-results',false);
+ show('registry-export',false);
  try{
    const params=new URLSearchParams({ano:state.ano,busca:$('registry-search').value.trim(),funcao:$('registry-role').value});
    const data=await req('/api/admin-servidores?'+params.toString());
    state.registry=data.servidores||[];
-   $('registry-count').textContent=state.registry.length+' servidores encontrados';
+   $('registry-count').textContent=state.registry.length+' servidor(es) encontrado(s)';
    const tbody=$('registry-records');tbody.replaceChildren();
    for(const s of state.registry){const tr=document.createElement('tr');
      for(const txt of [s.nome,s.matricula,s.funcao_turno||'—',s.mes_1?period(s.mes_1,s.periodo_1):'—',s.mes_2?period(s.mes_2,s.periodo_2):'—',s.protocolo?'Solicitado #'+s.protocolo:'Sem solicitação']){
        const td=document.createElement('td');td.textContent=txt;tr.append(td);
      }tbody.append(tr);
    }
- }catch(e){notify(e.message);}
+   const found=state.registry.length>0;
+   show('registry-results',found);
+   show('registry-export',found);
+   show('registry-placeholder',!found);
+   if(!found)$('registry-placeholder').textContent='Nenhum servidor encontrado com os filtros informados.';
+ }catch(e){
+   state.registry=[];
+   show('registry-results',false);
+   show('registry-export',false);
+   $('registry-count').textContent='Pesquisa não concluída';
+   $('registry-placeholder').textContent='Não foi possível obter os resultados. Tente pesquisar novamente.';
+   show('registry-placeholder',true);
+   notify(e.message);
+ }
 }
 function exportRegistry(){
  const rows=[['Servidor','Matricula','Função/Turno','1ª escolha','2ª escolha','Protocolo'],...state.registry.map(s=>[s.nome,s.matricula,s.funcao_turno,s.mes_1?period(s.mes_1,s.periodo_1):'',s.mes_2?period(s.mes_2,s.periodo_2):'',s.protocolo||''])];
@@ -561,7 +595,15 @@ Insp Chefe continua extra.`))return;
  }catch(e){state.busy=false;updateQuotaSummary(mes);notify(e.message);}
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));
-$('registry-filter').addEventListener('submit',e=>{e.preventDefault();if(state.ano!==Number($('year').value))load();else loadRegistry();});
+$('registry-filter').addEventListener('submit',async e=>{
+ e.preventDefault();
+ state.registrySearched=true;
+ if(state.ano!==Number($('year').value))await load();
+ else await loadRegistry();
+});
+for(const id of ['registry-search','registry-role','year']){
+ $(id).addEventListener(id==='registry-search'?'input':'change',clearRegistryResults);
+}
 $('registry-export').addEventListener('click',exportRegistry);
 $('quota-month').addEventListener('change',renderCotas);
 $('login-form').addEventListener('submit',async e=>{
@@ -570,7 +612,7 @@ $('login-form').addEventListener('submit',async e=>{
   catch(e){$('login-error').textContent=e.message;show('login-error',true);}
   finally{button.disabled=false;}
 });
-$('logout').addEventListener('click',async()=>{try{await req('/api/admin-login',{method:'DELETE'});}catch{}show('dashboard',false);show('login',true);show('logout',false);});
+$('logout').addEventListener('click',async()=>{try{await req('/api/admin-login',{method:'DELETE'});}catch{}clearRegistryResults();show('dashboard',false);show('login',true);show('logout',false);});
 $('filters').addEventListener('submit',e=>{e.preventDefault();load();});
 $('refresh').addEventListener('click',load);
 $('export').addEventListener('click',exportCSV);
