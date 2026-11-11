@@ -109,7 +109,7 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
         </form>
         <div class="registry-placeholder" id="registry-placeholder" role="status">Nenhuma pesquisa realizada. Os servidores serão exibidos somente após clicar em <strong>Pesquisar</strong>.</div>
         <div class="hidden" id="registry-results">
-          <div class="table-wrap"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Situação</th></tr></thead><tbody id="registry-records"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Registrado por</th><th>Situação</th></tr></thead><tbody id="registry-records"></tbody></table></div>
         </div>
       </section>
       <div class="card section"><div class="section-bar"><h2>Consulta mensal</h2><span class="note">O ano é selecionado no filtro de servidores acima · clique em um mês para filtrar</span></div>
@@ -129,7 +129,7 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
       <div class="section-bar"><h2>Ocupação por mês</h2><span class="note">Insp Chefe aparece como extra quando aplicável</span></div>
       <div id="months" class="month-grid"></div>
       <section class="section"><div class="section-bar"><h2>Solicitações do mês / servidor</h2><button id="export" class="btn" type="button">Exportar CSV</button></div>
-        <div class="table-wrap"><table><thead><tr><th>Protocolo</th><th>Servidor / Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Registro</th><th>Ação</th></tr></thead><tbody id="records"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Protocolo</th><th>Servidor / Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Registrado por</th><th>Registro</th><th>Ação</th></tr></thead><tbody id="records"></tbody></table></div>
         <div id="records-empty" class="empty hidden">Nenhuma solicitação corresponde aos filtros.</div>
       </section>
     </div>
@@ -333,8 +333,9 @@ function quotaDraftKey(mes,periodo){return `${mes}-${periodo}`;}
 function quotaValues(mes,periodo){
   return Object.fromEntries(QUOTA_GROUPS.map(g=>[g,capBase(mes,periodo,g)]));
 }
-function proposeDistribution(mes,periodo,capacity){
-  const current=quotaValues(mes,periodo),values={...current};
+function proposeDistribution(mes,periodo,capacity,baseValues=null){
+  // Se houver um ajuste ainda não salvo, redistribuir a partir dele, não do banco.
+  const current=baseValues?{...baseValues}:quotaValues(mes,periodo),values={...current};
   const original=Object.values(current).reduce((a,b)=>a+b,0)||10;
   const occupied=Object.fromEntries(QUOTA_GROUPS.map(g=>[g,occupiedGroup(mes,periodo,g)]));
   // Preserve actual reservations first; use current quotas as weights, never fixed quotas.
@@ -357,9 +358,18 @@ function changeCapacity(p,raw){
   const capacidade=Number(raw);
   if(!Number.isInteger(capacidade)||capacidade<1||capacidade>30){notify('Informe um número inteiro de 1 a 30 vagas.');return;}
   if(capacidade<Number(p.normais)){notify(`O período já tem ${p.normais} reservas normais. Não é possível reduzir abaixo disso.`);return;}
-  if(capacidade===Number(p.capacidade)){notify('O total de vagas já está em '+capacidade+'.',true);return;}
   const key=quotaDraftKey(p.mes,p.periodo);
-  state.quotaDrafts[key]={capacidade,valores:proposeDistribution(p.mes,p.periodo,capacidade)};
+  const rascunho=state.quotaDrafts[key];
+  const cotasAtuais=quotaValues(p.mes,p.periodo);
+  const somaAtual=Object.values(cotasAtuais).reduce((a,b)=>a+b,0);
+  // A capacidade do Neon pode já ser 10, mas o administrador ter um rascunho
+  // de 11 vagas ainda não salvo. Nesse caso é preciso substituir o rascunho,
+  // em vez de avisar que "já está em 10" e manter a tabela em 11/11.
+  if(capacidade===Number(p.capacidade)&&!rascunho&&somaAtual===capacidade){
+    notify('O total de vagas já está em '+capacidade+'.',true);return;
+  }
+  const origem=rascunho?.valores||cotasAtuais;
+  state.quotaDrafts[key]={capacidade,valores:proposeDistribution(p.mes,p.periodo,capacidade,origem)};
   $('quota-month').value=String(p.mes);
   activateTab('cotas');renderCotas();
   notify(`Total de ${capacidade} vagas preparado para ${fmt(p.mes)} · ${p.periodo}º período. Confira a distribuição e clique em Salvar. Nenhuma alteração foi gravada ainda.`,true);
@@ -368,15 +378,17 @@ function changeCapacity(p,raw){
 function renderRecords(){
   const root=$('records');root.replaceChildren();show('records-empty',!state.records.length);
   for(const s of state.records){
-    const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td'),c5=document.createElement('td'),c6=document.createElement('td'),c7=document.createElement('td');
+    const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td'),c5=document.createElement('td'),c6=document.createElement('td'),c7=document.createElement('td'),c8=document.createElement('td');
     c1.append(span('#'+s.id,'tag'));
     const strong=document.createElement('strong');strong.textContent=s.nome_completo;c2.append(strong,document.createElement('div'),span('Matrícula: '+s.matricula,'muted'));
     c3.append(span(s.funcao_turno||'—',s.funcao_turno==='Insp Chefe'?'tag good':'tag'));
     c4.append(span(period(s.mes_1,s.periodo_1),state.mes===s.mes_1?'tag good':''));
     c5.append(span(period(s.mes_2,s.periodo_2),state.mes===s.mes_2?'tag good':''));
-    c6.textContent=s.solicitada_em;
-    const action=document.createElement('button');action.type='button';action.className='btn danger mini';action.textContent='Cancelar';action.addEventListener('click',()=>cancel(s));c7.append(action);
-    tr.append(c1,c2,c3,c4,c5,c6,c7);root.append(tr);
+    c6.append(span(s.registrado_por_nome||'Não informado','muted'));
+    if(s.registrado_por_email){c6.append(document.createElement('div'),span(s.registrado_por_email,'muted'));}
+    c7.textContent=s.solicitada_em;
+    const action=document.createElement('button');action.type='button';action.className='btn danger mini';action.textContent='Cancelar';action.addEventListener('click',()=>cancel(s));c8.append(action);
+    tr.append(c1,c2,c3,c4,c5,c6,c7,c8);root.append(tr);
   }
 }
 async function load(){
@@ -410,7 +422,7 @@ async function cancel(s){
 }
 function csvEscape(s){let text=String(s??'');if(/^[=+@\-\t\r]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';}
 function exportCSV(){
-  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado em'],...state.records.map(s=>[s.id,s.ano,s.nome_completo,s.matricula,s.funcao_turno,fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.solicitada_em])];
+  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado por','Email de quem registrou','Registrado em'],...state.records.map(s=>[s.id,s.ano,s.nome_completo,s.matricula,s.funcao_turno,fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.solicitada_em])];
   const csv='\ufeff'+rows.map(row=>row.map(csvEscape).join(';')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`sttu_ferias_${state.ano}_${state.mes||'todos'}.csv`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
@@ -423,7 +435,7 @@ async function audit(){
     if(!b.registros.length)root.append(span('Nenhum cancelamento registrado neste ano.','muted'));
     else{
       const table=document.createElement('table');table.style.minWidth='660px';const body=document.createElement('tbody');
-      for(const s of b.registros){const tr=document.createElement('tr');for(const t of ['#'+s.solicitacao_id,s.nome_completo+' · '+s.matricula,period(s.mes_1,s.periodo_1)+' / '+period(s.mes_2,s.periodo_2),s.registrada_em,s.motivo]){const td=document.createElement('td');td.textContent=t;tr.append(td);}body.append(tr);}
+      for(const s of b.registros){const tr=document.createElement('tr');for(const t of ['#'+s.solicitacao_id,s.nome_completo+' · '+s.matricula,period(s.mes_1,s.periodo_1)+' / '+period(s.mes_2,s.periodo_2),(s.registrado_por_nome||'Não informado')+' · '+(s.registrado_por_email||'—'),s.registrada_em,s.motivo]){const td=document.createElement('td');td.textContent=t;tr.append(td);}body.append(tr);}
       table.append(body);const wrap=document.createElement('div');wrap.className='table-wrap';wrap.append(table);root.append(wrap);
     }
     const capacityHeading=document.createElement('h3');capacityHeading.textContent='Alterações no limite de vagas';capacityHeading.style.marginTop='20px';root.append(capacityHeading);
@@ -484,7 +496,7 @@ async function loadRegistry(){
    $('registry-count').textContent=state.registry.length+' servidor(es) encontrado(s)';
    const tbody=$('registry-records');tbody.replaceChildren();
    for(const s of state.registry){const tr=document.createElement('tr');
-     for(const txt of [s.nome,s.matricula,s.funcao_turno||'—',s.mes_1?period(s.mes_1,s.periodo_1):'—',s.mes_2?period(s.mes_2,s.periodo_2):'—',s.protocolo?'Solicitado #'+s.protocolo:'Sem solicitação']){
+     for(const txt of [s.nome,s.matricula,s.funcao_turno||'—',s.mes_1?period(s.mes_1,s.periodo_1):'—',s.mes_2?period(s.mes_2,s.periodo_2):'—',s.registrado_por_nome?(s.registrado_por_nome+' · '+(s.registrado_por_email||'')):'—',s.protocolo?'Solicitado #'+s.protocolo:'Sem solicitação']){
        const td=document.createElement('td');td.textContent=txt;tr.append(td);
      }tbody.append(tr);
    }
@@ -504,7 +516,7 @@ async function loadRegistry(){
  }
 }
 function exportRegistry(){
- const rows=[['Servidor','Matricula','Função/Turno','1ª escolha','2ª escolha','Protocolo'],...state.registry.map(s=>[s.nome,s.matricula,s.funcao_turno,s.mes_1?period(s.mes_1,s.periodo_1):'',s.mes_2?period(s.mes_2,s.periodo_2):'',s.protocolo||''])];
+ const rows=[['Servidor','Matricula','Função/Turno','1ª escolha','2ª escolha','Registrado por','Email de quem registrou','Protocolo'],...state.registry.map(s=>[s.nome,s.matricula,s.funcao_turno,s.mes_1?period(s.mes_1,s.periodo_1):'',s.mes_2?period(s.mes_2,s.periodo_2):'',s.registrado_por_nome||'',s.registrado_por_email||'',s.protocolo||''])];
  downloadCSV(rows,'sttu_cadastro_'+state.ano+'.csv');
 }
 function downloadCSV(rows,filename){
