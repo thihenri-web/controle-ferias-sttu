@@ -25,6 +25,15 @@ function protocoloPublico(ano,id){
   return Number.isSafeInteger(n)&&n>0?String(ano)+String(n).padStart(4,'0'):null;
 }
 
+// Rótulo informativo; cada escolha continua reservando sua própria vaga/cota.
+function tipoDeSolicitacao(ano,periodos){
+  if(!Array.isArray(periodos)||periodos.length!==2)return '15+15';
+  const a=periodos.find(p=>Number(p.periodo)===2),b=periodos.find(p=>Number(p.periodo)===1);
+  if(!a||!b||Number(b.mes)!==Number(a.mes)+1)return '15+15';
+  if(Number(ano)===2027&&(Number(a.mes)===1||Number(a.mes)===8))return '15+15';
+  return '30';
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   // Diagnóstico seguro da versão publicada; não retorna dados ou credenciais.
@@ -103,7 +112,7 @@ export default async function handler(req, res) {
         registrado_por_nome:s.registrado_por_nome,
         registrado_por_email:s.registrado_por_email,
         registrada_em:s.registrada_em, ciencia_regras_em:s.ciencia_regras_em,
-        reemissao:true,
+        reemissao:true, modalidade:tipoDeSolicitacao(s.ano,[{mes:s.mes_1,periodo:s.periodo_1},{mes:s.mes_2,periodo:s.periodo_2}]),
         escolhas:[
           {mes:s.mes_1,periodo:s.periodo_1,data_inicio:s.inicio_1,data_fim:s.fim_1},
           {mes:s.mes_2,periodo:s.periodo_2,data_inicio:s.inicio_2,data_fim:s.fim_2}
@@ -132,7 +141,7 @@ export default async function handler(req, res) {
       ) AS solicitacao
     `;
     const criada=result[0].solicitacao;
-    return res.status(201).json({ sucesso:true, solicitacao:{...criada, protocolo:protocoloPublico(criada.ano||ano,criada.id)} });
+    return res.status(201).json({ sucesso:true, solicitacao:{...criada, modalidade:tipoDeSolicitacao(ano,selecoes), protocolo:protocoloPublico(criada.ano||ano,criada.id)} });
   } catch (e) {
     const code = Object.keys(mensagens).sort((a,b) => b.length - a.length).find(c => String(e.message || '').includes(c));
     if (code) return res.status(['LIMITE_FUNCAO_TURNO','JA_SOLICITADO','PERIODO_ESGOTADO','PRAZO_ENCERRADO','ANO_BLOQUEADO','PERIODO_BLOQUEADO'].includes(code) ? 409 : 400).json({ erro: mensagens[code], codigo: code });
