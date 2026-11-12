@@ -218,7 +218,7 @@ body.role-viewer .cancel-button{display:none!important}
 .config-period-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
 .config-block{display:inline-flex;align-items:center;gap:6px;margin:0;cursor:pointer;font-size:.72rem;font-weight:800;white-space:nowrap;color:#fff}
 .config-block input{height:17px;width:17px;accent-color:#e45c65;cursor:pointer}
-.config-block .block-status{border:1px solid transparent;border-radius:7px;background:transparent;color:#fff;padding:5px 7px}
+.config-block .block-status{border:1px solid #28815b;border-radius:7px;background:#123c2e;color:#87e9af;padding:5px 7px}
 .config-block.is-blocked .block-status{color:#fff;background:#81333e;border-color:#bc5660}
 .config-month-actions{display:flex;flex-direction:column;gap:6px;padding-top:12px;margin-top:auto;border-top:1px solid #293846}
 .config-month-actions .btn{width:100%;white-space:normal;text-align:center}
@@ -265,6 +265,21 @@ body.role-viewer .cancel-button{display:none!important}
   #period-config .config-period-head{grid-template-columns:minmax(0,1fr) auto}
   #period-config .config-block{font-size:.67rem;gap:4px}
   #period-config .config-block .block-status{padding:5px}
+}
+
+/* LIBERADO / BLOQUEADO: cartões de status com dimensões idênticas. */
+#period-config .config-block .block-status {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: 108px;
+  min-width: 108px;
+  height: 30px;
+  padding: 0 6px;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
 }
 </style>
 </head>
@@ -638,7 +653,7 @@ function renderPeriodSettings(){
       checkbox.disabled=!p||state.busy||!canEdit();
       checkbox.setAttribute('aria-label',`Bloquear ${periodo}º período de ${fmt(mes)}`);
       const blockText=document.createElement('span');blockText.className='block-status';
-      const syncBlock=()=>{blockText.textContent=checkbox.checked?'BLOQUEADO':'BLOQUEAR';block.classList.toggle('is-blocked',checkbox.checked);};
+      const syncBlock=()=>{blockText.textContent=checkbox.checked?'BLOQUEADO':'LIBERADO';block.classList.toggle('is-blocked',checkbox.checked);};
       checkbox.addEventListener('change',syncBlock);syncBlock();block.append(checkbox,blockText);
       headingRow.append(title,block);line.append(headingRow);
       const note=document.createElement('p');note.className='config-compact-note';
