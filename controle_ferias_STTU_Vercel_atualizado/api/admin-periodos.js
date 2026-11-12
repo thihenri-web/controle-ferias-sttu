@@ -2,7 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import { requireAdmin, sameOrigin, validYear } from '../lib/admin-auth.js';
 
 export default async function handler(req,res){
-  if(!requireAdmin(req,res,'edit'))return;
+  if(!requireAdmin(req,res))return;
   if(req.method!=='POST')return res.status(405).json({erro:'Método não permitido.'});
   if(!sameOrigin(req))return res.status(403).json({erro:'Origem inválida.'});
   let b;
@@ -23,9 +23,8 @@ export default async function handler(req,res){
     if(inicio!==null){
       const start=parseISO(inicio),end=parseISO(fim);
       if(!start||!end||start.getUTCFullYear()!==ano||start.getUTCMonth()+1!==mes||
-         end.getUTCFullYear()!==ano||end.getUTCMonth()+1!==mes||
          Math.round((end-start)/86400000)!==14)
-        return res.status(400).json({erro:'Informe exatamente 15 dias consecutivos dentro do mês selecionado.'});
+        return res.status(400).json({erro:'Informe 15 dias consecutivos, com início no mês de referência e término permitido no mês seguinte.'});
     }
     try{
       const sql=neon(process.env.DATABASE_URL);
@@ -33,9 +32,9 @@ export default async function handler(req,res){
       return res.status(200).json(rows[0].resultado);
     }catch(e){
       const msg=String(e.message||'');
-      if(msg.includes('DATAS_SOBREPOSICAO_MAIOR_5')||msg.includes('DATAS_SOBREPOSTAS'))return res.status(409).json({erro:'Limite de sobreposição excedido: são permitidos até 5 dias em comum entre os dois períodos do mês.'});
+      if(msg.includes('DATAS_SOBREPOSICAO_MAIOR_7')||msg.includes('DATAS_SOBREPOSICAO_MAIOR_5')||msg.includes('DATAS_SOBREPOSTAS'))return res.status(409).json({erro:'Limite de sobreposição excedido: são permitidos até 7 dias em comum entre períodos de férias, inclusive entre meses distintos.'});
       if(msg.includes('DATAS_15_DIAS_MES')||msg.includes('DATAS_PREENCHIMENTO_INCOMPLETO')||msg.includes('DATAS_INVALIDAS'))
-        return res.status(400).json({erro:'Datas inválidas: selecione 15 dias consecutivos dentro do mês.'});
+        return res.status(400).json({erro:'Datas inválidas: o início deve estar no mês escolhido e o fim deve ser 14 dias depois, podendo cair no mês seguinte.'});
       console.error('Datas do período:',e);
       return res.status(503).json({erro:'Não foi possível salvar as datas. Confira se executou a nova migração no Neon.'});
     }
