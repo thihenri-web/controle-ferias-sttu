@@ -1,6 +1,8 @@
 import { createHmac, createHash, timingSafeEqual } from 'node:crypto';
 
 // Credenciais sempre no ambiente da Vercel, nunca neste repositório.
+// A sessão expira no servidor após 5 minutos sem renovação por atividade humana.
+export const ADMIN_IDLE_SECONDS = 5 * 60;
 const USERS = () => [
   {username:'THIAGO-HENRIQUE',role:'admin',password:process.env.ADMIN_PASSWORD},
   {username:'ANDREA-CASTRO',role:'admin',password:process.env.ANDREA_PASSWORD},
@@ -40,7 +42,7 @@ export function createSession(identity){
   const u=userByName(identity?.username);
   if(!u||u.role!==identity.role)throw Error('Conta administrativa não configurada');
   const data=encode({aud:'sttu-ferias-admin-v2',u:u.username,role:u.role,
-    ver:passwordDigest(u.password).slice(0,24),exp:Math.floor(Date.now()/1000)+8*60*60});
+    ver:passwordDigest(u.password).slice(0,24),exp:Math.floor(Date.now()/1000)+ADMIN_IDLE_SECONDS});
   return `${data}.${signature(data)}`;
 }
 export function getAdminSession(req){
@@ -73,7 +75,7 @@ export function requireAdmin(req,res,permission='read'){
   return true;
 }
 export function setSessionCookie(res,token){
-  res.setHeader('Set-Cookie',`__Host-sttu_admin=${token}; Max-Age=28800; Path=/; Secure; HttpOnly; SameSite=Strict`);
+  res.setHeader('Set-Cookie',`__Host-sttu_admin=${token}; Max-Age=${ADMIN_IDLE_SECONDS}; Path=/; Secure; HttpOnly; SameSite=Strict`);
 }
 export function clearSessionCookie(res){
   res.setHeader('Set-Cookie','__Host-sttu_admin=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Strict');
