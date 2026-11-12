@@ -89,7 +89,7 @@
       #step-selection .sumlabel{font-size:.7rem}
       #step-selection .chips{gap:4px;margin-top:5px}
       #step-selection .chip{font-size:.68rem;padding:3px 6px}
-      #step-selection .sumtext{display:none}
+      #step-selection .sumtext{display:block;font-size:.67rem;line-height:1.4;margin-top:5px}
     }
     .existing-panel{max-width:650px;margin:48px auto;padding:clamp(18px,4vw,34px)}
     .existing-panel h1{font-size:clamp(1.5rem,4vw,2.2rem);margin:10px 0 13px}
@@ -98,7 +98,8 @@
     .existing-actions{display:flex;gap:10px;margin-top:16px}
     .existing-actions .primary{flex:1}.existing-actions .outline{flex:0 0 auto}
     @media(max-width:570px){.existing-panel{margin:26px 0}.existing-actions{flex-direction:column-reverse}}
-  </style>
+      #modalidade-resumo.consolidado{color:#b3f3d4;font-weight:800}
+</style>
 </head>
 <body>
   <div class="layout">
@@ -114,7 +115,7 @@
         <div class="intro-text">
           <div class="eyebrow">Planejamento anual · STTU</div>
           <h1>Suas férias, <span>bem planejadas.</span></h1>
-          <p class="lead">Informe quem está realizando o registro, escolha o servidor beneficiário e consulte as vagas disponíveis para selecionar <strong>dois períodos de 15 dias de férias</strong> em <strong>meses diferentes</strong>.</p>
+          <p class="lead">Informe quem está realizando o registro, escolha o servidor beneficiário e consulte as vagas disponíveis para selecionar <strong>dois períodos de 15 dias de férias</strong> em <strong>meses diferentes</strong>. A combinação do 2º período de um mês com o 1º do mês seguinte será identificada como programação única de 30 dias, exceto janeiro–fevereiro e agosto–setembro de 2027.</p>
           <div class="intro-points"><span>Campanha inicial: 2027</span><span>2 períodos de 15 dias</span></div>
         </div>
         <form id="entry-form" class="panel" novalidate>
@@ -184,7 +185,7 @@
         <div id="calendar-error" class="alert hidden" role="alert"></div>
         <div id="months" class="month-grid" aria-label="Meses e períodos disponíveis"></div>
         <div id="selection-error" class="alert hidden" role="alert"></div>
-        <div class="summary" aria-live="polite"><div><div class="sumlabel">Seus períodos selecionados</div><div class="chips" id="selected-chips"><span class="chip empty">1º período: não escolhido</span><span class="chip empty">2º período: não escolhido</span></div><div class="sumtext">Obrigatório: dois meses diferentes</div></div><button id="confirm" type="button" class="primary" disabled><span class="idle">Confirmar solicitação →</span><span class="busy">Registrando...</span></button></div>
+        <div class="summary" aria-live="polite"><div><div class="sumlabel">Seus períodos selecionados</div><div class="chips" id="selected-chips"><span class="chip empty">1º período: não escolhido</span><span class="chip empty">2º período: não escolhido</span></div><div class="sumtext" id="modalidade-resumo">Obrigatório: dois meses diferentes</div></div><button id="confirm" type="button" class="primary" disabled><span class="idle">Confirmar solicitação →</span><span class="busy">Registrando...</span></button></div>
         <div class="notice">A seleção constitui solicitação de férias, sujeita à análise e aprovação administrativa.</div>
       </section>
 
@@ -304,6 +305,30 @@
     function periodDates(m,p){
       const info=state.periodos.find(v=>v.mes===Number(m)&&v.periodo===Number(p));
       return info?.data_inicio&&info?.data_fim?(dateBR(info.data_inicio)+' a '+dateBR(info.data_fim)):'Datas a definir';
+    }
+    // Reconhece uma única programação de 30 dias (2 x 15), sem somar vagas nem mudar os prazos.
+    function classificacao30Dias(ano,selecoes,consultarDatas){
+      if(!Array.isArray(selecoes)||selecoes.length!==2)return {tipo:'separados',rotulo:'Dois períodos de 15 dias'};
+      const normalized=selecoes.map(s=>({mes:Number(s.mes),periodo:Number(s.periodo),data_inicio:s.data_inicio,data_fim:s.data_fim}));
+      const first=normalized.find(s=>s.periodo===2),next=normalized.find(s=>s.periodo===1);
+      if(!first||!next||next.mes!==first.mes+1)return {tipo:'separados',rotulo:'Dois períodos de 15 dias'};
+      if(Number(ano)===2027&&([1,8].includes(first.mes))){
+        return {tipo:'excecao',rotulo:'Dois períodos de 15 dias (exceção de 2027)'};
+      }
+      let note='';
+      if(consultarDatas){
+        const lookup=s=>{
+          const saved=state.periodos.find(p=>p.mes===s.mes&&p.periodo===s.periodo);
+          return {inicio:s.data_inicio||saved?.data_inicio,fim:s.data_fim||saved?.data_fim};
+        };
+        const a=lookup(first),b=lookup(next);
+        if(a.fim&&b.inicio){
+          const fim=new Date(a.fim+'T00:00:00Z');fim.setUTCDate(fim.getUTCDate()+1);
+          if(fim.toISOString().slice(0,10)!==b.inicio)
+            note='Atenção: as datas cadastradas não são consecutivas. A classificação de 30 dias precisa de conferência administrativa.';
+        }else note='Datas ainda a definir pela administração.';
+      }
+      return {tipo:'continuo',rotulo:'30 dias — programação única (2 × 15)',aviso:note};
     }
     function titlePeriod(x) {return nomes[x.mes-1]+' · '+x.periodo+'º período (15 dias; '+periodDates(x.mes,x.periodo)+')';}
     function matriculaNormalizada(s){return s.toUpperCase().replace(/[^A-Z0-9]/g,'');}
@@ -486,6 +511,12 @@
         const chip=document.createElement('span');chip.className='chip'+(state.escolhidos[i]?'':' empty');
         chip.textContent=state.escolhidos[i]?titlePeriod(state.escolhidos[i]):(i+1)+'º período: não escolhido';chips.append(chip);
       }
+      const classificacao=classificacao30Dias(state.ano,state.escolhidos,true);
+      const label=el('modalidade-resumo');
+      if(label){
+        label.textContent=state.escolhidos.length===2?classificacao.rotulo+(classificacao.aviso?' · '+classificacao.aviso:''):'Obrigatório: dois meses diferentes';
+        label.classList.toggle('consolidado',classificacao.tipo==='continuo');
+      }
       el('confirm').disabled=state.escolhidos.length!==2||state.loading;
     }
     el('confirm').addEventListener('click',async()=>{
@@ -507,9 +538,12 @@
         const datas=x.data_inicio&&x.data_fim?dateBR(x.data_inicio)+' a '+dateBR(x.data_fim):periodDates(x.mes,x.periodo);
         return periodo+datas+')';
       };
-      const pairs=[['Protocolo',protocoloPublico(s.ano,s.protocolo||s.id)],['Servidor(a) beneficiário(a)',s.nome],['Matrícula',s.matricula],['Função/Turno',s.funcao_turno||state.funcao_turno||'—'],['Ano',String(s.ano)],['1ª escolha',s.reemissao?tituloEscolha(s.escolhas[0]):titlePeriod(s.escolhas[0])],['2ª escolha',s.reemissao?tituloEscolha(s.escolhas[1]):titlePeriod(s.escolhas[1])],['Situação',DEMO?'Demonstração (sem validade)':'Solicitação registrada']];
+      const pairs=[['Protocolo',protocoloPublico(s.ano,s.protocolo||s.id)],['Servidor(a) beneficiário(a)',s.nome],['Matrícula',s.matricula],['Função/Turno',s.funcao_turno||state.funcao_turno||'—'],['Ano',String(s.ano)],['Modalidade',classificacao30Dias(s.ano,s.escolhas,true).rotulo],['1ª escolha',s.reemissao?tituloEscolha(s.escolhas[0]):titlePeriod(s.escolhas[0])],['2ª escolha',s.reemissao?tituloEscolha(s.escolhas[1]):titlePeriod(s.escolhas[1])],['Situação',DEMO?'Demonstração (sem validade)':'Solicitação registrada']];
       const addLine=([l,v])=>{const row=document.createElement('div');row.className='receipt-line';const a=document.createElement('span');a.textContent=l;const b=document.createElement('strong');b.textContent=v??'—';row.append(a,b);root.append(row);};
       pairs.forEach(addLine);
+      const classif=classificacao30Dias(s.ano,s.escolhas,true);
+      if(classif.aviso){const aviso=document.createElement('p');aviso.className='micro';aviso.textContent=classif.aviso;root.append(aviso);}
+
       const heading=document.createElement('div');heading.className='receipt-heading';heading.textContent='Informações adicionais · responsável pelo preenchimento';root.append(heading);
       if(s.reemissao){const nota=document.createElement('div');nota.className='micro';nota.textContent='Reemissão: as datas exibidas seguem a configuração atual do calendário e podem ter sido alteradas desde a solicitação original. O protocolo, o ano e os períodos escolhidos são os registrados.';root.append(nota);}
       [['Registrado por',s.registrado_por_nome||state.registrante_nome],['E-mail informado',s.registrado_por_email||state.registrante_email],['Data e hora do registro',s.registrada_em||'—'],['Ciência das regras',s.ciencia_regras_em||'—']].forEach(addLine);
