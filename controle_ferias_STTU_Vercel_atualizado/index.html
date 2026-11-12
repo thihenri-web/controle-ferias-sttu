@@ -99,6 +99,28 @@
     .existing-actions .primary{flex:1}.existing-actions .outline{flex:0 0 auto}
     @media(max-width:570px){.existing-panel{margin:26px 0}.existing-actions{flex-direction:column-reverse}}
       #modalidade-resumo.consolidado{color:#b3f3d4;font-weight:800}
+
+    /* Etapa 03: alinhamento conforme o segundo print do usuário.
+       Somente apresentação; preserva ids, formulário e JavaScript. */
+    #step-selection {
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+    #step-selection .toolbar { align-items: flex-end; }
+    #step-selection .toolbar .year-select,
+    #step-selection .toolbar .refresh {
+      box-sizing: border-box;
+      height: 43px;
+      min-height: 43px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    #step-selection .toolbar .refresh {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-end;
+    }
 </style>
 </head>
 <body>
