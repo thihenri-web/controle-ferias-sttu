@@ -15,6 +15,13 @@ export default async function handler(req,res){
   if(!adminConfigured())return res.status(503).json({erro:'Configure ADMIN_PASSWORD e ADMIN_SESSION_SECRET na Vercel.'});
   if(!process.env.DATABASE_URL)return res.status(503).json({erro:'Banco de dados não configurado.'});
   let b;try{b=typeof req.body==='string'?JSON.parse(req.body):req.body||{};}catch{return res.status(400).json({erro:'Dados inválidos.'});}
+  // Somente o evento de atividade do painel renova o cookie. Consultas GET não renovam.
+  if(b.acao==='renovar'){
+    const identity=getAdminSession(req);
+    if(!identity)return res.status(401).json({erro:'Sessão expirada. Entre novamente.'});
+    setSessionCookie(res,createSession(identity));
+    return res.status(200).json({sucesso:true,autenticado:true,usuario:identity.username,perfil:identity.role});
+  }
   const usuario=String(b.usuario||'').trim().toUpperCase(),senha=String(b.senha||'');
   if(usuario.length>64||senha.length>256||!usuario||!senha)return res.status(400).json({erro:'Informe usuário e senha.'});
   try{
