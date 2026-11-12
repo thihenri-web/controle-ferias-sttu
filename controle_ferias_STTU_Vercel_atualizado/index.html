@@ -35,7 +35,7 @@
     .confirmation{max-width:670px;margin:64px auto;background:var(--surface);border:1px solid #365343;border-radius:22px;padding:34px;box-shadow:0 25px 60px #0005}.checkmark{width:59px;height:59px;border-radius:50%;background:#1b4839;color:#70efb4;font-size:2rem;display:grid;place-items:center}.confirmation h1{font-size:2.1rem}.receipt{border:1px solid #344453;border-radius:15px;background:#101821;padding:19px 22px;margin:26px 0}.receipt-line{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #2a3541}.receipt-line:last-child{border-bottom:0}.receipt-line span{color:var(--muted)}.receipt-line strong{text-align:right;overflow-wrap:anywhere}.actions{display:flex;gap:10px}.actions .primary{width:auto;flex:1}.actions .outline{flex:1}
     @media(max-width:1070px){.intro{grid-template-columns:1fr 410px;gap:20px}.month-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:820px){.intro{grid-template-columns:1fr;min-height:0;padding:45px 0}.intro-text{max-width:710px}.panel{max-width:670px}.month-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.summary{gap:10px}}
     @media(max-width:570px){.layout{padding:12px 14px 100px}.logo{width:59px;height:59px}.header{gap:10px}.brand-sub{display:none}.header-right{display:none}.header-admin{font-size:.72rem;padding:8px}.intro{padding:36px 0 25px}.panel{padding:23px 18px}.intro-points span{font-size:.76rem}.topline{margin:29px 0 15px}.topline h1{font-size:1.85rem}.topline .outline{padding:9px;font-size:.8rem}.month-grid{grid-template-columns:1fr;gap:12px}.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:1/-1}.stat{padding:14px}.stat strong{font-size:1.6rem}.status-text{margin:0;width:100%;padding:0}.toolbar{gap:12px}.summary{bottom:7px;padding:12px 13px;flex-direction:column;align-items:stretch}.summary .primary{width:100%}.receipt-line{font-size:.86rem}.actions{flex-direction:column}.confirmation{padding:24px 17px;margin:32px 0}}
-    @media print{body{background:#fff;color:#111}.header,.footer,#step-entry,#step-selection,.actions,.notice,.demo-banner{display:none!important}.layout{max-width:none;padding:0}.confirmation{box-shadow:none;border:1px solid #aaa;background:#fff;color:#111;margin:0}.receipt{background:#fff;color:#111;border-color:#ccc}.receipt-line span{color:#555}}
+    @media print{body{background:#fff;color:#111}.header,.footer,#step-entry,#step-existing,#step-rules,#step-selection,.actions,.notice,.demo-banner{display:none!important}.layout{max-width:none;padding:0}.confirmation{box-shadow:none;border:1px solid #aaa;background:#fff;color:#111;margin:0}.receipt{background:#fff;color:#111;border-color:#ccc}.receipt-line span{color:#555}}
 
     .choose-list{position:relative}.roster-results{position:absolute;z-index:50;top:100%;left:0;right:0;max-height:285px;overflow:auto;background:#0f1c27;border:1px solid #687788;border-radius:12px;box-shadow:0 16px 48px #0009;padding:6px;margin-top:5px}
     .roster-option{display:block;width:100%;text-align:left;background:transparent;color:#f3f6fa;border:0;border-radius:8px;padding:10px 11px;line-height:1.35}
@@ -91,6 +91,13 @@
       #step-selection .chip{font-size:.68rem;padding:3px 6px}
       #step-selection .sumtext{display:none}
     }
+    .existing-panel{max-width:650px;margin:48px auto;padding:clamp(18px,4vw,34px)}
+    .existing-panel h1{font-size:clamp(1.5rem,4vw,2.2rem);margin:10px 0 13px}
+    .existing-panel p{color:var(--muted)}
+    .existing-panel .field{margin:16px 0}
+    .existing-actions{display:flex;gap:10px;margin-top:16px}
+    .existing-actions .primary{flex:1}.existing-actions .outline{flex:0 0 auto}
+    @media(max-width:570px){.existing-panel{margin:26px 0}.existing-actions{flex-direction:column-reverse}}
   </style>
 </head>
 <body>
@@ -137,6 +144,22 @@
         </form>
       </section>
 
+      <section id="step-existing" class="hidden" aria-label="Consulta de comprovante já registrado">
+        <div class="panel existing-panel">
+          <div class="panel-kicker">Solicitação já registrada</div>
+          <h1>Este servidor já escolheu as férias para <span id="existing-year">2027</span>.</h1>
+          <p>Não é necessário fazer outra solicitação. Para consultar e imprimir o comprovante anterior, informe o <strong>número do protocolo</strong> e o <strong>e-mail utilizado no registro original</strong>.</p>
+          <div class="notice" role="note" style="margin:16px 0;padding:14px 16px"><strong>Não tem o número do protocolo?</strong> Entre em contato com o <strong>DFV</strong> para consultar sua solicitação.</div>
+          <form id="existing-form" novalidate>
+            <div class="field"><label for="existing-protocol">Número do protocolo</label><input id="existing-protocol" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]+" placeholder="Ex.: 48" required></div>
+            <div class="field"><label for="existing-email">E-mail informado no registro original</label><input id="existing-email" type="email" autocomplete="email" maxlength="254" placeholder="nome@exemplo.com" required></div>
+            <div id="existing-error" class="alert hidden" role="alert"></div>
+            <div class="existing-actions"><button id="existing-back" type="button" class="outline">← Voltar</button><button id="existing-submit" class="primary" type="submit">Consultar comprovante</button></div>
+          </form>
+          <p class="micro">Se outro servidor preencheu o pedido, use o e-mail informado no registro original. Caso não tenha o número do protocolo, entre em contato com o DFV. A matrícula isolada não dá acesso ao comprovante.</p>
+        </div>
+      </section>
+
       <section id="step-rules" class="hidden" aria-label="Leitura obrigatória das regras de férias">
         <div class="panel rules-panel">
           <div class="panel-kicker">Etapa 02 de 03 · Leitura obrigatória</div>
@@ -166,7 +189,7 @@
       </section>
 
       <section id="step-success" class="hidden" aria-label="Comprovante da solicitação">
-        <div class="confirmation"><div class="checkmark" aria-hidden="true">✓</div><div class="eyebrow" style="margin-top:21px">Solicitação registrada</div><h1>Escolhas recebidas com sucesso.</h1><p style="color:#b9c6d2">A solicitação foi registrada no sistema. Guarde o número de protocolo para conferência.</p><div id="receipt" class="receipt"></div><div class="actions"><button id="print" class="outline" type="button">Imprimir comprovante</button><button id="another" class="primary" type="button">Encerrar e voltar ao início</button></div><p class="micro">O registro não substitui a aprovação formal de férias pela administração.</p></div>
+        <div class="confirmation"><div class="checkmark" aria-hidden="true">✓</div><div id="receipt-status" class="eyebrow" style="margin-top:21px">Solicitação registrada</div><h1 id="receipt-title">Escolhas recebidas com sucesso.</h1><p id="receipt-subtitle" style="color:#b9c6d2">A solicitação foi registrada no sistema. Guarde o número de protocolo para conferência.</p><div id="receipt" class="receipt"></div><div class="actions"><button id="print" class="outline" type="button">Imprimir comprovante</button><button id="another" class="primary" type="button">Encerrar e voltar ao início</button></div><p class="micro">O registro não substitui a aprovação formal de férias pela administração.</p></div>
       </section>
     </main>
     <footer class="footer"><span>STTU · Secretaria Municipal de Mobilidade Urbana · Natal/RN</span><span class="dev-credit"><small>Desenvolvido por</small><strong>THIAGO HENRIQUE FERREIRA DA SILVA</strong></span></footer>
@@ -258,7 +281,7 @@
       if(ano===2027&&mes===1)return '2026-12-31';
       const d=new Date(Date.UTC(ano,mes-1,1));d.setUTCDate(d.getUTCDate()-45);return d.toISOString().slice(0,10);
     }
-    function screen(n) { for (const name of ['entry','rules','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
+    function screen(n) { for (const name of ['entry','existing','rules','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
     function dateBR(v){return v&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(8,10)+'/'+v.slice(5,7)+'/'+v.slice(0,4):'';}
@@ -291,13 +314,57 @@
         if(payload.selecoes.some(s=>{const p=atual.periodos.find(a=>a.mes===s.mes&&a.periodo===s.periodo);return !p||p.restantes===0||!p.aberto;})) throw Error('Uma das vagas acabou de se esgotar.');
         if(payload.aceite_regras!==true)throw Error('A leitura e a ciência das regras são obrigatórias.');
         const solicitacao={id:Math.floor(Date.now()/1000),ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes,registrado_por_nome:payload.registrante_nome,registrado_por_email:payload.registrante_email,registrada_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'}),ciencia_regras_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'})};
-        all.push({...payload});demoStore.setItem(demoKey(state.ano),JSON.stringify(all));return {solicitacao};
+        all.push({...payload,protocolo:solicitacao.id,registrada_em:solicitacao.registrada_em,ciencia_regras_em:solicitacao.ciencia_regras_em});demoStore.setItem(demoKey(state.ano),JSON.stringify(all));return {solicitacao};
       }
       const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data=await r.json().catch(()=>({}));
       if(!r.ok)throw Error(data.erro||'Não foi possível registrar a solicitação.');
       return data;
     }
+    async function verificarExistente(ano, matricula){
+      if(DEMO) return getDemo().some(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(matricula));
+      const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({acao:'verificar',ano,matricula})});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok)throw Error(data.erro||'Não foi possível consultar o histórico desta matrícula.');
+      return data.ja_solicitado===true;
+    }
+    function abrirConsultaExistente(){
+      el('existing-year').textContent=String(state.ano);
+      el('existing-protocol').value='';
+      el('existing-email').value=state.registrante_email;
+      error('existing-error','');
+      screen('existing');
+    }
+    el('existing-back').addEventListener('click',()=>screen('entry'));
+    el('existing-form').addEventListener('submit',async e=>{
+      e.preventDefault();error('existing-error','');
+      const protocolo=el('existing-protocol').value.trim();
+      const email=el('existing-email').value.trim().toLowerCase();
+      if(!/^[0-9]{1,15}$/.test(protocolo)||!el('existing-email').validity.valid||!email){
+        error('existing-error','Informe o número do protocolo e o e-mail do registro original.');return;
+      }
+      const button=el('existing-submit');button.disabled=true;button.textContent='Consultando...';
+      try{
+        let s;
+        if(DEMO){
+          const item=getDemo().find(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(state.matricula)
+            && String(r.protocolo||'')===protocolo && String(r.registrante_email||'').toLowerCase()===email);
+          if(!item)throw Error('Comprovante não encontrado com os dados informados.');
+          s={id:item.protocolo,ano:item.ano,nome:item.nome,matricula:item.matricula,
+            funcao_turno:state.funcao_turno,registrado_por_nome:item.registrante_nome,
+            registrado_por_email:item.registrante_email,registrada_em:item.registrada_em,
+            ciencia_regras_em:item.ciencia_regras_em,escolhas:item.selecoes,reemissao:true};
+        }else{
+          const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
+            body:JSON.stringify({acao:'consultar_comprovante',ano:state.ano,matricula:state.matricula,protocolo,email})});
+          const data=await r.json().catch(()=>({}));
+          if(!r.ok)throw Error(data.erro||'Não foi possível localizar o comprovante.');
+          s=data.solicitacao;
+        }
+        clearInterval(state.intervalo);showReceipt(s);screen('success');
+      }catch(ex){error('existing-error',ex.message||'Erro ao consultar comprovante.');}
+      finally{button.disabled=false;button.textContent='Consultar comprovante';}
+    });
     el('entry-form').addEventListener('submit',async e=>{
       e.preventDefault();error('entry-error','');
       const responsavelNome=el('registrante-nome').value.replace(/\s+/g,' ').trim();
@@ -313,6 +380,12 @@
       try{await atualizarAnos();}catch(ex){error('entry-error',ex.message||'Erro ao consultar campanhas.');return;}
       state.nome=nome;state.matricula=matricula;state.funcao_turno=funcao_turno||'';state.registrante_nome=responsavelNome;state.registrante_email=responsavelEmail;
       el('welcome').textContent=state.nome+' · '+state.matricula+' · '+state.funcao_turno+' · Registro por: '+state.registrante_nome;
+      // Evita que quem já registrou passe pela escolha de novos períodos.
+      try{
+        if(await verificarExistente(state.ano,state.matricula)){
+          abrirConsultaExistente();return;
+        }
+      }catch(ex){error('entry-error',ex.message||'Falha ao conferir solicitações existentes.');return;}
       state.aceite_regras=false;el('rules-ack').checked=false;el('rules-next').disabled=true;
       screen('rules');
     });
@@ -326,7 +399,7 @@
       state.intervalo=setInterval(()=>{if(!document.hidden && !el('step-selection').classList.contains('hidden'))carregar(true);},30000);
     });
     el('back').addEventListener('click',()=>{clearInterval(state.intervalo);state.aceite_regras=false;screen('entry');});
-    el('year').addEventListener('change',async e=>{state.ano=Number(e.target.value);state.escolhidos=[];updateSelection();await carregar();});
+    el('year').addEventListener('change',async e=>{state.ano=Number(e.target.value);state.escolhidos=[];updateSelection();try{if(await verificarExistente(state.ano,state.matricula)){clearInterval(state.intervalo);abrirConsultaExistente();return;}}catch(ex){error('calendar-error',ex.message||'Não foi possível verificar a matrícula.');return;}await carregar();});
     el('refresh').addEventListener('click',()=>carregar());
     async function carregar(silencioso=false){
       if(state.loading)return;
@@ -401,15 +474,24 @@
       try{
         const result=await reservar({ano:state.ano,nome:state.nome,matricula:state.matricula,selecoes:state.escolhidos,registrante_nome:state.registrante_nome,registrante_email:state.registrante_email,aceite_regras:state.aceite_regras});
         clearInterval(state.intervalo);showReceipt(result.solicitacao);screen('success');
-      }catch(ex){error('selection-error',ex.message||'Erro inesperado.');await carregar(true);window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}
+      }catch(ex){if(String(ex.message||'').includes('Já existe uma solicitação')){clearInterval(state.intervalo);abrirConsultaExistente();}else{error('selection-error',ex.message||'Erro inesperado.');await carregar(true);window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}}
       finally{button.classList.remove('loading');button.disabled=state.escolhidos.length!==2;}
     });
     function showReceipt(s){
       const root=el('receipt');root.replaceChildren();
-      const pairs=[['Protocolo',String(s.id)],['Servidor(a) beneficiário(a)',s.nome],['Matrícula',s.matricula],['Função/Turno',s.funcao_turno||state.funcao_turno||'—'],['Ano',String(s.ano)],['1ª escolha',titlePeriod(s.escolhas[0])],['2ª escolha',titlePeriod(s.escolhas[1])],['Situação',DEMO?'Demonstração (sem validade)':'Solicitação registrada']];
+      el('receipt-status').textContent=s.reemissao?'Consulta de solicitação existente':'Solicitação registrada';
+      el('receipt-title').textContent=s.reemissao?'Comprovante de solicitação anterior':'Escolhas recebidas com sucesso.';
+      el('receipt-subtitle').textContent=s.reemissao?'Solicitação já registrada. Não foi criada uma nova reserva.':'A solicitação foi registrada no sistema. Guarde o número de protocolo para conferência.';
+      const tituloEscolha=x=>{
+        const periodo=nomes[Number(x.mes)-1]+' · '+x.periodo+'º período (15 dias; ';
+        const datas=x.data_inicio&&x.data_fim?dateBR(x.data_inicio)+' a '+dateBR(x.data_fim):periodDates(x.mes,x.periodo);
+        return periodo+datas+')';
+      };
+      const pairs=[['Protocolo',String(s.id)],['Servidor(a) beneficiário(a)',s.nome],['Matrícula',s.matricula],['Função/Turno',s.funcao_turno||state.funcao_turno||'—'],['Ano',String(s.ano)],['1ª escolha',s.reemissao?tituloEscolha(s.escolhas[0]):titlePeriod(s.escolhas[0])],['2ª escolha',s.reemissao?tituloEscolha(s.escolhas[1]):titlePeriod(s.escolhas[1])],['Situação',DEMO?'Demonstração (sem validade)':'Solicitação registrada']];
       const addLine=([l,v])=>{const row=document.createElement('div');row.className='receipt-line';const a=document.createElement('span');a.textContent=l;const b=document.createElement('strong');b.textContent=v??'—';row.append(a,b);root.append(row);};
       pairs.forEach(addLine);
       const heading=document.createElement('div');heading.className='receipt-heading';heading.textContent='Informações adicionais · responsável pelo preenchimento';root.append(heading);
+      if(s.reemissao){const nota=document.createElement('div');nota.className='micro';nota.textContent='Reemissão: as datas exibidas seguem a configuração atual do calendário e podem ter sido alteradas desde a solicitação original. O protocolo, o ano e os períodos escolhidos são os registrados.';root.append(nota);}
       [['Registrado por',s.registrado_por_nome||state.registrante_nome],['E-mail informado',s.registrado_por_email||state.registrante_email],['Data e hora do registro',s.registrada_em||'—'],['Ciência das regras',s.ciencia_regras_em||'—']].forEach(addLine);
     }
     el('print').addEventListener('click',()=>window.print());
