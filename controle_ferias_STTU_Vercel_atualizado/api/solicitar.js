@@ -15,7 +15,8 @@ const mensagens = {
   'LIMITE_FUNCAO_TURNO': 'Limite por Função/Turno excedido',
   'PERIODO_ESGOTADO': 'Uma das vagas foi preenchida. Atualize as opções e escolha outro período.',
   'REGISTRANTE_NOME_INVALIDO': 'Informe o nome completo de quem está fazendo a solicitação.',
-  'REGISTRANTE_EMAIL_INVALIDO': 'Informe um e-mail válido de quem está fazendo a solicitação.'
+  'REGISTRANTE_EMAIL_INVALIDO': 'Informe um e-mail válido de quem está fazendo a solicitação.',
+  'CIENCIA_REGRAS_OBRIGATORIA': 'É necessário ler e confirmar as regras de solicitação de férias.'
 };
 
 export default async function handler(req, res) {
@@ -31,6 +32,7 @@ export default async function handler(req, res) {
     const registranteNome = String(b.registrante_nome || '').replace(/\s+/g, ' ').trim();
     const registranteEmail = String(b.registrante_email || '').trim().toLowerCase();
     const selecoes = b.selecoes;
+    if (b.aceite_regras !== true) return res.status(400).json({ erro: mensagens.CIENCIA_REGRAS_OBRIGATORIA, codigo: 'CIENCIA_REGRAS_OBRIGATORIA' });
     if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
       nome.length < 5 || nome.length > 180 || !nome.includes(' ') ||
       registranteNome.length < 5 || registranteNome.length > 150 || !registranteNome.includes(' ') ||
@@ -43,11 +45,11 @@ export default async function handler(req, res) {
     }
     const sql = neon(process.env.DATABASE_URL);
     const result = await sql`
-      SELECT sttu_registrar_ferias_com_registrante(
+      SELECT sttu_registrar_ferias_com_ciencia(
         ${ano}, ${nome}, ${matricula},
         ${selecoes[0].mes}, ${selecoes[0].periodo},
         ${selecoes[1].mes}, ${selecoes[1].periodo},
-        ${registranteNome}, ${registranteEmail}
+        ${registranteNome}, ${registranteEmail}, ${true}
       ) AS solicitacao
     `;
     return res.status(201).json({ sucesso: true, solicitacao: result[0].solicitacao });
