@@ -1,7 +1,7 @@
 import {neon} from '@neondatabase/serverless';
 import {requireAdmin,sameOrigin,validYear} from '../lib/admin-auth.js';
 export default async function handler(req,res){
- if(!requireAdmin(req,res))return;
+ if(!requireAdmin(req,res,req.query?.acao==='anos'?'edit':'read'))return;
  if(req.query?.acao==='anos')return handleAdminAnos(req,res);
  if(req.query?.visao==='auditoria')return handleAuditoria(req,res);
  if(req.method!=='GET')return res.status(405).json({erro:'Método não permitido.'});
@@ -74,7 +74,7 @@ async function handleAuditoria(req,res){
   try{
     const sql=neon(process.env.DATABASE_URL);
     const [rows,capacidades,cotas,datas]=await Promise.all([
-      sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,registrado_por_nome,registrado_por_email,
+      sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,registrado_por_nome,registrado_por_email,cancelado_por_login,
       to_char(registrada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em
       FROM sttu_ferias_auditoria a WHERE ano=${ano} ORDER BY a.registrada_em DESC LIMIT 500`,
       sql`SELECT ano,mes,periodo,capacidade_antes,capacidade_depois,ocupadas_no_momento,
@@ -101,6 +101,7 @@ async function handleAuditoria(req,res){
 
 // Liberação administrativa dos anos agrupada para respeitar limite da Vercel.
 async function handleAdminAnos(req,res){
+  if(!requireAdmin(req,res,'edit'))return;
   if(req.method!=='POST')return res.status(405).json({erro:'Método não permitido.'});
   if(!sameOrigin(req))return res.status(403).json({erro:'Origem inválida.'});
   let b; try { b=typeof req.body==='string'?JSON.parse(req.body):(req.body||{}); } catch { return res.status(400).json({erro:'Dados inválidos.'}); }
