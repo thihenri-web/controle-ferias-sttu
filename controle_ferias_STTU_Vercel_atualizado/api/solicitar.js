@@ -19,8 +19,16 @@ const mensagens = {
   'CIENCIA_REGRAS_OBRIGATORIA': 'É necessário ler e confirmar as regras de solicitação de férias.'
 };
 
+// O ID numérico permanece interno; o código visível incorpora o ano.
+function protocoloPublico(ano,id){
+  const n=Number(id);
+  return Number.isSafeInteger(n)&&n>0?String(ano)+String(n).padStart(4,'0'):null;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
+  // Diagnóstico seguro da versão publicada; não retorna dados ou credenciais.
+  if (req.method === 'GET') return res.status(200).json({ ok:true, versao:'2027.11-protocolo', consulta_matricula:true, comprovante:true });
   if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido.' });
   if (!process.env.DATABASE_URL) {
     return res.status(503).json({ erro: 'Banco de dados não configurado. Conecte o Neon à Vercel.' });
@@ -31,6 +39,77 @@ export default async function handler(req, res) {
     const matricula = String(b.matricula || '').trim();
     const registranteNome = String(b.registrante_nome || '').replace(/\s+/g, ' ').trim();
     const registranteEmail = String(b.registrante_email || '').trim().toLowerCase();
+    // Antes da seleção, devolver somente um indicador de existência, sem dados pessoais.
+    if (b.acao === 'verificar') {
+      if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
+          !/^[0-9]{4,14}$/.test(matricula.replace(/\D/g, ''))) {
+        return res.status(400).json({ erro: 'Ano ou matrícula inválidos.' });
+      }
+      const digits = matricula.replace(/\D/g, '');
+      const sql = neon(process.env.DATABASE_URL);
+      const rows = await sql`
+        SELECT 1 FROM public.sttu_ferias_solicitacoes
+        WHERE ano=${ano}
+          AND regexp_replace(matricula,'[^0-9]','','g')=${digits}
+        LIMIT 1`;
+      return res.status(200).json({ ja_solicitado: rows.length > 0 });
+    }
+    // Reemissão: protocolo + e-mail informado no pedido + matrícula + ano.
+    // Nunca devolver nome, e-mail, escolhas ou datas no indicador público acima.
+    if (b.acao === 'consultar_comprovante') {
+      const digits = matricula.replace(/\D/g, '');
+      const email = String(b.email || '').trim().toLowerCase();
+      const rawProtocolo = String(b.protocolo ?? '').trim();
+      const anoPrefixo = String(ano);
+      const protocoloCorreto = /^\d{8}$/.test(rawProtocolo)
+        ? rawProtocolo.startsWith(anoPrefixo)
+        : /^\d{1,7}$/.test(rawProtocolo);
+      const protocolo = Number(/^\d{8}$/.test(rawProtocolo) ? rawProtocolo.slice(4) : rawProtocolo);
+      if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
+          !/^[0-9]{4,14}$/.test(digits) ||
+          !protocoloCorreto || !Number.isSafeInteger(protocolo) || protocolo < 1 ||
+          email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ erro: 'Preencha protocolo e e-mail válidos.' });
+      }
+      const sql = neon(process.env.DATABASE_URL);
+      const rows = await sql`
+        SELECT s.id, s.ano, s.nome_completo AS nome, s.matricula,
+          COALESCE(s.funcao_turno, c.funcao_turno) AS funcao_turno,
+          s.mes_1, s.periodo_1, s.mes_2, s.periodo_2,
+          s.registrado_por_nome, s.registrado_por_email,
+          to_char(s.criada_em AT TIME ZONE 'America/Fortaleza', 'DD/MM/YYYY HH24:MI') AS registrada_em,
+          to_char(s.ciencia_regras_em AT TIME ZONE 'America/Fortaleza', 'DD/MM/YYYY HH24:MI') AS ciencia_regras_em,
+          to_char(p1.data_inicio, 'YYYY-MM-DD') AS inicio_1,
+          to_char(p1.data_fim, 'YYYY-MM-DD') AS fim_1,
+          to_char(p2.data_inicio, 'YYYY-MM-DD') AS inicio_2,
+          to_char(p2.data_fim, 'YYYY-MM-DD') AS fim_2
+        FROM public.sttu_ferias_solicitacoes s
+        LEFT JOIN public.sttu_ferias_servidores c ON c.matricula=s.matricula
+        LEFT JOIN public.sttu_ferias_periodos_config p1
+          ON p1.ano=s.ano AND p1.mes=s.mes_1 AND p1.periodo=s.periodo_1
+        LEFT JOIN public.sttu_ferias_periodos_config p2
+          ON p2.ano=s.ano AND p2.mes=s.mes_2 AND p2.periodo=s.periodo_2
+        WHERE s.id=${protocolo} AND s.ano=${ano}
+          AND regexp_replace(s.matricula,'[^0-9]','','g')=${digits}
+          AND lower(btrim(coalesce(s.registrado_por_email,'')))=${email}
+        LIMIT 1`;
+      if (!rows.length) return res.status(404).json({
+        erro: 'Comprovante não encontrado com os dados informados. Caso não tenha o número do protocolo, entre em contato com o DFV.'
+      });
+      const s = rows[0];
+      return res.status(200).json({ sucesso:true, solicitacao:{
+        id:s.id, protocolo:protocoloPublico(s.ano,s.id), ano:s.ano, nome:s.nome, matricula:s.matricula,
+        funcao_turno:s.funcao_turno,
+        registrado_por_nome:s.registrado_por_nome,
+        registrado_por_email:s.registrado_por_email,
+        registrada_em:s.registrada_em, ciencia_regras_em:s.ciencia_regras_em,
+        reemissao:true,
+        escolhas:[
+          {mes:s.mes_1,periodo:s.periodo_1,data_inicio:s.inicio_1,data_fim:s.fim_1},
+          {mes:s.mes_2,periodo:s.periodo_2,data_inicio:s.inicio_2,data_fim:s.fim_2}
+        ]
+      }});
+    }
     const selecoes = b.selecoes;
     if (b.aceite_regras !== true) return res.status(400).json({ erro: mensagens.CIENCIA_REGRAS_OBRIGATORIA, codigo: 'CIENCIA_REGRAS_OBRIGATORIA' });
     if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
@@ -52,7 +131,8 @@ export default async function handler(req, res) {
         ${registranteNome}, ${registranteEmail}, ${true}
       ) AS solicitacao
     `;
-    return res.status(201).json({ sucesso: true, solicitacao: result[0].solicitacao });
+    const criada=result[0].solicitacao;
+    return res.status(201).json({ sucesso:true, solicitacao:{...criada, protocolo:protocoloPublico(criada.ano||ano,criada.id)} });
   } catch (e) {
     const code = Object.keys(mensagens).sort((a,b) => b.length - a.length).find(c => String(e.message || '').includes(c));
     if (code) return res.status(['LIMITE_FUNCAO_TURNO','JA_SOLICITADO','PERIODO_ESGOTADO','PRAZO_ENCERRADO','ANO_BLOQUEADO','PERIODO_BLOQUEADO'].includes(code) ? 409 : 400).json({ erro: mensagens[code], codigo: code });
