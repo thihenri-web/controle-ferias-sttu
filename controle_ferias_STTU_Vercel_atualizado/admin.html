@@ -63,12 +63,14 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
 .quota-total{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .quota-total strong{font-size:.98rem}
 .quota-total .ok{color:var(--green)}.quota-total .bad{color:#ffb4b4}
-.quota-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.quota-action-card{background:#101a24;border:1px solid var(--line);border-radius:11px;padding:12px}
-.quota-action-card .btn{margin-top:9px}
+.quota-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,.75fr) minmax(0,1fr);gap:12px;margin-top:14px;align-items:stretch}
+.quota-action-card,.quota-save-center{background:#101a24;border:1px solid var(--line);border-radius:11px;padding:14px;min-height:96px;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.quota-action-card .quota-total{line-height:1.5;align-items:center}
+.quota-save-center{align-items:center;text-align:center}
+.quota-save-center .btn{min-height:48px;width:100%;max-width:300px;margin:0;white-space:normal;line-height:1.25}
 .quota-footer-note{margin:10px 0 0}
 @media(max-width:820px){.registry-filters{grid-template-columns:1fr 1fr}.registry-filters>div:nth-child(2){grid-column:1/-1}}
-@media(max-width:540px){.quota-toolbar{grid-template-columns:1fr}.quota-table th,.quota-table td{padding:8px 5px}.quota-table .q-name{font-size:.79rem}.quota-cell{gap:4px}.quota-cell input{width:62px;padding:6px}.quota-actions{grid-template-columns:1fr}.registry-filters{grid-template-columns:1fr}.registry-filters>div:nth-child(2){grid-column:auto}}
+@media(max-width:540px){.quota-toolbar{grid-template-columns:1fr}.quota-table th,.quota-table td{padding:8px 5px}.quota-table .q-name{font-size:.79rem}.quota-cell{gap:4px}.quota-cell input{width:62px;padding:6px}.quota-actions{grid-template-columns:1fr}.quota-action-card,.quota-save-center{min-height:76px}.registry-filters{grid-template-columns:1fr}.registry-filters>div:nth-child(2){grid-column:auto}}
 .registry-placeholder{padding:18px;border:1px dashed #445264;background:#111b26;border-radius:12px;color:var(--muted);font-size:.89rem;margin-top:8px}
 .registry-placeholder strong{color:var(--text)}
 
@@ -385,7 +387,7 @@ body.role-viewer .cancel-button{display:none!important}
         <div class="section-bar"><h2>Distribuição das vagas por Função/Turno</h2><span class="tag">Totais vinculados à capacidade</span></div>
         <div class="quota-toolbar">
           <div><label for="quota-month">Mês</label><select class="input" id="quota-month"></select></div>
-          <p class="note">Ajuste os números e salve cada período. A soma precisa ser igual ao total definido em <strong>Períodos e vagas</strong>. Insp Chefe é extra.</p>
+          <p class="note">Ajuste as cotas e confirme os dois períodos no botão central. A soma de cada um deve coincidir com o total definido em <strong>Períodos e vagas</strong>. Insp Chefe é extra.</p>
         </div>
         <div id="quota-grid" aria-live="polite"></div>
         <p class="note quota-footer-note">Tarde e Corujão compartilham uma vaga flutuante entre os períodos. As escolhas existentes são preservadas.</p>
@@ -1007,63 +1009,100 @@ function renderCotas(){
  const chief=document.createElement('tr');const chiefName=document.createElement('td');chiefName.className='q-name';chiefName.textContent='Insp Chefe';chief.append(chiefName);
  for(const periodo of [1,2]){const td=document.createElement('td');td.append(span(`${occupiedGroup(mes,periodo,'Insp Chefe')} extra(s) · sem limite`,'tag good'));chief.append(td);}body.append(chief);
  table.append(body);wrap.append(table);root.append(wrap);
+
  const actions=document.createElement('div');actions.className='quota-actions';
- for(const periodo of [1,2]){
+ const cardForPeriod=periodo=>{
    const card=document.createElement('div');card.className='quota-action-card';
-   const info=document.createElement('div');info.className='quota-total';info.id='quota-total-'+periodo;card.append(info);
-   const button=document.createElement('button');button.className='btn primary mini';button.type='button';button.textContent=`Confirmar e aplicar ${periodo}º período`;
-   button.id='quota-save-'+periodo;button.addEventListener('click',()=>saveQuotaPeriod(mes,periodo));card.append(button);actions.append(card);
- }root.append(actions);updateQuotaSummary(mes);
-  applyReadonly();
+   const info=document.createElement('div');info.className='quota-total';
+   info.id='quota-total-'+periodo;
+   info.setAttribute('aria-live','polite');
+   card.append(info);return card;
+ };
+ actions.append(cardForPeriod(1));
+ const center=document.createElement('div');center.className='quota-save-center';
+ const saveBoth=document.createElement('button');saveBoth.className='btn primary';
+ saveBoth.type='button';saveBoth.textContent='Confirmar e aplicar os 2 períodos';
+ saveBoth.id='quota-save-month';
+ saveBoth.setAttribute('aria-label',`Confirmar e aplicar os dois períodos de ${fmt(mes)}`);
+ saveBoth.addEventListener('click',()=>saveQuotaMonth(mes));
+ center.append(saveBoth);actions.append(center);
+ actions.append(cardForPeriod(2));
+ root.append(actions);updateQuotaSummary(mes);
+ applyReadonly();
+}
+
+function validQuotaPeriod(mes,periodo){
+ const d=draftForPeriod(mes,periodo);
+ const capacidade=Number(d.capacidade);
+ if(!Number.isInteger(capacidade)||capacidade<1||capacidade>30)
+   return {valid:false,reason:`${periodo}º período: capacidade deve ser de 1 a 30 vagas.`,d};
+ const vals=QUOTA_GROUPS.map(g=>d.valores[g]);
+ if(!vals.every(n=>Number.isInteger(n)&&n>=0&&n<=30))
+   return {valid:false,reason:`${periodo}º período: todas as cotas devem ser números inteiros entre 0 e 30.`,d};
+ const sum=vals.reduce((a,b)=>a+b,0);
+ if(sum!==capacidade)
+   return {valid:false,reason:`${periodo}º período: as cotas somam ${sum}, mas a capacidade é ${capacidade}.`,d,sum};
+ return {valid:true,d,sum};
 }
 function updateQuotaSummary(mes){
+ const checks=[validQuotaPeriod(mes,1),validQuotaPeriod(mes,2)];
  for(const periodo of [1,2]){
-   const d=draftForPeriod(mes,periodo);
-   const nums=QUOTA_GROUPS.map(g=>d.valores[g]);const valid=nums.every(n=>Number.isInteger(n)&&n>=0&&n<=30);
-   const sum=valid?nums.reduce((a,b)=>a+b,0):NaN;
-   const target=d.capacidade;const good=valid&&sum===target;
+   const {d,valid,sum}=checks[periodo-1];
+   const target=d.capacidade;
    const info=$('quota-total-'+periodo);if(!info)continue;info.replaceChildren();
    const title=document.createElement('strong');title.textContent=`${periodo}º período: `;
-   const value=document.createElement('strong');value.className=good?'ok':'bad';
-   value.textContent=valid?`${sum} / ${target} vagas`:'Cota inválida';
+   const value=document.createElement('strong');value.className=valid?'ok':'bad';
+   const numeric=Number.isFinite(sum);
+   value.textContent=numeric?`${sum} / ${target} vagas`:'Cota inválida';
    info.append(title,value);
-   if(valid&&!good)info.append(span(sum<target?`Faltam ${target-sum}`:`Excedem ${sum-target}`,'tag off'));
+   if(numeric&&!valid&&Number.isInteger(target)&&sum!==target)
+     info.append(span(sum<target?`Faltam ${target-sum}`:`Excedem ${sum-target}`,'tag off'));
    if(state.quotaDrafts[quotaDraftKey(mes,periodo)]){
-     info.append(span(`PRÉVIA: no banco ainda são ${Number(state.vagas.find(v=>v.mes===mes&&v.periodo===periodo)?.capacidade??10)} vagas. Clique em Confirmar e aplicar para efetivar.`, 'tag off'));
+     const antiga=Number(state.vagas.find(v=>v.mes===mes&&v.periodo===periodo)?.capacidade??10);
+     info.append(span(`Prévia: ${antiga} vagas no banco até confirmar.`, 'tag off'));
    }
-   const button=$('quota-save-'+periodo);if(button)button.disabled=state.busy||!good;
+ }
+ const button=$('quota-save-month');
+ if(button){
+   button.disabled=state.busy||!canEdit()||!checks.every(x=>x.valid);
+   button.title=checks.every(x=>x.valid)?'Salvar as duas distribuições em uma única transação':checks.find(x=>!x.valid).reason;
  }
 }
-async function saveQuotaPeriod(mes,periodo){
+async function saveQuotaMonth(mes){
  if(!canEdit()){notify('Seu perfil permite apenas consulta.');return;}
  if(state.busy)return;
- const d=draftForPeriod(mes,periodo),values=d.valores;
- if(!QUOTA_GROUPS.every(g=>Number.isInteger(values[g])&&values[g]>=0&&values[g]<=30)){
-   notify('Todas as cotas devem ser números inteiros entre 0 e 30.');return;
- }
- const soma=Object.values(values).reduce((a,b)=>a+b,0);
- if(soma!==d.capacidade){notify(`A soma (${soma}) deve ser exatamente ${d.capacidade} vagas.`);return;}
- const atual=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
- if(!confirm(`Salvar distribuição de ${fmt(mes)}/${state.ano} · ${periodo}º período?
-
-Capacidade: ${atual?.capacidade??10} → ${d.capacidade}
-Soma das cotas: ${soma}
-
-Insp Chefe continua extra.`))return;
- state.busy=true;updateQuotaSummary(mes);notify('Salvando distribuição e capacidade em uma única operação...');
+ const checks=[validQuotaPeriod(mes,1),validQuotaPeriod(mes,2)];
+ const invalid=checks.find(x=>!x.valid);
+ if(invalid){notify(invalid.reason);return;}
+ const current=checks.map((_,i)=>state.vagas.find(v=>v.mes===mes&&v.periodo===i+1));
+ const summary=checks.map((x,i)=>`${i+1}º período: ${current[i]?.capacidade??10} → ${x.d.capacidade} vagas; cotas ${x.sum}/${x.d.capacidade}`).join('\n');
+ if(!confirm(`Confirmar as DUAS distribuições de ${fmt(mes)}/${state.ano}?\n\n${summary}\n\nSe uma delas for recusada, nenhuma será alterada. Insp Chefe permanece como vaga extra.`))return;
+ state.busy=true;updateQuotaSummary(mes);notify(`Salvando os dois períodos de ${fmt(mes)} em uma única operação...`);
  try{
-   await req('/api/admin-cotas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,mes,periodo,capacidade:d.capacidade,cotas:values})});
-   delete state.quotaDrafts[quotaDraftKey(mes,periodo)];state.busy=false;await load();
-   $('quota-month').value=String(mes);renderCotas();
-   const confirmado=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
-   if(Number(confirmado?.capacidade)!==Number(d.capacidade)){
-     notify(`O Neon ainda retorna ${confirmado?.capacidade??'—'} vagas. A alteração para ${d.capacidade} não foi confirmada. Consulte os registros da Vercel.`);
+   const distribuicoes=checks.map((x,i)=>({periodo:i+1,capacidade:x.d.capacidade,cotas:{...x.d.valores}}));
+   await req('/api/admin-cotas',{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({ano:state.ano,mes,distribuicoes})});
+   // Recarregar depois do commit; manter os rascunhos até confirmar as duas capacidades.
+   state.busy=false;await load();
+   $('quota-month').value=String(mes);
+   const matched=distribuicoes.every(x=>{
+     const p=state.vagas.find(v=>Number(v.mes)===mes&&Number(v.periodo)===x.periodo);
+     return p&&Number(p.capacidade)===x.capacidade&&
+       QUOTA_GROUPS.every(g=>capBase(mes,x.periodo,g)===x.cotas[g]);
+   });
+   if(!matched){
+     renderCotas();
+     notify('Não foi possível confirmar os dois períodos na nova consulta. Verifique os registros da Vercel e não repita a operação sem conferir o Neon.');
      return;
    }
-   activateTab('periodos');
-   renderPeriodSettings();
-   notify(`${fmt(mes)} · ${periodo}º período: ${confirmado.capacidade} vagas confirmadas no Neon; ${confirmado.normais} ocupadas normais e ${confirmado.restantes} restantes.`,true);
- }catch(e){state.busy=false;updateQuotaSummary(mes);notify(e.message);}
+   delete state.quotaDrafts[quotaDraftKey(mes,1)];
+   delete state.quotaDrafts[quotaDraftKey(mes,2)];
+   renderCotas();
+   notify(`${fmt(mes)}: 1º e 2º períodos salvos e confirmados no Neon.`,true);
+ }catch(e){
+   state.busy=false;updateQuotaSummary(mes);
+   notify('Nenhuma distribuição foi aplicada: '+e.message);
+ }
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));
 $('registry-filter').addEventListener('submit',async e=>{
