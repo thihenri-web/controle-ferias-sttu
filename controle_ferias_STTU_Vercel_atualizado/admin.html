@@ -426,6 +426,95 @@ const ALLOWED=Array.from({length:12},(_,i)=>i+1);
 const GROUPS=['Manhã','Adm','Insp','Noite','COTT','Tarde','Corujão','Insp Chefe'];
 const QUOTA_GROUPS=GROUPS.filter(g=>g!=='Insp Chefe');
 const state={ano:2027,mes:0,periodo:0,busca:'',records:[],vagas:[],anos:[],cotas:[],ocupacao_funcao:[],registry:[],registrySearched:false,activeTab:'painel',busy:false,quotaDrafts:{},role:null,username:null};
+
+// ========== ENCERRAMENTO AUTOMÁTICO POR INATIVIDADE (5 MINUTOS) ==========
+const ADMIN_INACTIVITY_MS=5*60*1000;
+const ADMIN_RENEW_INTERVAL_MS=20*1000;
+const ADMIN_ACTIVITY_KEY='sttu-ferias-admin-last-activity-v1';
+const ADMIN_SIGNOUT_KEY='sttu-ferias-admin-signout-v1';
+let adminLastActivity=0,adminLastRenewed=0,adminIdleTicker=null;
+let adminClosing=false,adminRenewPromise=null,adminLocalStoreLast=0;
+function adminStorageGet(key){try{return window.localStorage.getItem(key);}catch{return null;}}
+function adminStorageSet(key,value){try{window.localStorage.setItem(key,String(value));}catch{}}
+function adminStorageRemove(key){try{window.localStorage.removeItem(key);}catch{}}
+function adminReadActivity(){
+ const shared=Number(adminStorageGet(ADMIN_ACTIVITY_KEY));
+ return Math.max(adminLastActivity,Number.isFinite(shared)&&shared>0?shared:0);
+}
+function adminStopIdle(){if(adminIdleTicker!==null){clearInterval(adminIdleTicker);adminIdleTicker=null;}}
+function adminToLogin(message=''){
+ adminStopIdle();adminLastActivity=0;adminLastRenewed=0;
+ clearRegistryResults();configureSession(null);
+ show('dashboard',false);show('login',true);show('logout',false);
+ $('password').value='';
+ $('login-error').textContent=message;
+ show('login-error',Boolean(message));
+}
+async function adminFinishSignout(message='',revoke=true){
+ if(adminClosing)return;
+ adminClosing=true;
+ adminStopIdle();
+ adminStorageRemove(ADMIN_ACTIVITY_KEY);
+ adminStorageSet(ADMIN_SIGNOUT_KEY,Date.now());
+ // Espera uma renovação já iniciada terminar para que seu Set-Cookie não reabra a sessão.
+ const inFlight=adminRenewPromise;
+ adminToLogin(message);
+ if(inFlight)await inFlight.catch(()=>{});
+ if(revoke){
+   try{await fetch('/api/admin-login',{method:'DELETE',credentials:'same-origin',cache:'no-store'});}catch{}
+ }
+}
+function adminCheckIdle(){
+ if(!state.role||adminClosing)return;
+ if(Date.now()-adminReadActivity()>=ADMIN_INACTIVITY_MS){
+   void adminFinishSignout('Sessão encerrada após 5 minutos sem atividade. Faça login novamente.');
+ }
+}
+function adminRenewOnAction(){
+ if(adminClosing||!state.role||adminRenewPromise)return;
+ const now=Date.now();
+ if(now-adminLastRenewed<ADMIN_RENEW_INTERVAL_MS)return;
+ adminLastRenewed=now;
+ adminRenewPromise=fetch('/api/admin-login',{
+   method:'POST',credentials:'same-origin',cache:'no-store',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({acao:'renovar'})
+ }).then(async response=>{
+   if(response.status===401){
+     void adminFinishSignout('Sua sessão expirou. Faça login novamente.');
+   }
+ }).catch(()=>{/* Sem rede, o cookie expira no servidor normalmente. */})
+ .finally(()=>{adminRenewPromise=null;});
+}
+function adminRecordInteraction(){
+ if(!state.role||adminClosing)return;
+ // Um retorno tardio à aba não pode reativar uma sessão que já ficou ociosa.
+ if(Date.now()-adminReadActivity()>=ADMIN_INACTIVITY_MS){adminCheckIdle();return;}
+ const now=Date.now();adminLastActivity=now;
+ // Reduz gravações enquanto o mouse se move sem parar.
+ if(now-adminLocalStoreLast>=1000){adminStorageSet(ADMIN_ACTIVITY_KEY,now);adminLocalStoreLast=now;}
+ adminRenewOnAction();
+}
+function adminStartIdle(restored=false){
+ adminClosing=false;
+ // Em sessão restaurada, a primeira interação pode renovar imediatamente o cookie.
+ adminLastActivity=Date.now();adminLastRenewed=restored?0:Date.now();
+ adminStorageSet(ADMIN_ACTIVITY_KEY,adminLastActivity);adminLocalStoreLast=adminLastActivity;
+ adminStopIdle();adminIdleTicker=setInterval(adminCheckIdle,1000);
+}
+for(const eventName of ['pointerdown','pointermove','keydown','wheel','touchstart','scroll']){
+ window.addEventListener(eventName,adminRecordInteraction,{passive:true});
+}
+window.addEventListener('focus',adminCheckIdle);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)adminCheckIdle();});
+window.addEventListener('storage',event=>{
+ if(event.key===ADMIN_SIGNOUT_KEY&&event.newValue&&state.role){
+   adminClosing=true;adminToLogin('Sessão encerrada em outra aba. Faça login novamente.');
+ }
+ if(event.key===ADMIN_ACTIVITY_KEY&&state.role)adminCheckIdle();
+});
+// ================================================================
+
 const canEdit=()=>state.role==='admin';
 const canCancel=()=>state.role==='admin'||state.role==='canceller';
 function configureSession(info){
@@ -448,7 +537,7 @@ function notify(t,ok=false){const e=$('status');e.textContent=t;show('status',Bo
 async function req(url,opts={}){
   const r=await fetch(url,{credentials:'same-origin',cache:'no-store',...opts});
   const data=await r.json().catch(()=>({}));
-  if(!r.ok){if(r.status===401){show('dashboard',false);show('login',true);show('logout',false);}throw Error(data.erro||'Erro ao consultar sistema.');}
+  if(!r.ok){if(r.status===401&&state.role&&!adminClosing){void adminFinishSignout('Sua sessão expirou. Faça login novamente.');}throw Error(data.erro||'Erro ao consultar sistema.');}
   return data;
 }
 function opts(items,selected){
@@ -1120,11 +1209,11 @@ $('dash-func-month').addEventListener('change',renderFunctionDistribution);
 $('dash-func-period').addEventListener('change',renderFunctionDistribution);
 $('login-form').addEventListener('submit',async e=>{
   e.preventDefault();const button=$('login-button');button.disabled=true;show('login-error',false);
-  try{const sess=await req('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:$('username').value,senha:$('password').value})});$('password').value='';configureSession(sess);show('login',false);show('dashboard',true);show('logout',true);await load();}
+  try{const sess=await req('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:$('username').value,senha:$('password').value})});$('password').value='';configureSession(sess);adminStartIdle();show('login',false);show('dashboard',true);show('logout',true);await load();}
   catch(e){$('login-error').textContent=e.message;show('login-error',true);}
   finally{button.disabled=false;}
 });
-$('logout').addEventListener('click',async()=>{try{await req('/api/admin-login',{method:'DELETE'});}catch{}clearRegistryResults();configureSession(null);show('dashboard',false);show('login',true);show('logout',false);});
+$('logout').addEventListener('click',()=>{void adminFinishSignout();});
 $('filters').addEventListener('submit',e=>{e.preventDefault();load();});
 $('refresh').addEventListener('click',load);
 $('export').addEventListener('click',exportCSV);
@@ -1144,7 +1233,7 @@ setOptions('dash-func-period',[[1,'1º período'],[2,'2º período']],1);
 setOptions('registry-role',[['','Todas as funções'],...GROUPS.map(g=>[g,g])],'');
 setOptions('year',[[2027,'2027']],2027);
 setOptions('manage-year',Array.from({length:8},(_,i)=>[2028+i,String(2028+i)]),2028);
-req('/api/admin-login').then(s=>{if(s.autenticado){configureSession(s);show('login',false);show('dashboard',true);show('logout',true);load();}else if(!s.configurado){$('login-error').textContent='A conta principal ainda não foi configurada na Vercel.';show('login-error',true);}}).catch(()=>{});
+req('/api/admin-login').then(s=>{if(s.autenticado){configureSession(s);adminStartIdle(true);show('login',false);show('dashboard',true);show('logout',true);load();}else if(!s.configurado){$('login-error').textContent='A conta principal ainda não foi configurada na Vercel.';show('login-error',true);}}).catch(()=>{});
 </script>
 </body>
 </html>
