@@ -151,7 +151,7 @@
           <p>Não é necessário fazer outra solicitação. Para consultar e imprimir o comprovante anterior, informe o <strong>número do protocolo</strong> e o <strong>e-mail utilizado no registro original</strong>.</p>
           <div class="notice" role="note" style="margin:16px 0;padding:14px 16px"><strong>Não tem o número do protocolo?</strong> Entre em contato com o <strong>DFV</strong> para consultar sua solicitação.</div>
           <form id="existing-form" novalidate>
-            <div class="field"><label for="existing-protocol">Número do protocolo</label><input id="existing-protocol" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]+" placeholder="Ex.: 48" required></div>
+            <div class="field"><label for="existing-protocol">Número do protocolo</label><input id="existing-protocol" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]+" placeholder="Ex.: 20270048" maxlength="12" required></div>
             <div class="field"><label for="existing-email">E-mail informado no registro original</label><input id="existing-email" type="email" autocomplete="email" maxlength="254" placeholder="nome@exemplo.com" required></div>
             <div id="existing-error" class="alert hidden" role="alert"></div>
             <div class="existing-actions"><button id="existing-back" type="button" class="outline">← Voltar</button><button id="existing-submit" class="primary" type="submit">Consultar comprovante</button></div>
@@ -200,6 +200,22 @@
     const mesesDisponiveis=Array.from({length:12},(_,i)=>i+1);
     const periodosDoMes=()=>[1,2];
     const el = id => document.getElementById(id);
+    // O protocolo público agrega o ano ao ID interno sem alterar a chave do Neon.
+    function protocoloPublico(ano,id){
+      const raw=String(id??'').trim();
+      if(raw.startsWith(String(ano)) && /^\d{8}$/.test(raw))return raw;
+      return /^\d+$/.test(raw)?String(ano)+raw.padStart(4,'0'):raw;
+    }
+    function numeroInternoProtocolo(ano,codigo){
+      const str=String(codigo??'').trim();
+      if(!/^\d+$/.test(str))return null;
+      if(str.length===8){
+        if(!str.startsWith(String(ano)))return null;
+        return Number(str.slice(4));
+      }
+      // Compatibilidade com comprovantes emitidos antes desta atualização.
+      return Number(str);
+    }
     const DEMO = new URLSearchParams(window.location.search).get('demo') === '1';
     const demoStore = (() => { const memory = new Map(); return { getItem(k) { try { return localStorage.getItem(k); } catch { return memory.get(k) ?? null; } }, setItem(k,v) { memory.set(k, String(v)); try { localStorage.setItem(k,v); } catch {} } }; })();
     const state = { nome:'',matricula:'',registrante_nome:'',registrante_email:'',aceite_regras:false,ano:2027,periodos:[],escolhidos:[],loading:false,intervalo:null };
@@ -313,7 +329,7 @@
         if(payload.selecoes.length!==2||payload.selecoes[0].mes===payload.selecoes[1].mes||payload.selecoes.some(s=>!atual.periodos.some(p=>p.mes===s.mes&&p.periodo===s.periodo&&p.habilitado))) throw Error('Escolha dois períodos liberados em meses diferentes.');
         if(payload.selecoes.some(s=>{const p=atual.periodos.find(a=>a.mes===s.mes&&a.periodo===s.periodo);return !p||p.restantes===0||!p.aberto;})) throw Error('Uma das vagas acabou de se esgotar.');
         if(payload.aceite_regras!==true)throw Error('A leitura e a ciência das regras são obrigatórias.');
-        const solicitacao={id:Math.floor(Date.now()/1000),ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes,registrado_por_nome:payload.registrante_nome,registrado_por_email:payload.registrante_email,registrada_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'}),ciencia_regras_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'})};
+        const solicitacao={id:Math.max(0,...all.map(r=>Number(r.protocolo)||0).filter(Number.isSafeInteger))+1,ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes,registrado_por_nome:payload.registrante_nome,registrado_por_email:payload.registrante_email,registrada_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'}),ciencia_regras_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'})};
         all.push({...payload,protocolo:solicitacao.id,registrada_em:solicitacao.registrada_em,ciencia_regras_em:solicitacao.ciencia_regras_em});demoStore.setItem(demoKey(state.ano),JSON.stringify(all));return {solicitacao};
       }
       const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -325,7 +341,11 @@
       if(DEMO) return getDemo().some(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(matricula));
       const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({acao:'verificar',ano,matricula})});
       const data=await r.json().catch(()=>({}));
-      if(!r.ok)throw Error(data.erro||'Não foi possível consultar o histórico desta matrícula.');
+      if(!r.ok){
+        if(data.codigo==='CIENCIA_REGRAS_OBRIGATORIA'||String(data.erro||'').includes('ler e confirmar as regras'))
+          throw Error('A função de consulta não está atualizada. Substitua também api/solicitar.js no GitHub e verifique a publicação na Vercel.');
+        throw Error(data.erro||'Não foi possível consultar o histórico desta matrícula.');
+      }
       return data.ja_solicitado===true;
     }
     function abrirConsultaExistente(){
@@ -340,7 +360,7 @@
       e.preventDefault();error('existing-error','');
       const protocolo=el('existing-protocol').value.trim();
       const email=el('existing-email').value.trim().toLowerCase();
-      if(!/^[0-9]{1,15}$/.test(protocolo)||!el('existing-email').validity.valid||!email){
+      if(!Number.isSafeInteger(numeroInternoProtocolo(state.ano,protocolo))||numeroInternoProtocolo(state.ano,protocolo)<1||!el('existing-email').validity.valid||!email){
         error('existing-error','Informe o número do protocolo e o e-mail do registro original.');return;
       }
       const button=el('existing-submit');button.disabled=true;button.textContent='Consultando...';
@@ -348,7 +368,7 @@
         let s;
         if(DEMO){
           const item=getDemo().find(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(state.matricula)
-            && String(r.protocolo||'')===protocolo && String(r.registrante_email||'').toLowerCase()===email);
+            && Number(r.protocolo||0)===numeroInternoProtocolo(state.ano,protocolo) && String(r.registrante_email||'').toLowerCase()===email);
           if(!item)throw Error('Comprovante não encontrado com os dados informados.');
           s={id:item.protocolo,ano:item.ano,nome:item.nome,matricula:item.matricula,
             funcao_turno:state.funcao_turno,registrado_por_nome:item.registrante_nome,
@@ -487,7 +507,7 @@
         const datas=x.data_inicio&&x.data_fim?dateBR(x.data_inicio)+' a '+dateBR(x.data_fim):periodDates(x.mes,x.periodo);
         return periodo+datas+')';
       };
-      const pairs=[['Protocolo',String(s.id)],['Servidor(a) beneficiário(a)',s.nome],['Matrícula',s.matricula],['Função/Turno',s.funcao_turno||state.funcao_turno||'—'],['Ano',String(s.ano)],['1ª escolha',s.reemissao?tituloEscolha(s.escolhas[0]):titlePeriod(s.escolhas[0])],['2ª escolha',s.reemissao?tituloEscolha(s.escolhas[1]):titlePeriod(s.escolhas[1])],['Situação',DEMO?'Demonstração (sem validade)':'Solicitação registrada']];
+      const pairs=[['Protocolo',protocoloPublico(s.ano,s.protocolo||s.id)],['Servidor(a) beneficiário(a)',s.nome],['Matrícula',s.matricula],['Função/Turno',s.funcao_turno||state.funcao_turno||'—'],['Ano',String(s.ano)],['1ª escolha',s.reemissao?tituloEscolha(s.escolhas[0]):titlePeriod(s.escolhas[0])],['2ª escolha',s.reemissao?tituloEscolha(s.escolhas[1]):titlePeriod(s.escolhas[1])],['Situação',DEMO?'Demonstração (sem validade)':'Solicitação registrada']];
       const addLine=([l,v])=>{const row=document.createElement('div');row.className='receipt-line';const a=document.createElement('span');a.textContent=l;const b=document.createElement('strong');b.textContent=v??'—';row.append(a,b);root.append(row);};
       pairs.forEach(addLine);
       const heading=document.createElement('div');heading.className='receipt-heading';heading.textContent='Informações adicionais · responsável pelo preenchimento';root.append(heading);

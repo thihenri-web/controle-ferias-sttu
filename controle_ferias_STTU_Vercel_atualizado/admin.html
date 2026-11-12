@@ -253,6 +253,12 @@ function opts(items,selected){
 }
 function setOptions(id,items,selected){const s=$(id);s.replaceChildren(...Array.from(opts(items,selected).children));s.value=String(selected);}
 const fmt=(x)=>MONTHS[x-1]||'—';
+// Identificador público: ANO + ID interno de quatro dígitos (mínimo).
+function protocoloPublico(ano,id){
+  const raw=String(id??'').trim();
+  if(raw.startsWith(String(ano))&&/^\d{8}$/.test(raw))return raw;
+  return /^\d+$/.test(raw)?String(ano)+raw.padStart(4,'0'):raw;
+}
 const span=(text,className)=>{const e=document.createElement('span');if(className)e.className=className;e.textContent=text;return e;};
 const formatDate=iso=>iso&&/^\d{4}-\d{2}-\d{2}$/.test(iso)?iso.slice(8,10)+'/'+iso.slice(5,7)+'/'+iso.slice(0,4):'';
 // Para férias de 15 dias, a data inicial também é contada: fim = início + 14 dias.
@@ -470,7 +476,7 @@ function renderRecords(){
   const root=$('records');root.replaceChildren();show('records-empty',!state.records.length);
   for(const s of state.records){
     const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td'),c5=document.createElement('td'),c6=document.createElement('td'),c7=document.createElement('td'),c8=document.createElement('td');
-    c1.append(span('#'+s.id,'tag'));
+    c1.append(span('#'+protocoloPublico(s.ano,s.id),'tag'));
     const strong=document.createElement('strong');strong.textContent=s.nome_completo;c2.append(strong,document.createElement('div'),span('Matrícula: '+s.matricula,'muted'));
     c3.append(span(s.funcao_turno||'—',s.funcao_turno==='Insp Chefe'?'tag good':'tag'));
     c4.append(span(period(s.mes_1,s.periodo_1),state.mes===s.mes_1?'tag good':''));
@@ -506,16 +512,16 @@ async function load(){
 function updateYearInfo(){const y=Number($('manage-year').value),found=state.anos.find(x=>x.ano===y);$('year-info').textContent=found?.liberado?'Liberado':'Bloqueado até autorização';$('year-status').value=found?.liberado?'true':'false';}
 async function cancel(s){
   if(!canCancel()){notify('Seu perfil não permite cancelar solicitações.');return;}
-  const reason=prompt(`Cancelamento do protocolo #${s.id}\nServidor: ${s.nome_completo}\n\nInforme o motivo (mínimo 5 caracteres):`);
+  const reason=prompt(`Cancelamento do protocolo #${protocoloPublico(s.ano,s.id)}\nServidor: ${s.nome_completo}\n\nInforme o motivo (mínimo 5 caracteres):`);
   if(reason===null)return;
   const motivo=reason.trim();if(motivo.length<5||motivo.length>500){notify('Descreva o motivo do cancelamento (5 a 500 caracteres).');return;}
-  if(!confirm(`Confirmar o cancelamento do protocolo #${s.id}?\nAs duas vagas serão devolvidas. Esta ação será registrada no histórico.`))return;
-  try{await req('/api/admin-cancelar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:s.id,motivo})});await load();notify('Solicitação #'+s.id+' cancelada, com devolução das duas vagas.',true);}
+  if(!confirm(`Confirmar o cancelamento do protocolo #${protocoloPublico(s.ano,s.id)}?\nAs duas vagas serão devolvidas. Esta ação será registrada no histórico.`))return;
+  try{await req('/api/admin-cancelar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:s.id,motivo})});await load();notify('Solicitação #'+protocoloPublico(s.ano,s.id)+' cancelada, com devolução das duas vagas.',true);}
   catch(e){notify(e.message);}
 }
 function csvEscape(s){let text=String(s??'');if(/^[=+@\-\t\r]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';}
 function exportCSV(){
-  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado por','Email de quem registrou','Registrado em'],...state.records.map(s=>[s.id,s.ano,s.nome_completo,s.matricula,s.funcao_turno,fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.registrado_por_nome,s.registrado_por_email,s.solicitada_em])];
+  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado por','Email de quem registrou','Registrado em'],...state.records.map(s=>[protocoloPublico(s.ano,s.id),s.ano,s.nome_completo,s.matricula,s.funcao_turno,fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.registrado_por_nome,s.registrado_por_email,s.solicitada_em])];
   const csv='\ufeff'+rows.map(row=>row.map(csvEscape).join(';')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`sttu_ferias_${state.ano}_${state.mes||'todos'}.csv`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
@@ -528,7 +534,7 @@ async function audit(){
     if(!b.registros.length)root.append(span('Nenhum cancelamento registrado neste ano.','muted'));
     else{
       const table=document.createElement('table');table.style.minWidth='900px';const thead=document.createElement('thead');thead.innerHTML='<tr><th>Protocolo</th><th>Servidor / Matrícula</th><th>Períodos</th><th>Quem registrou</th><th>Login que cancelou</th><th>Data/hora do cancelamento</th><th>Motivo</th></tr>';table.append(thead);const body=document.createElement('tbody');
-      for(const s of b.registros){const tr=document.createElement('tr');for(const t of ['#'+s.solicitacao_id,s.nome_completo+' · '+s.matricula,period(s.mes_1,s.periodo_1)+' / '+period(s.mes_2,s.periodo_2),(s.registrado_por_nome||'Não informado')+' · '+(s.registrado_por_email||'—'),(s.cancelado_por_login||'Registro anterior à identificação do login'),s.registrada_em,s.motivo]){const td=document.createElement('td');td.textContent=t;tr.append(td);}body.append(tr);}
+      for(const s of b.registros){const tr=document.createElement('tr');for(const t of ['#'+protocoloPublico(state.ano,s.solicitacao_id),s.nome_completo+' · '+s.matricula,period(s.mes_1,s.periodo_1)+' / '+period(s.mes_2,s.periodo_2),(s.registrado_por_nome||'Não informado')+' · '+(s.registrado_por_email||'—'),(s.cancelado_por_login||'Registro anterior à identificação do login'),s.registrada_em,s.motivo]){const td=document.createElement('td');td.textContent=t;tr.append(td);}body.append(tr);}
       table.append(body);const wrap=document.createElement('div');wrap.className='table-wrap';wrap.append(table);root.append(wrap);
     }
     const capacityHeading=document.createElement('h3');capacityHeading.textContent='Alterações no limite de vagas';capacityHeading.style.marginTop='20px';root.append(capacityHeading);
@@ -589,7 +595,7 @@ async function loadRegistry(){
    $('registry-count').textContent=state.registry.length+' servidor(es) encontrado(s)';
    const tbody=$('registry-records');tbody.replaceChildren();
    for(const s of state.registry){const tr=document.createElement('tr');
-     for(const txt of [s.nome,s.matricula,s.funcao_turno||'—',s.mes_1?period(s.mes_1,s.periodo_1):'—',s.mes_2?period(s.mes_2,s.periodo_2):'—',s.registrado_por_nome?(s.registrado_por_nome+' · '+(s.registrado_por_email||'')):'—',s.protocolo?'Solicitado #'+s.protocolo:'Sem solicitação']){
+     for(const txt of [s.nome,s.matricula,s.funcao_turno||'—',s.mes_1?period(s.mes_1,s.periodo_1):'—',s.mes_2?period(s.mes_2,s.periodo_2):'—',s.registrado_por_nome?(s.registrado_por_nome+' · '+(s.registrado_por_email||'')):'—',s.protocolo?'Solicitado #'+protocoloPublico(state.ano,s.protocolo):'Sem solicitação']){
        const td=document.createElement('td');td.textContent=txt;tr.append(td);
      }tbody.append(tr);
    }
@@ -609,7 +615,7 @@ async function loadRegistry(){
  }
 }
 function exportRegistry(){
- const rows=[['Servidor','Matricula','Função/Turno','1ª escolha','2ª escolha','Registrado por','Email de quem registrou','Protocolo'],...state.registry.map(s=>[s.nome,s.matricula,s.funcao_turno,s.mes_1?period(s.mes_1,s.periodo_1):'',s.mes_2?period(s.mes_2,s.periodo_2):'',s.registrado_por_nome||'',s.registrado_por_email||'',s.protocolo||''])];
+ const rows=[['Servidor','Matricula','Função/Turno','1ª escolha','2ª escolha','Registrado por','Email de quem registrou','Protocolo'],...state.registry.map(s=>[s.nome,s.matricula,s.funcao_turno,s.mes_1?period(s.mes_1,s.periodo_1):'',s.mes_2?period(s.mes_2,s.periodo_2):'',s.registrado_por_nome||'',s.registrado_por_email||'',(s.protocolo?protocoloPublico(state.ano,s.protocolo):'')])];
  downloadCSV(rows,'sttu_cadastro_'+state.ano+'.csv');
 }
 function downloadCSV(rows,filename){
