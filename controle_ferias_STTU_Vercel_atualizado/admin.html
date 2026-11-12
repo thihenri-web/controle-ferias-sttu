@@ -150,6 +150,67 @@ body:not(.role-admin) #tab-cotas input,
 body:not(.role-admin) #year-status{opacity:.75;cursor:not-allowed}
 body.role-viewer .cancel-button{display:none!important}
 @media(max-width:650px){.dev-credit{text-align:left}}
+
+/* STTU — correção pontual de alinhamento dos 12 cards de ocupação mensal.
+   Mantém gráficos, dados, permissões e demais estilos sem alterações. */
+#dashboard-bar-chart.bar-chart{
+  align-items:stretch;
+  grid-auto-rows:1fr;
+  min-height:0;
+}
+#dashboard-bar-chart .bar-item{
+  display:grid;
+  grid-template-rows:46px 170px minmax(68px,auto);
+  align-content:start;
+  align-self:stretch;
+  gap:8px;
+  min-width:0;
+}
+#dashboard-bar-chart .bar-top{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  align-content:flex-end;
+  justify-content:flex-start;
+  column-gap:7px;
+  row-gap:3px;
+  height:46px;
+  min-height:46px;
+  box-sizing:border-box;
+}
+#dashboard-bar-chart .bar-top strong{
+  white-space:nowrap;
+  font-size:.78rem;
+  line-height:1.2;
+}
+#dashboard-bar-chart .bar-top small{
+  text-align:left;
+  line-height:1.2;
+  font-size:.66rem;
+}
+#dashboard-bar-chart .bar-track{
+  box-sizing:border-box;
+  height:170px;
+  min-height:170px;
+  align-self:start;
+  margin:0;
+}
+#dashboard-bar-chart .bar-bottom{
+  min-height:68px;
+  align-self:start;
+  text-align:left;
+  gap:3px;
+}
+#dashboard-bar-chart .bar-bottom strong{line-height:1.25;}
+#dashboard-bar-chart .bar-bottom small{line-height:1.3;}
+@media(max-width:920px){
+  #dashboard-bar-chart .bar-item{grid-template-rows:46px 132px minmax(68px,auto);}
+  #dashboard-bar-chart .bar-track{height:132px;min-height:132px;}
+}
+@media(max-width:550px){
+  #dashboard-bar-chart .bar-item{grid-template-rows:46px 112px minmax(68px,auto);}
+  #dashboard-bar-chart .bar-track{height:112px;min-height:112px;}
+}
 </style>
 </head>
 <body>
