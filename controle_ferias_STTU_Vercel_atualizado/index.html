@@ -43,6 +43,54 @@
     .roster-option:hover,.roster-option:focus-visible{background:#33465a}.roster-option strong{display:block;font-size:.86rem}.roster-option small{color:#c4d3df;font-size:.78rem}
     .roster-empty{color:#becbda;padding:11px;font-size:.86rem}.chosen-server{border:1px solid #53654c;background:#1c302b;border-radius:12px;padding:12px 14px;margin-top:12px}
     .chosen-server strong{display:block;font-size:.92rem}.chosen-server span{color:#a9e2c7;font-size:.84rem}.choose-list .input-hint{margin-top:8px}
+    /* Leitura das regras: uma etapa obrigatória entre identificação e calendário. */
+    .rules-panel{max-width:760px;margin:clamp(28px,6vw,66px) auto 36px;padding:clamp(20px,4vw,34px)}
+    .rules-panel h1{font-size:clamp(1.6rem,4vw,2.2rem);margin:8px 0 16px;letter-spacing:-.025em}
+    .rules-text{background:#101a25;border:1px solid #43505e;border-radius:13px;padding:20px 22px;font-size:1rem;line-height:1.76;color:#e2ebf4}
+    .rules-checkbox{display:flex;align-items:flex-start;gap:12px;margin:22px 0 18px;background:#202e3a;border:1px solid #526479;border-radius:12px;padding:15px;cursor:pointer;font-size:.96rem;font-weight:700}
+    .rules-checkbox input{margin:3px 0 0;flex-shrink:0;width:20px;height:20px;accent-color:var(--accent2)}
+    .rules-actions{display:flex;gap:10px}.rules-actions .outline{flex:0 0 auto}.rules-actions .primary{flex:1}
+    /* Seleção: somente informações essenciais, com cards baixos para celular. */
+    #step-selection .topline{margin:24px 0 15px;gap:12px}
+    #step-selection .topline h1{font-size:clamp(1.55rem,3.5vw,2rem);margin:4px 0 5px}
+    #step-selection #welcome{font-size:.8rem;line-height:1.5}
+    #step-selection .toolbar{margin:10px 0 17px;gap:9px;align-items:center}
+    #step-selection .year-block{width:150px}
+    #step-selection .month-grid{gap:12px}
+    #step-selection .month-header{padding:12px 12px 7px}
+    #step-selection .month-title{font-size:1.03rem}
+    #step-selection .slots{gap:6px;padding:0 8px 10px}
+    #step-selection .slot{padding:9px 10px;min-height:52px}
+    #step-selection .slot-top{gap:8px}
+    #step-selection .slot strong{font-size:.84rem;line-height:1.2}
+    #step-selection .slot-date{font-size:.69rem;line-height:1.32;padding-top:2px}
+    #step-selection .slot-badge{font-size:.68rem;max-width:48%;padding:3px 6px}
+    #step-selection .month.closed-month{opacity:.78}
+    #step-selection .summary{margin-top:17px}
+    @media(max-width:570px){
+      .rules-panel{padding:20px 16px;margin:21px 0}.rules-text{font-size:.91rem;padding:15px;line-height:1.65}
+      .rules-actions{flex-direction:column-reverse}.rules-actions .primary{width:100%}
+      #step-selection .topline{align-items:flex-start;margin:16px 0 11px}
+      #step-selection .topline h1{font-size:1.5rem}
+      #step-selection .topline .outline{white-space:normal;padding:8px;font-size:.73rem}
+      #step-selection #welcome{font-size:.76rem}
+      #step-selection .toolbar{gap:8px;margin:8px 0 15px}
+      #step-selection .year-block{width:122px}
+      #step-selection .year-block label{font-size:.76rem}
+      #step-selection .year-select,#step-selection .refresh{font-size:.86rem;padding:9px 10px}
+      #step-selection .month-grid{grid-template-columns:1fr;gap:8px}
+      #step-selection .month-header{padding:9px 11px 5px}
+      #step-selection .slots{padding:0 7px 8px;gap:5px}
+      #step-selection .slot{min-height:48px;padding:7px 10px}
+      #step-selection .slot-date{font-size:.69rem}
+      #step-selection .slot-badge{font-size:.69rem;max-width:48%}
+      #step-selection .summary{border-radius:12px;display:grid;grid-template-columns:minmax(0,1fr) 142px;gap:10px;padding:10px 11px;align-items:center}
+      #step-selection .summary .primary{width:100%;min-height:47px;font-size:.78rem;padding:8px 6px;line-height:1.25}
+      #step-selection .sumlabel{font-size:.7rem}
+      #step-selection .chips{gap:4px;margin-top:5px}
+      #step-selection .chip{font-size:.68rem;padding:3px 6px}
+      #step-selection .sumtext{display:none}
+    }
   </style>
 </head>
 <body>
@@ -63,7 +111,7 @@
           <div class="intro-points"><span>Campanha inicial: 2027</span><span>2 períodos de 15 dias</span></div>
         </div>
         <form id="entry-form" class="panel" novalidate>
-          <div class="panel-kicker">Etapa 01 de 02</div>
+          <div class="panel-kicker">Etapa 01 de 03</div>
           <h2>Quem está registrando?</h2>
           
           <div class="field"><label for="registrante-nome">Nome completo de quem está preenchendo</label>
@@ -84,22 +132,37 @@
             <div id="chosen-server" class="chosen-server hidden" aria-live="polite"><strong id="chosen-name"></strong><span id="chosen-registration"></span></div>
           </div>
           <div id="entry-error" class="alert hidden" role="alert"></div>
-          <button type="submit" class="primary">Avançar para escolha dos períodos →</button>
+          <button type="submit" class="primary">Avançar para leitura das regras →</button>
           <div class="micro">O nome e o e-mail de quem preencheu são informações declaradas, usadas para eventuais esclarecimentos. A solicitação só é registrada após a confirmação final.</div>
         </form>
       </section>
 
+      <section id="step-rules" class="hidden" aria-label="Leitura obrigatória das regras de férias">
+        <div class="panel rules-panel">
+          <div class="panel-kicker">Etapa 02 de 03 · Leitura obrigatória</div>
+          <h1>Calendário de vagas</h1>
+          <div class="rules-text" id="rules-text">
+            Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas serão exibidas quando definidas pela administração</strong>. Enquanto isso, o sistema indicará “Datas a definir” para cada período. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.
+          </div>
+          <label class="rules-checkbox" for="rules-ack">
+            <input id="rules-ack" type="checkbox" aria-describedby="rules-text">
+            <span>Declaro que li e estou ciente das regras de solicitação de férias apresentadas acima.</span>
+          </label>
+          <div class="rules-actions">
+            <button id="rules-back" type="button" class="outline">← Voltar aos dados</button>
+            <button id="rules-next" type="button" class="primary" disabled>Li e estou ciente · Escolher períodos →</button>
+          </div>
+        </div>
+      </section>
+
       <section id="step-selection" class="hidden" aria-label="Escolha dos períodos de férias">
-        <div class="topline"><div><div class="eyebrow">Etapa 02 de 02 · Calendário anual</div><h1>Escolha seus períodos de férias</h1><p id="welcome">Selecione dois períodos de 15 dias em meses diferentes.</p></div><button id="back" type="button" class="outline">← Alterar dados</button></div>
-        <div class="toolbar"><div class="year-block"><label for="year">Ano liberado para escolha</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
-        <div class="stats"><div class="stat"><small>Vagas com prazo aberto</small><strong id="stat-open">—</strong></div><div class="stat"><small>Vagas já ocupadas</small><strong id="stat-taken">—</strong></div><div class="stat"><small>Seu planejamento</small><strong id="stat-selected">0 <em>de 2 períodos</em></strong></div></div>
-        <div class="section-title"><h2>Calendário de vagas</h2><div class="rule"></div></div>
-        <p class="caption">Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas serão exibidas quando definidas pela administração</strong>. Enquanto isso, o sistema indicará "Datas a definir" para cada período. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.</p>
+        <div class="topline"><div><div class="eyebrow">Etapa 03 de 03 · Seleção anual</div><h1>Escolha seus períodos de férias</h1><p id="welcome">Selecione dois períodos de 15 dias em meses diferentes.</p></div><button id="back" type="button" class="outline">← Alterar dados</button></div>
+        <div class="toolbar"><div class="year-block"><label for="year">Ano da solicitação</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
         <div id="calendar-error" class="alert hidden" role="alert"></div>
-        <div id="months" class="month-grid" aria-label="Meses e vagas disponíveis"></div>
+        <div id="months" class="month-grid" aria-label="Meses e períodos disponíveis"></div>
         <div id="selection-error" class="alert hidden" role="alert"></div>
         <div class="summary" aria-live="polite"><div><div class="sumlabel">Seus períodos selecionados</div><div class="chips" id="selected-chips"><span class="chip empty">1º período: não escolhido</span><span class="chip empty">2º período: não escolhido</span></div><div class="sumtext">Obrigatório: dois meses diferentes</div></div><button id="confirm" type="button" class="primary" disabled><span class="idle">Confirmar solicitação →</span><span class="busy">Registrando...</span></button></div>
-        <div class="notice"><strong>Importante:</strong> esta etapa registra uma solicitação de períodos, não uma concessão administrativa de férias. O sistema aceita apenas uma solicitação por matrícula em cada ano. O preenchimento do nome e matrícula, por si só, não autentica a identidade do servidor.</div>
+        <div class="notice">A seleção constitui solicitação de férias, sujeita à análise e aprovação administrativa.</div>
       </section>
 
       <section id="step-success" class="hidden" aria-label="Comprovante da solicitação">
@@ -116,7 +179,7 @@
     const el = id => document.getElementById(id);
     const DEMO = new URLSearchParams(window.location.search).get('demo') === '1';
     const demoStore = (() => { const memory = new Map(); return { getItem(k) { try { return localStorage.getItem(k); } catch { return memory.get(k) ?? null; } }, setItem(k,v) { memory.set(k, String(v)); try { localStorage.setItem(k,v); } catch {} } }; })();
-    const state = { nome:'',matricula:'',registrante_nome:'',registrante_email:'',ano:2027,periodos:[],escolhidos:[],loading:false,intervalo:null };
+    const state = { nome:'',matricula:'',registrante_nome:'',registrante_email:'',aceite_regras:false,ano:2027,periodos:[],escolhidos:[],loading:false,intervalo:null };
     let servidores=[];
     let servidorSelecionado=null;
     const demoServidores=[{"nome":"ADRIANA GOMES DA SILVA","matricula":"43.071-4","funcao_turno":"Tarde"},{"nome":"ADRIANO ANDRE GUEDES COSTA","matricula":"43.079-0","funcao_turno":"Adm"},{"nome":"ADRIANO NASCIMENTO DA FONSECA","matricula":"49.991-9","funcao_turno":"Corujão"},{"nome":"AFRANIO MEDEIROS DA COSTA","matricula":"43.151-6","funcao_turno":"Adm"},{"nome":"AGRICIO BELCHIOR BANDEIRA NETTO","matricula":"43.127-3","funcao_turno":"Manhã"},{"nome":"AILTON ANDRADE","matricula":"62.095-5","funcao_turno":"Manhã"},{"nome":"ALCINEIDE JUSTO SIQUEIRA","matricula":"62.100-5","funcao_turno":"Adm"},{"nome":"ALDREY LUIS MORAIS DA SILVA","matricula":"62.549-3","funcao_turno":"Adm"},{"nome":"ALDRIN MAGNO DANTAS SIQUEIRA","matricula":"43.080-3","funcao_turno":"Noite"},{"nome":"ALESSANDRA DORA DA SILVA COSTA","matricula":"43.199-1","funcao_turno":"Tarde"},{"nome":"ALEXANDRA BARROS DO NASCIMENTO","matricula":"49.953-6","funcao_turno":"Insp"},{"nome":"ALEXANDRE MAGNO FREITAS COSMO","matricula":"61.947-7","funcao_turno":"Tarde"},{"nome":"ALEXSANDRO NASCIMENTO BARBOSA","matricula":"43.072-2","funcao_turno":"Insp"},{"nome":"ALISSON EMANOEL DE OLIVEIRA FAGUNDES","matricula":"49.995-1","funcao_turno":"Insp Chefe"},{"nome":"ALLAN ARAUJO DE MEDEIROS","matricula":"43.073-1","funcao_turno":"Insp"},{"nome":"ALYENE PATRICIA CRUZ DE BRITO ALVES","matricula":"64.545-0","funcao_turno":"Tarde"},{"nome":"ANDERSON RODRIGO DO NASCIMENTO","matricula":"63.802-1","funcao_turno":"Noite"},{"nome":"ANDRE ALVES DE OLIVEIRA","matricula":"43.085-4","funcao_turno":"Adm"},{"nome":"ANDRÉ CORCINO DE LIMA FILHO","matricula":"00.387-5","funcao_turno":"Manhã"},{"nome":"ANDREA CASTRO GALVAO","matricula":"62.097-1","funcao_turno":"Insp"},{"nome":"ANDREZA CABRAL CAMARA NUNES","matricula":"61.710-5","funcao_turno":"Adm"},{"nome":"ANNE CAROLLINE MACEDO DE ARAUJO","matricula":"60.233-7","funcao_turno":"COTT"},{"nome":"BARBARA KALYANA DOS SANTOS G. ALVES","matricula":"43.102-8","funcao_turno":"Adm"},{"nome":"CARLOS EUBER DE FREITAS NEVES","matricula":"43.077-3","funcao_turno":"Manhã"},{"nome":"CARLYLE CAMARA DOS SANTOS","matricula":"43.150-8","funcao_turno":"Noite"},{"nome":"CARMOZINA REGIA DE MELO DANTAS","matricula":"43.084-6","funcao_turno":"COTT"},{"nome":"CAROLINA DE CASSIA DEFENTE","matricula":"43.101-0","funcao_turno":"Adm"},{"nome":"CHIARA LUCIA DE GUSMAO GONCALVES","matricula":"43.096-0","funcao_turno":"Adm"},{"nome":"CRISTIANE DE MACEDO E SILVA","matricula":"62.873-5","funcao_turno":"Manhã"},{"nome":"DANIEL ALBUQUERQUE EMERENCIANO","matricula":"43.090-1","funcao_turno":"Insp"},{"nome":"DANIELLE PEREIRA DE OLIVEIRA","matricula":"60.072-5","funcao_turno":"COTT"},{"nome":"DANILO CLAUDIO LIRA DOS SANTOS","matricula":"72.245-7","funcao_turno":"Manhã"},{"nome":"DENILSON ARAUJO DA COSTA","matricula":"60.090-3","funcao_turno":"Adm"},{"nome":"EDILSON FERREIRA DOS SANTOS","matricula":"00.417-1","funcao_turno":"Adm"},{"nome":"EDINASIO COSTA SOARES","matricula":"49.986-2","funcao_turno":"Tarde"},{"nome":"EDJA PAULA MAIA","matricula":"45.570-9","funcao_turno":"Adm"},{"nome":"EDSON SIQUEIRA DE LIMA","matricula":"00.469-3","funcao_turno":"Adm"},{"nome":"ELIZABETE RANYELA MORAIS DE MOURA","matricula":"43.198-2","funcao_turno":"Insp"},{"nome":"EVALDO FÉLIX FERREIRA","matricula":"00.518-5","funcao_turno":"Tarde"},{"nome":"FERNANDA FREITAS DE HOLANDA","matricula":"60.066-1","funcao_turno":"COTT"},{"nome":"FRANZ BIAGGIO FULCO GAAG","matricula":"65.247-4","funcao_turno":"Insp"},{"nome":"GENALDO AZEVEDO DA TRINDADE","matricula":"43.086-2","funcao_turno":"Insp"},{"nome":"HAILSON CABRAL DO NASCIMENTO","matricula":"00.375-1","funcao_turno":"Noite"},{"nome":"HARLLEY CAMPOS MARQUES","matricula":"65.420-5","funcao_turno":"Noite"},{"nome":"HEITOR RODRIGUES DE LIMA","matricula":"43.097-8","funcao_turno":"Adm"},{"nome":"HEMERSON MELO DA SILVA","matricula":"49.952-8","funcao_turno":"Manhã"},{"nome":"HERANDY DE ARAUJO CABRAL","matricula":"49.950-1","funcao_turno":"Adm"},{"nome":"HERQUILES LIMA DOS SANTOS","matricula":"43.149-4","funcao_turno":"Manhã"},{"nome":"HEWERTON MOURA DA SILVA","matricula":"43.098-6","funcao_turno":"Corujão"},{"nome":"ISABELA SILVA NICACIO DE BRITO","matricula":"60.234-5","funcao_turno":"Noite"},{"nome":"IVAN DE CARVALHO MEDEIROS","matricula":"00.431-6","funcao_turno":"Noite"},{"nome":"IVES SILVA DE SOUZA","matricula":"62.151-0","funcao_turno":"Insp"},{"nome":"JARDEL BEZERRA DE ANDRADE","matricula":"62.189-7","funcao_turno":"Tarde"},{"nome":"JARDS MEDEIROS DE OLIVEIRA","matricula":"62.826-3","funcao_turno":"Noite"},{"nome":"JEFFERSON STANLEY DA SILVA","matricula":"62.919-7","funcao_turno":"Adm"},{"nome":"JOÃO BATISTA MONTEIRO DE AQUINO","matricula":"00.482-1","funcao_turno":"Noite"},{"nome":"JOAO BATISTA ROCHA FILHO","matricula":"49.994-3","funcao_turno":"Adm"},{"nome":"JOÃO CLÁUDIO DE OLIVEIRA DE FARIA","matricula":"00.383-2","funcao_turno":"Noite"},{"nome":"JOAO MARIA ALMEIDA DE MOURA","matricula":"43.070-6","funcao_turno":"Noite"},{"nome":"JOAO MARIA MACEDO DA ROCHA","matricula":"43.201-6","funcao_turno":"Manhã"},{"nome":"JOAO PAULO DE OLIVEIRA","matricula":"43.082-0","funcao_turno":"Insp"},{"nome":"JOAO WILLAMS DA SILVA","matricula":"62.253-2","funcao_turno":"Manhã"},{"nome":"JORGE LUIZ BARROS DO NASCIMENTO","matricula":"62.431-4","funcao_turno":"Manhã"},{"nome":"JORGE LUIZ SIQUEIRA DE OLIVEIRA","matricula":"62.191-9","funcao_turno":"Manhã"},{"nome":"JOSE ALBERTO FREIRE DA COSTA","matricula":"42.766-7","funcao_turno":"Tarde"},{"nome":"JOSE EUDES BEZERRA","matricula":"49.985-4","funcao_turno":"Manhã"},{"nome":"JOSE GONCALVES MANGABEIRA DE MEDEIROS","matricula":"43.083-8","funcao_turno":"Noite"},{"nome":"JOSE ROOSEVELT MEDEIROS JUNIOR","matricula":"62.416-1","funcao_turno":"Manhã"},{"nome":"JOSEMAR DA SILVA DAMASCENO","matricula":"60.068-7","funcao_turno":"Corujão"},{"nome":"JOSEMAR TAVARES CAMARA JUNIOR","matricula":"43.152-4","funcao_turno":"Adm"},{"nome":"JOSENILSON TEIXEIRA DE SOUZA","matricula":"00.386-7","funcao_turno":"Manhã"},{"nome":"KASTEEN CARLOS DE AQUINO E SILVA","matricula":"43.076-5","funcao_turno":"Insp"},{"nome":"KLEBER SILVESTRE LUSTOSA","matricula":"49.825-4","funcao_turno":"COTT"},{"nome":"LAILTON RIBEIRO DA COSTA","matricula":"43.078-1","funcao_turno":"Manhã"},{"nome":"LEONARDO BATISTA DE SOUZA SILVA","matricula":"64.542-7","funcao_turno":"Manhã"},{"nome":"LEONARDO DA SILVEIRA LUCENA","matricula":"43.122-2","funcao_turno":"Adm"},{"nome":"MADSON LIMA CAVALCANTI DE OLIVEIRA","matricula":"49.989-7","funcao_turno":"Adm"},{"nome":"MARA LUCIA BARROS DE SOUZA","matricula":"70.665-5","funcao_turno":"Manhã"},{"nome":"MARCELO BATISTA DE ANDRADE","matricula":"61.952-3","funcao_turno":"Tarde"},{"nome":"MARCELO FRANCA DA SILVA","matricula":"60.073-3","funcao_turno":"Adm"},{"nome":"MARCELO ZAERDSON LINS DE MEDEIROS","matricula":"62.184-6","funcao_turno":"Corujão"},{"nome":"MARCILIO DE OLIVEIRA RODRIGUES","matricula":"49.951-0","funcao_turno":"Corujão"},{"nome":"MARCIO JOSE DA SILVA","matricula":"68.159-8","funcao_turno":"Insp"},{"nome":"MARCIO JOSE SA DANTAS LUZ","matricula":"45.833-3","funcao_turno":"Adm"},{"nome":"MARIA DE LOURDES DA SILVA FILHA","matricula":"43.200-8","funcao_turno":"Adm"},{"nome":"MARYANE CRISTINA LOPES P. DA ROCHA","matricula":"43.112-5","funcao_turno":"Adm"},{"nome":"MIGUEL ANGELO DE SANTANA","matricula":"62.092-1","funcao_turno":"Tarde"},{"nome":"NADJANIA MARIA DAMASCENO VALLE","matricula":"62.368-7","funcao_turno":"COTT"},{"nome":"NAOMI SUASSUNA DOS SANTOS","matricula":"60.237-0","funcao_turno":"Tarde"},{"nome":"NEUZELIDES PRISCILLA SILVA ANDRADE","matricula":"49.949-8","funcao_turno":"Tarde"},{"nome":"NEWDEMBERG FERREIRA GALVAO","matricula":"43.081-1","funcao_turno":"Insp"},{"nome":"NEWTON DE SOUZA PEREIRA FILHO","matricula":"60.064-4","funcao_turno":"Adm"},{"nome":"PATRICIA CRISTINA CAVALCANTE","matricula":"45.990-9","funcao_turno":"COTT"},{"nome":"RAIMUNDO NONATO DE MEDEIROS NETO","matricula":"00.249-6","funcao_turno":"Adm"},{"nome":"RAPHAELLE CAVALCANTE R. DE ARAUJO","matricula":"62.149-8","funcao_turno":"Manhã"},{"nome":"REGINA VICENCIA CRISPIM","matricula":"62.250-8","funcao_turno":"Adm"},{"nome":"RITA DE CASSIA SILVA","matricula":"49.992-7","funcao_turno":"Manhã"},{"nome":"ROBSON LUIZ DE AZEVEDO","matricula":"00.184-8","funcao_turno":"Adm"},{"nome":"RODRIGO COSTA","matricula":"43.087-1","funcao_turno":"Insp Chefe"},{"nome":"RONALDO MARINHO DE SOUZA","matricula":"62.825-5","funcao_turno":"COTT"},{"nome":"RONALDO TEIXEIRA DE ARAUJO","matricula":"62.257-5","funcao_turno":"Tarde"},{"nome":"ROSEMBERG PEREIRA","matricula":"00.137-6","funcao_turno":"Adm"},{"nome":"SANDRA DA SILVA BEZERRIL BACELAR","matricula":"61.712-1","funcao_turno":"Manhã"},{"nome":"SARAH POLLYANA DIAS DOS SANTOS","matricula":"43.154-1","funcao_turno":"COTT"},{"nome":"SEVERINO FERNANDES MAIA","matricula":"00.192-9","funcao_turno":"Manhã"},{"nome":"SYBELLE DE ARAUJO DANTAS","matricula":"63.386-1","funcao_turno":"Manhã"},{"nome":"TALITHA LOUISE FORTUNA BEZERRA","matricula":"49.990-1","funcao_turno":"Tarde"},{"nome":"THALES GALVAO DE ARAUJO","matricula":"63.803-0","funcao_turno":"Insp"},{"nome":"THALLES THIAGO MEDEIROS DE SOUZA","matricula":"49.988-9","funcao_turno":"Insp"},{"nome":"THIAGO DE LIRA BEZERRA","matricula":"43.075-7","funcao_turno":"Insp Chefe"},{"nome":"THIAGO HENRIQUE FERREIRA DA SILVA","matricula":"60.275-2","funcao_turno":"Insp"},{"nome":"VANESSA GALDINO DA SILVA","matricula":"61.955-8","funcao_turno":"Insp"},{"nome":"WANDERCLEY SILVA NEVES","matricula":"70.563-2","funcao_turno":"Insp"},{"nome":"WANDRE WAGNER DA SILVA","matricula":"62.367-9","funcao_turno":"Tarde"}];
@@ -195,7 +258,7 @@
       if(ano===2027&&mes===1)return '2026-12-31';
       const d=new Date(Date.UTC(ano,mes-1,1));d.setUTCDate(d.getUTCDate()-45);return d.toISOString().slice(0,10);
     }
-    function screen(n) { for (const name of ['entry','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
+    function screen(n) { for (const name of ['entry','rules','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
     function dateBR(v){return v&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(8,10)+'/'+v.slice(5,7)+'/'+v.slice(0,4):'';}
@@ -226,7 +289,8 @@
         const atual=await consultar();
         if(payload.selecoes.length!==2||payload.selecoes[0].mes===payload.selecoes[1].mes||payload.selecoes.some(s=>!atual.periodos.some(p=>p.mes===s.mes&&p.periodo===s.periodo&&p.habilitado))) throw Error('Escolha dois períodos liberados em meses diferentes.');
         if(payload.selecoes.some(s=>{const p=atual.periodos.find(a=>a.mes===s.mes&&a.periodo===s.periodo);return !p||p.restantes===0||!p.aberto;})) throw Error('Uma das vagas acabou de se esgotar.');
-        const solicitacao={id:Math.floor(Date.now()/1000),ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes,registrado_por_nome:payload.registrante_nome,registrado_por_email:payload.registrante_email,registrada_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'})};
+        if(payload.aceite_regras!==true)throw Error('A leitura e a ciência das regras são obrigatórias.');
+        const solicitacao={id:Math.floor(Date.now()/1000),ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes,registrado_por_nome:payload.registrante_nome,registrado_por_email:payload.registrante_email,registrada_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'}),ciencia_regras_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'})};
         all.push({...payload});demoStore.setItem(demoKey(state.ano),JSON.stringify(all));return {solicitacao};
       }
       const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -248,12 +312,20 @@
       const {nome,matricula,funcao_turno}=servidorSelecionado;
       try{await atualizarAnos();}catch(ex){error('entry-error',ex.message||'Erro ao consultar campanhas.');return;}
       state.nome=nome;state.matricula=matricula;state.funcao_turno=funcao_turno||'';state.registrante_nome=responsavelNome;state.registrante_email=responsavelEmail;
-      el('welcome').textContent='Servidor(a) beneficiário(a): '+state.nome+' · Matrícula: '+state.matricula+' · Função/Turno: '+state.funcao_turno+' · Registro por: '+state.registrante_nome;
+      el('welcome').textContent=state.nome+' · '+state.matricula+' · '+state.funcao_turno+' · Registro por: '+state.registrante_nome;
+      state.aceite_regras=false;el('rules-ack').checked=false;el('rules-next').disabled=true;
+      screen('rules');
+    });
+    el('rules-ack').addEventListener('change',e=>{el('rules-next').disabled=!e.target.checked;});
+    el('rules-back').addEventListener('click',()=>{state.aceite_regras=false;screen('entry');});
+    el('rules-next').addEventListener('click',async()=>{
+      if(!el('rules-ack').checked)return;
+      state.aceite_regras=true;
       screen('selection');await carregar();
       if(state.intervalo)clearInterval(state.intervalo);
       state.intervalo=setInterval(()=>{if(!document.hidden && !el('step-selection').classList.contains('hidden'))carregar(true);},30000);
     });
-    el('back').addEventListener('click',()=>{clearInterval(state.intervalo);screen('entry');});
+    el('back').addEventListener('click',()=>{clearInterval(state.intervalo);state.aceite_regras=false;screen('entry');});
     el('year').addEventListener('change',async e=>{state.ano=Number(e.target.value);state.escolhidos=[];updateSelection();await carregar();});
     el('refresh').addEventListener('click',()=>carregar());
     async function carregar(silencioso=false){
@@ -271,19 +343,16 @@
     }
     function render(){
       const root=el('months');root.replaceChildren();
-      let taken=0,open=0;
+
       for (const m of mesesDisponiveis){
         const box=document.createElement('article');box.className='month';
         const head=document.createElement('div');head.className='month-header';
         const name=document.createElement('span');name.className='month-title';name.textContent=nomes[m-1];
         head.append(name);
-        const available=document.createElement('div');available.className='month-available';
         const slotBox=document.createElement('div');slotBox.className='slots';
         const entries=state.periodos.filter(x=>x.mes===m);
         const mesAberto=entries.some(x=>x.aberto);
-        const periodosLiberados=entries.filter(x=>x.habilitado);
         if(entries.length&&!mesAberto)box.classList.add('closed-month');
-        available.textContent=!periodosLiberados.length?'Nenhum período liberado':(periodosLiberados.reduce((n,x)=>n+Number(x.restantes),0)+' vagas restantes · '+(mesAberto?'Recebendo solicitações':'Prazo encerrado'));
         for(const p of periodosDoMes(m)){
           const data=entries.find(x=>x.periodo===p);
           const remaining=data?Number(data.restantes):0;
@@ -297,19 +366,15 @@
           btn.disabled=!data||globalEsgotada||cotaEsgotada||fechado||bloqueado;btn.setAttribute('aria-pressed',String(selected));
           const top=document.createElement('span');top.className='slot-top';
           const label=document.createElement('strong');label.textContent=p+'º período';
-          const date=document.createElement('small');date.className='slot-date';date.textContent='15 dias · '+periodDates(m,p);label.append(date);
+          const date=document.createElement('small');date.className='slot-date';date.textContent=periodDates(m,p);label.append(date);
           const badge=document.createElement('span');badge.className='slot-badge';badge.textContent=bloqueado?'Indisponível':fechado?'Prazo encerrado':cotaEsgotada?'Limite por Função/Turno excedido':globalEsgotada?'Esgotado':selected?'✓ Selecionado':extraChefe?'Insp Chefe · vaga extra':remaining+' '+(remaining===1?'vaga':'vagas');
           top.append(label,badge);
-          const bar=document.createElement('span');bar.className='track';const prog=document.createElement('span');prog.style.width=(data?.capacidade?Math.max(0,remaining)/Number(data.capacidade)*100:0)+'%';bar.append(prog);btn.append(top,bar);
+          btn.append(top);
           btn.setAttribute('aria-label',`${nomes[m-1]}, ${p}º período de 15 dias, ${bloqueado?'indisponível':cotaEsgotada?'Limite por Função/Turno excedido':remaining+' vagas normais restantes'}${fechado?', prazo encerrado':''}${selected?', selecionado':''}`);
           btn.addEventListener('click',()=>toggle(m,p));slotBox.append(btn);
-          if(data){taken+=Number(data.ocupadas);if(data.aberto)open+=remaining;}
         }
-        box.append(head,available,slotBox);root.append(box);
+        box.append(head,slotBox);root.append(box);
       }
-      el('stat-open').textContent=state.periodos.length?String(open):'—';
-      const availableInfo=document.createElement('em');availableInfo.textContent='em '+state.periodos.filter(x=>x.habilitado).length+' períodos liberados';el('stat-open').appendChild(availableInfo);
-      el('stat-taken').textContent=state.periodos.length?String(taken):'—';
     }
     function toggle(m,p){
       error('selection-error','');
@@ -328,15 +393,13 @@
         const chip=document.createElement('span');chip.className='chip'+(state.escolhidos[i]?'':' empty');
         chip.textContent=state.escolhidos[i]?titlePeriod(state.escolhidos[i]):(i+1)+'º período: não escolhido';chips.append(chip);
       }
-      el('stat-selected').textContent=String(state.escolhidos.length)+' ';
-      const info=document.createElement('em');info.textContent='de 2 períodos';el('stat-selected').append(info);
       el('confirm').disabled=state.escolhidos.length!==2||state.loading;
     }
     el('confirm').addEventListener('click',async()=>{
       if(state.escolhidos.length!==2)return;
       const button=el('confirm');button.disabled=true;button.classList.add('loading');error('selection-error','');
       try{
-        const result=await reservar({ano:state.ano,nome:state.nome,matricula:state.matricula,selecoes:state.escolhidos,registrante_nome:state.registrante_nome,registrante_email:state.registrante_email});
+        const result=await reservar({ano:state.ano,nome:state.nome,matricula:state.matricula,selecoes:state.escolhidos,registrante_nome:state.registrante_nome,registrante_email:state.registrante_email,aceite_regras:state.aceite_regras});
         clearInterval(state.intervalo);showReceipt(result.solicitacao);screen('success');
       }catch(ex){error('selection-error',ex.message||'Erro inesperado.');await carregar(true);window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}
       finally{button.classList.remove('loading');button.disabled=state.escolhidos.length!==2;}
@@ -347,10 +410,10 @@
       const addLine=([l,v])=>{const row=document.createElement('div');row.className='receipt-line';const a=document.createElement('span');a.textContent=l;const b=document.createElement('strong');b.textContent=v??'—';row.append(a,b);root.append(row);};
       pairs.forEach(addLine);
       const heading=document.createElement('div');heading.className='receipt-heading';heading.textContent='Informações adicionais · responsável pelo preenchimento';root.append(heading);
-      [['Registrado por',s.registrado_por_nome||state.registrante_nome],['E-mail informado',s.registrado_por_email||state.registrante_email],['Data e hora do registro',s.registrada_em||'—']].forEach(addLine);
+      [['Registrado por',s.registrado_por_nome||state.registrante_nome],['E-mail informado',s.registrado_por_email||state.registrante_email],['Data e hora do registro',s.registrada_em||'—'],['Ciência das regras',s.ciencia_regras_em||'—']].forEach(addLine);
     }
     el('print').addEventListener('click',()=>window.print());
-    el('another').addEventListener('click',()=>{state.nome='';state.matricula='';state.funcao_turno='';state.registrante_nome='';state.registrante_email='';state.escolhidos=[];state.periodos=[];el('entry-form').reset();servidorSelecionado=null;mostrarSelecionado();fecharLista();error('entry-error','');error('selection-error','');screen('entry');});
+    el('another').addEventListener('click',()=>{state.nome='';state.matricula='';state.funcao_turno='';state.registrante_nome='';state.registrante_email='';state.aceite_regras=false;el('rules-ack').checked=false;el('rules-next').disabled=true;state.escolhidos=[];state.periodos=[];el('entry-form').reset();servidorSelecionado=null;mostrarSelecionado();fecharLista();error('entry-error','');error('selection-error','');screen('entry');});
     screen('entry');
     carregarServidores();
     atualizarAnos().catch(()=>{});
