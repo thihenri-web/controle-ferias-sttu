@@ -73,25 +73,74 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
 .registry-placeholder strong{color:var(--text)}
 
 /* Dashboard de consulta (sem ações de escolha ou edição). */
-.dashboard-calendar{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 28px}
-.dashboard-month{display:flex;flex-direction:column;gap:8px;min-height:0;padding:13px;cursor:default}
+.dashboard-stats .stat{display:flex;flex-direction:column;gap:4px}
+.dashboard-stats .stat small{color:#9fb0c1;font-size:.76rem}
+.chart-panel{padding:18px 18px 12px}
+.dashboard-panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.bar-chart{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px;align-items:end;min-height:260px}
+.bar-item{display:flex;flex-direction:column;gap:8px;min-width:0}
+.bar-top{display:flex;justify-content:space-between;gap:6px;align-items:flex-end;min-height:34px}
+.bar-top strong{font-size:.86rem;line-height:1.1}
+.bar-top small{font-size:.68rem;color:#aebccc;text-align:right}
+.bar-track{height:170px;border-radius:14px;background:#121c26;border:1px solid #314150;display:flex;align-items:flex-end;padding:7px;position:relative;overflow:hidden}
+.bar-fill{width:100%;border-radius:10px 10px 8px 8px;background:linear-gradient(180deg,#67e0b0 0%,#2f9f76 100%);min-height:12px;display:flex;align-items:flex-start;justify-content:center;padding-top:6px;color:#082417;font-size:.68rem;font-weight:800;transition:height .2s ease}
+.bar-fill.warn{background:linear-gradient(180deg,#f0c657 0%,#c89719 100%);color:#302008}
+.bar-fill.danger{background:linear-gradient(180deg,#ef8d95 0%,#c64a57 100%);color:#2a0f13}
+.bar-fill.off{background:linear-gradient(180deg,#647182 0%,#445161 100%);color:#f2f5f8}
+.bar-bottom{display:flex;flex-direction:column;gap:2px}
+.bar-bottom strong{font-size:.84rem}
+.bar-bottom small{font-size:.7rem;color:#aebccc;line-height:1.35}
+.dashboard-split{display:grid;grid-template-columns:1.18fr .82fr;gap:14px;margin-top:8px}
+.dashboard-filter-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 14px}
+.function-chart{display:flex;flex-direction:column;gap:11px}
+.func-caption{font-size:.78rem;color:#aebccc;margin:2px 0 8px}
+.func-row{background:#111a24;border:1px solid #30404f;border-radius:12px;padding:11px 12px;display:flex;flex-direction:column;gap:7px}
+.func-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.func-head strong{font-size:.88rem}
+.func-meta{font-size:.72rem;color:#afc0d1}
+.func-track{height:11px;border-radius:999px;background:#2a3948;overflow:hidden}
+.func-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#67e0b0 0%,#2f9f76 100%)}
+.func-fill.warn{background:linear-gradient(90deg,#f0c657 0%,#c89719 100%)}
+.func-fill.danger{background:linear-gradient(90deg,#ef8d95 0%,#c64a57 100%)}
+.func-fill.off{background:linear-gradient(90deg,#748399 0%,#546171 100%)}
+.func-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.73rem;color:#c1d0dd}
+.func-extra-box{margin-top:4px;padding:10px 12px;border:1px dashed #41615a;border-radius:12px;background:#12211c;color:#caf7e1;font-size:.78rem}
+.alert-list{display:flex;flex-direction:column;gap:10px}
+.alert-card{border-radius:12px;border:1px solid #314150;background:#111a24;padding:12px 13px}
+.alert-card strong{display:block;font-size:.86rem;margin-bottom:4px}
+.alert-card small{display:block;color:#c0cedb;font-size:.75rem;line-height:1.45}
+.alert-card.good{background:#13231b;border-color:#2b5a47}
+.alert-card.warn{background:#2a2417;border-color:#7c6a38}
+.alert-card.danger{background:#2a1b1d;border-color:#7b4248}
+.alert-card.empty{background:#13231b;border-color:#2b5a47}
+.dashboard-calendar{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 20px}
+.dashboard-month{display:flex;flex-direction:column;gap:10px;min-height:0;padding:13px;cursor:default}
 .dashboard-month:hover{border-color:#3b4858;background:#17212c}
-.dashboard-month .month-head{margin:0 0 2px;align-items:center;gap:8px}
+.dashboard-month .month-head{margin:0;align-items:flex-start;gap:8px}
+.dashboard-month .month-head div{display:flex;flex-direction:column;gap:2px}
 .dashboard-month .month-head span:last-child{color:#c1cedb;font-size:.75rem;white-space:nowrap}
 .dashboard-month.closed{opacity:.72}
-.dash-period{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#202d39;border:1px solid #354556;border-radius:9px;padding:9px;min-height:64px}
+.dash-period{display:flex;flex-direction:column;gap:7px;background:#202d39;border:1px solid #354556;border-radius:10px;padding:10px;min-height:0}
 .dash-period.dash-closed{opacity:.7;background:#141d27}
+.dash-period-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .dash-period-text{display:flex;flex-direction:column;gap:2px;min-width:0}
 .dash-label{font-size:.84rem;font-weight:800;white-space:nowrap}
 .dash-date{font-size:.7rem;color:#b7c5d3;line-height:1.4}
 .dash-period-right{display:flex;flex-direction:column;gap:2px;text-align:right;align-items:flex-end;flex-shrink:0}
 .dash-period-right .tag{font-size:.69rem;white-space:nowrap}
+.dash-period-meter{height:8px;border-radius:999px;background:#30404f;overflow:hidden}
+.dash-period-meter i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#67e0b0 0%,#2f9f76 100%)}
+.dash-period-meter i.warn{background:linear-gradient(90deg,#f0c657 0%,#c89719 100%)}
+.dash-period-meter i.danger{background:linear-gradient(90deg,#ef8d95 0%,#c64a57 100%)}
+.dash-period-meter i.off{background:linear-gradient(90deg,#748399 0%,#546171 100%)}
+.dash-statline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.72rem;color:#c1d0dd}
 .dash-free{color:#b5c6d5;font-size:.69rem;line-height:1.28}
 .dash-extra{color:#a9efd0;font-size:.68rem}
 .dash-month-foot{font-size:.7rem;color:#afc2d3;margin-top:auto}
-@media(max-width:1100px){.dashboard-calendar{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.tag.warn{background:#5d4a24;color:#ffe09a}
+@media(max-width:1180px){.dashboard-split{grid-template-columns:1fr}.dashboard-calendar{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:920px){.bar-chart{grid-template-columns:repeat(6,minmax(0,1fr));min-height:0}.bar-track{height:132px}}
 @media(max-width:800px){.dashboard-calendar{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:550px){.dashboard-calendar{grid-template-columns:1fr}.dashboard-month{padding:10px}.dash-period{min-height:54px}.dashboard-stats .stat{padding:13px 12px}.dashboard-stats .stat strong{font-size:1.55rem}}
+@media(max-width:550px){.dashboard-calendar{grid-template-columns:1fr}.dashboard-month{padding:10px}.dash-period{min-height:0}.dashboard-stats .stat{padding:13px 12px}.dashboard-stats .stat strong{font-size:1.55rem}.dashboard-filter-row{grid-template-columns:1fr}.bar-chart{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.bar-track{height:112px}}
 /* Consulta e cancelamento: mesmas telas, porém sem controles de alteração. */
 body:not(.role-admin) #tab-periodos button,
 body:not(.role-admin) #tab-cotas button,
@@ -142,13 +191,34 @@ body.role-viewer .cancel-button{display:none!important}
       <section class="section">
         <div class="section-bar"><h2>Dashboard de vagas · <span id="dashboard-year">2027</span></h2><span class="tag">Somente consulta</span></div>
         <div class="stat-grid dashboard-stats">
-          <div class="stat"><label>Vagas com prazo aberto</label><strong id="dash-open">—</strong></div>
-          <div class="stat"><label>Vagas ocupadas</label><strong id="dash-occupied">—</strong></div>
-          <div class="stat"><label>Vagas normais restantes</label><strong id="dash-available">—</strong></div>
-          <div class="stat"><label>Períodos liberados</label><strong id="dash-enabled">—</strong></div>
+          <div class="stat"><label>Vagas com prazo aberto</label><strong id="dash-open">—</strong><small>Períodos ainda recebendo solicitações</small></div>
+          <div class="stat"><label>Vagas ocupadas</label><strong id="dash-occupied">—</strong><small>Solicitações registradas no ano</small></div>
+          <div class="stat"><label>Vagas normais restantes</label><strong id="dash-available">—</strong><small>Somente períodos liberados</small></div>
+          <div class="stat"><label>Períodos liberados</label><strong id="dash-enabled">—</strong><small>De até 24 períodos possíveis</small></div>
         </div>
-        <div class="section-bar"><h2>Ocupação e disponibilidade por mês</h2><span class="note">Insp Chefe contabilizado separadamente</span></div>
+
+        <div class="section-bar"><h2>Ocupação mensal</h2><span class="note">Comparativo visual das ocupações normais por mês</span></div>
+        <div class="dashboard-panel chart-panel">
+          <div id="dashboard-bar-chart" class="bar-chart" aria-label="Gráfico de ocupação por mês"></div>
+        </div>
+
+        <div class="section-bar"><h2>Calendário visual dos meses</h2><span class="note">Disponibilidade por período com barra de ocupação</span></div>
         <div id="dashboard-months" class="month-grid dashboard-calendar" aria-label="Ocupação dos doze meses"></div>
+
+        <div class="dashboard-split">
+          <section class="dashboard-panel">
+            <div class="section-bar"><h2>Distribuição por Função/Turno</h2><span class="note">Consulta visual por mês e período</span></div>
+            <div class="dashboard-filter-row">
+              <div><label for="dash-func-month">Mês</label><select class="input" id="dash-func-month"></select></div>
+              <div><label for="dash-func-period">Período</label><select class="input" id="dash-func-period"></select></div>
+            </div>
+            <div id="dashboard-functions" class="function-chart" aria-live="polite"></div>
+          </section>
+          <section class="dashboard-panel">
+            <div class="section-bar"><h2>Alertas administrativos</h2><span class="note">Situações que merecem atenção</span></div>
+            <div id="dashboard-alerts" class="alert-list" aria-live="polite"></div>
+          </section>
+        </div>
       </section>
     </div>
     <div class="tab-pane hidden" id="tab-relatorios" role="tabpanel">
@@ -278,31 +348,152 @@ function overlapDays(iniA,fimA,iniB,fimB){
 }
 const dateLabel=(data)=>data?.data_inicio&&data?.data_fim?(formatDate(data.data_inicio)+' a '+formatDate(data.data_fim)):'Datas a definir';
 const period=(m,p)=>{const x=state.vagas.find(v=>v.mes===Number(m)&&v.periodo===Number(p));return `${fmt(m)} · ${p}º período (15 dias; ${dateLabel(x)})`;};
+function monthTotals(mes){
+  const entries=state.vagas.filter(x=>x.mes===mes);
+  const enabled=entries.filter(x=>x.habilitado);
+  const capacidade=enabled.reduce((n,x)=>n+Number(x.capacidade||0),0);
+  const normais=enabled.reduce((n,x)=>n+Number(x.normais??x.ocupadas??0),0);
+  const chefes=enabled.reduce((n,x)=>n+Number(x.chefes||0),0);
+  const restantes=enabled.reduce((n,x)=>n+Number(x.restantes||0),0);
+  return {entries,enabled,capacidade,normais,chefes,restantes};
+}
+function periodTone(data){
+  if(!data||!data.habilitado)return 'off';
+  const cap=Number(data.capacidade||0),used=Number(data.normais??data.ocupadas??0),rest=Number(data.restantes||0);
+  if(cap<=0)return 'off';
+  const ratio=used/cap;
+  if(rest<=0||ratio>=1)return 'danger';
+  if(!data.aberto||ratio>=0.8)return 'warn';
+  return 'good';
+}
+function periodBadge(data){
+  if(!data||!data.habilitado)return ['Bloqueado','off'];
+  if(Number(data.restantes||0)<=0)return ['Lotado','off'];
+  if(!data.aberto)return ['Prazo encerrado','warn'];
+  if(!data.data_inicio||!data.data_fim)return ['Datas a definir','warn'];
+  return ['Recebendo solicitações','good'];
+}
+function renderDashboardFilters(){
+  const mesAtual=Number($('dash-func-month')?.value||1);
+  const periodoAtual=Number($('dash-func-period')?.value||1);
+  setOptions('dash-func-month',ALLOWED.map(m=>[m,fmt(m)]),mesAtual);
+  setOptions('dash-func-period',[[1,'1º período'],[2,'2º período']],periodoAtual);
+}
+function renderDashboardChart(){
+  const root=$('dashboard-bar-chart');root.replaceChildren();
+  const metrics=ALLOWED.map(m=>({mes:m,...monthTotals(m)}));
+  const maxCap=Math.max(1,...metrics.map(x=>x.capacidade||0));
+  for(const item of metrics){
+    const ratio=item.capacidade?Math.min(1,(item.normais||0)/item.capacidade):0;
+    const tone=!item.enabled.length?'off':ratio>=1?'danger':ratio>=0.8?'warn':'good';
+    const bar=document.createElement('div');bar.className='bar-item';
+    const top=document.createElement('div');top.className='bar-top';
+    const left=document.createElement('strong');left.textContent=item.capacidade?`${item.normais}/${item.capacidade}`:'—';
+    const right=document.createElement('small');right.textContent=item.enabled.length?`${item.restantes} livre(s)`:'sem períodos';
+    top.append(left,right);
+    const track=document.createElement('div');track.className='bar-track';
+    const fill=document.createElement('div');fill.className='bar-fill '+tone;fill.style.height=`${Math.max(12,Math.round((item.normais/maxCap)*100))}%`;
+    fill.textContent=item.normais?String(item.normais):'';
+    track.append(fill);
+    const bottom=document.createElement('div');bottom.className='bar-bottom';
+    const monthName=document.createElement('strong');monthName.textContent=fmt(item.mes);
+    const detail=document.createElement('small');
+    detail.textContent=item.enabled.length?`${item.enabled.length} período(s) liberado(s) · ${item.chefes} extra(s)`:'Nenhum período liberado';
+    bottom.append(monthName,detail);
+    bar.append(top,track,bottom);root.append(bar);
+  }
+}
 function renderMonths(){
   const root=$('dashboard-months');root.replaceChildren();
   for(const mes of ALLOWED){
-    const entries=state.vagas.filter(x=>x.mes===mes).sort((a,b)=>a.periodo-b.periodo);
-    const enabled=entries.filter(x=>x.habilitado);
-    const ocupadas=entries.reduce((n,x)=>n+Number(x.ocupadas||0),0);
-    const box=document.createElement('article');box.className='month dashboard-month'+(!enabled.length?' closed':'');
+    const totals=monthTotals(mes);
+    const ocupadas=totals.normais;
+    const box=document.createElement('article');box.className='month dashboard-month'+(!totals.enabled.length?' closed':'');
     const head=document.createElement('div');head.className='month-head';
-    head.append(span(fmt(mes)),span(ocupadas+' ocupada(s)'));box.append(head);
+    const leftHead=document.createElement('div');leftHead.append(span(fmt(mes)),span(`${ocupadas} ocupada(s) · ${totals.restantes} restante(s)`,'muted'));
+    head.append(leftHead,span(totals.enabled.length?`${totals.enabled.length} período(s)`:'Fechado','tag'+(!totals.enabled.length?' off':'')));
+    box.append(head);
     for(const p of [1,2]){
-      const data=entries.find(x=>x.periodo===p);
+      const data=totals.entries.find(x=>x.periodo===p);
+      const tone=periodTone(data);
+      const [badge,badgeClass]=periodBadge(data);
+      const used=Number(data?.normais??data?.ocupadas??0),cap=Number(data?.capacidade||0),rest=Number(data?.restantes||0);
       const row=document.createElement('div');row.className='dash-period'+(!data?.habilitado?' dash-closed':'');
+      const top=document.createElement('div');top.className='dash-period-top';
       const left=document.createElement('div');left.className='dash-period-text';
       left.append(span(p+'º período','dash-label'),span(data?dateLabel(data):'Datas a definir','dash-date'));
       const right=document.createElement('div');right.className='dash-period-right';
-      if(!data||!data.habilitado)right.append(span('Bloqueado','tag off'));
-      else{
-        right.append(span(Number(data.normais||0)+'/'+Number(data.capacidade||10)+' vagas','tag'));
-        if(Number(data.chefes||0)>0)right.append(span('+'+Number(data.chefes)+' Insp Chefe','dash-extra'));
-        right.append(span(Number(data.restantes||0)+' livre(s)'+(!data.aberto?' · Prazo encerrado':''),'dash-free'));
-      }
-      row.append(left,right);box.append(row);
+      right.append(span(badge,'tag '+badgeClass));
+      if(data?.habilitado)right.append(span(cap?`${used}/${cap}`:'—','dash-free'));
+      top.append(left,right);
+      const meter=document.createElement('div');meter.className='dash-period-meter';
+      const fill=document.createElement('i');fill.className=tone;fill.style.width=`${cap?Math.min(100,(used/cap)*100):0}%`;meter.append(fill);
+      const stat=document.createElement('div');stat.className='dash-statline';
+      stat.append(span(data?.habilitado?`${used} ocupada(s) · ${rest} livre(s)`:'Sem vagas liberadas'),span(data?.habilitado&&Number(data?.chefes||0)>0?`+${Number(data.chefes)} Insp Chefe`:(!data?.habilitado?'Bloqueado':' '),data?.habilitado&&Number(data?.chefes||0)>0?'dash-extra':''));
+      row.append(top,meter,stat);box.append(row);
     }
-    const foot=document.createElement('small');foot.className='dash-month-foot';foot.textContent=enabled.length?enabled.length+' período(s) liberado(s)':'Nenhum período liberado';box.append(foot);
+    const foot=document.createElement('small');foot.className='dash-month-foot';foot.textContent=totals.enabled.length?`${totals.enabled.length} período(s) liberado(s) · ${totals.chefes} Insp Chefe extra(s)`:'Nenhum período liberado';box.append(foot);
     root.append(box);
+  }
+}
+function renderFunctionDistribution(){
+  const root=$('dashboard-functions');root.replaceChildren();
+  const mes=Number($('dash-func-month').value)||1,periodo=Number($('dash-func-period').value)||1;
+  const caption=document.createElement('div');caption.className='func-caption';caption.textContent=`${fmt(mes)} · ${periodo}º período`;
+  root.append(caption);
+  for(const g of QUOTA_GROUPS){
+    const limit=capBase(mes,periodo,g);
+    const used=occupiedGroup(mes,periodo,g);
+    const rest=Math.max(0,limit-used);
+    const ratio=limit>0?Math.min(1,used/limit):0;
+    const tone=limit<=0?'off':ratio>=1?'danger':ratio>=0.8?'warn':'good';
+    const row=document.createElement('div');row.className='func-row';
+    const head=document.createElement('div');head.className='func-head';
+    const title=document.createElement('strong');title.textContent=g==='Adm'?'ADM':g;
+    const meta=document.createElement('span');meta.className='func-meta';meta.textContent=limit>0?`${used}/${limit} ocupada(s)`:'Sem vagas atribuídas';
+    head.append(title,meta);
+    const track=document.createElement('div');track.className='func-track';
+    const fill=document.createElement('div');fill.className='func-fill '+tone;fill.style.width=`${limit>0?Math.max(0,Math.min(100,ratio*100)):0}%`;track.append(fill);
+    const foot=document.createElement('div');foot.className='func-foot';
+    foot.append(span(limit>0?`${rest} restante(s)`:'Sem cota',''),span(limit>0?`Limite ${limit}`:'Verifique a distribuição',limit>0&&rest===0?'dash-extra':''));
+    row.append(head,track,foot);root.append(row);
+  }
+  const chief=document.createElement('div');chief.className='func-extra-box';
+  chief.textContent=`Insp Chefe: ${occupiedGroup(mes,periodo,'Insp Chefe')} registro(s) extra(s) no período selecionado.`;
+  root.append(chief);
+}
+function renderDashboardAlerts(){
+  const root=$('dashboard-alerts');root.replaceChildren();
+  const alerts=[];
+  for(const mes of ALLOWED){
+    const totals=monthTotals(mes);
+    if(!totals.enabled.length){
+      alerts.push(['warn',fmt(mes), 'Nenhum período está liberado neste mês.']);
+      continue;
+    }
+    for(const data of totals.enabled){
+      const prefix=`${fmt(mes)} · ${data.periodo}º período`;
+      const used=Number(data.normais??data.ocupadas??0),cap=Number(data.capacidade||0),rest=Number(data.restantes||0);
+      if(!data.data_inicio||!data.data_fim)alerts.push(['warn',prefix,'Período liberado sem datas definidas.']);
+      if(rest<=0)alerts.push(['danger',prefix,'Capacidade esgotada para vagas normais.']);
+      else if(cap>0&&used/cap>=0.8)alerts.push(['warn',prefix,`Ocupação alta: ${used}/${cap} vagas.`]);
+      if(!data.aberto)alerts.push(['warn',prefix,'Prazo de solicitação encerrado.']);
+    }
+  }
+  if(!alerts.length){
+    const ok=document.createElement('div');ok.className='alert-card empty';ok.innerHTML='<strong>Sem alertas críticos</strong><small>Os períodos liberados possuem folga operacional no momento desta consulta.</small>';
+    root.append(ok);return;
+  }
+  for(const [tone,title,detail] of alerts.slice(0,10)){
+    const card=document.createElement('div');card.className='alert-card '+tone;
+    const strong=document.createElement('strong');strong.textContent=title;
+    const small=document.createElement('small');small.textContent=detail;
+    card.append(strong,small);root.append(card);
+  }
+  if(alerts.length>10){
+    const more=document.createElement('div');more.className='alert-card';
+    more.innerHTML=`<strong>Outros alertas</strong><small>Há mais ${alerts.length-10} ocorrência(s) que não foram exibidas neste resumo.</small>`;
+    root.append(more);
   }
 }
 function renderPeriodSettings(){
@@ -505,7 +696,7 @@ async function load(){
     setOptions('year',ylist.map(y=>[y,String(y)]),state.ano);
     const mg=$('manage-year').value||'2028';
     setOptions('manage-year',Array.from({length:8},(_,i)=>[2028+i,String(2028+i)]),mg);
-    updateYearInfo();renderMonths();renderPeriodSettings();renderRecords();renderCotas();if(state.registrySearched)await loadRegistry();notify('Consulta atualizada.',true);
+    updateYearInfo();renderDashboardFilters();renderDashboardChart();renderMonths();renderFunctionDistribution();renderDashboardAlerts();renderPeriodSettings();renderRecords();renderCotas();if(state.registrySearched)await loadRegistry();notify('Consulta atualizada.',true);
   }catch(e){notify(e.message);}
   finally{state.busy=false;$('refresh').disabled=false;renderPeriodSettings();renderCotas();}
 }
@@ -731,6 +922,8 @@ for(const id of ['registry-search','registry-role','year']){
 }
 $('registry-export').addEventListener('click',exportRegistry);
 $('quota-month').addEventListener('change',renderCotas);
+$('dash-func-month').addEventListener('change',renderFunctionDistribution);
+$('dash-func-period').addEventListener('change',renderFunctionDistribution);
 $('login-form').addEventListener('submit',async e=>{
   e.preventDefault();const button=$('login-button');button.disabled=true;show('login-error',false);
   try{const sess=await req('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:$('username').value,senha:$('password').value})});$('password').value='';configureSession(sess);show('login',false);show('dashboard',true);show('logout',true);await load();}
@@ -752,6 +945,8 @@ $('apply-year').addEventListener('click',async()=>{
 });
 setOptions('month',[[0,'Todos os meses'],...ALLOWED.map(n=>[n,fmt(n)])],0);
 setOptions('quota-month',ALLOWED.map(m=>[m,fmt(m)]),1);
+setOptions('dash-func-month',ALLOWED.map(m=>[m,fmt(m)]),1);
+setOptions('dash-func-period',[[1,'1º período'],[2,'2º período']],1);
 setOptions('registry-role',[['','Todas as funções'],...GROUPS.map(g=>[g,g])],'');
 setOptions('year',[[2027,'2027']],2027);
 setOptions('manage-year',Array.from({length:8},(_,i)=>[2028+i,String(2028+i)]),2028);
