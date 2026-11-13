@@ -369,6 +369,16 @@ body.role-viewer .cancel-button{display:none!important}
           <div class="table-wrap"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Registrado por</th><th>Situação</th></tr></thead><tbody id="registry-records"></tbody></table></div>
         </div>
       </section>
+      <section class="section card hidden" id="reset-servidor-panel">
+        <div class="section-bar"><h2>Redefinição de acesso do servidor · DFV</h2><span class="tag">Administração / Cancelamento</span></div>
+        <p class="note">Somente após conferir a identidade do titular. Ao redefinir, a senha provisória volta a ser a matrícula e a troca torna-se obrigatória. Todas as sessões anteriores serão invalidadas. <strong>As férias já solicitadas, protocolos e vagas não serão alterados ou cancelados.</strong> A operação será auditada.</p>
+        <form id="reset-servidor-form" class="filters">
+          <div><label for="reset-matricula">Matrícula do servidor</label><input class="input" id="reset-matricula" maxlength="20" placeholder="Ex.: 00.000-0" required autocomplete="off"></div>
+          <div class="search-field"><label for="reset-motivo">Justificativa / conferência de identidade</label><input class="input" id="reset-motivo" maxlength="300" minlength="10" placeholder="Ex.: Titular identificado presencialmente no DFV" required></div>
+          <button class="btn primary" id="reset-servidor-btn" type="submit">Resetar senha</button>
+        </form>
+        <div class="notice hidden" id="reset-servidor-msg" role="status" aria-live="polite"></div>
+      </section>
       <div class="card section"><div class="section-bar"><h2>Consulta mensal</h2><span class="note">Selecione mês e período nos filtros para consultar as solicitações</span></div>
         <form class="filters" id="filters">
           <div><label for="month">Mês</label><select class="input" id="month"></select></div>
@@ -530,6 +540,7 @@ function applyReadonly(){
  for(const field of document.querySelectorAll('#tab-periodos input,#tab-cotas input'))field.disabled=readonly||field.disabled;
  const status=$('year-status');if(status)status.disabled=readonly;
  const apply=$('apply-year');if(apply)apply.disabled=readonly;
+ show('reset-servidor-panel',canCancel());
 }
 
 const show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
@@ -1214,6 +1225,24 @@ $('login-form').addEventListener('submit',async e=>{
   finally{button.disabled=false;}
 });
 $('logout').addEventListener('click',()=>{void adminFinishSignout();});
+$('reset-servidor-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(!canCancel())return;
+ const matricula=$('reset-matricula').value.trim();
+ const motivo=$('reset-motivo').value.trim();
+ const aviso=$('reset-servidor-msg');
+ if(matricula.replace(/\D/g,'').length<4||motivo.length<10){aviso.textContent='Informe matrícula e justificativa com pelo menos 10 caracteres.';show('reset-servidor-msg',true);return;}
+ if(!confirm('Você conferiu a identidade do titular?\n\nRedefinir a senha de '+matricula+' para a matrícula provisória?\nAs sessões anteriores serão invalidadas. As férias já solicitadas permanecem inalteradas.'))return;
+ const botao=$('reset-servidor-btn');botao.disabled=true;
+ try{
+   const data=await req('/api/servidor-acesso',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:'reset',matricula,motivo})});
+   aviso.textContent=data.mensagem||'Acesso redefinido.';show('reset-servidor-msg',true);
+   $('reset-matricula').value='';$('reset-motivo').value='';
+ }catch(e){aviso.textContent=e.message;show('reset-servidor-msg',true);}
+ finally{botao.disabled=false;}
+});
+
 $('filters').addEventListener('submit',e=>{e.preventDefault();load();});
 $('refresh').addEventListener('click',load);
 $('export').addEventListener('click',exportCSV);

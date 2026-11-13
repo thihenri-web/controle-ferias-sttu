@@ -128,32 +128,69 @@
     <header class="header">
       <img src="./assets/brasao-sttu.jpg" alt="Brasão da Fiscalização de Mobilidade da STTU Natal/RN" class="logo">
       <div><div class="brand-small">STTU · Natal/RN</div><div class="brand-title">Secretaria Municipal de Mobilidade Urbana</div><div class="brand-sub">Controle anual de solicitação de férias</div></div>
-      <a class="header-admin" href="./admin.html">Área administrativa</a><div class="header-right">Sistema de solicitação de férias</div>
+      <a class="header-admin" href="./admin.html">Área administrativa</a><button id="servidor-sair" type="button" class="header-admin hidden">Sair da conta</button><div class="header-right">Sistema de solicitação de férias</div>
     </header>
     <div id="demo-banner" class="demo-banner hidden"><strong>AMBIENTE DE DEMONSTRAÇÃO.</strong> Os registros são simulados neste navegador e não são compartilhados. Para uso real, publique na Vercel com o Neon configurado.</div>
 
     <main>
-      <section id="step-entry" class="intro" aria-label="Identificação de quem registra e do servidor beneficiário">
+      <section id="step-login" class="intro" aria-label="Acesso individual do servidor">
+        <div class="intro-text">
+          <div class="eyebrow">Controle individual · STTU</div>
+          <h1>Suas férias, <span>com acesso pessoal.</span></h1>
+          <p class="lead">Use sua matrícula funcional para acessar. No primeiro acesso, a senha provisória é a própria matrícula e sua alteração será obrigatória antes de escolher férias.</p>
+          <div class="intro-points"><span>Campanha inicial: 2027</span><span>2 períodos de 15 dias</span></div>
+        </div>
+        <form id="servidor-login-form" class="panel" novalidate>
+          <div class="panel-kicker">Identificação do servidor</div>
+          <h2>Acesso ao sistema</h2>
+          <div class="field"><label for="servidor-login-matricula">Matrícula funcional</label>
+            <input id="servidor-login-matricula" type="text" autocomplete="username" inputmode="text" maxlength="20" placeholder="Ex.: 00.000-0" required></div>
+          <div class="field"><label for="servidor-login-senha">Senha</label>
+            <input id="servidor-login-senha" type="password" autocomplete="current-password" maxlength="128" placeholder="Senha pessoal ou matrícula no primeiro acesso" required></div>
+          <div id="servidor-login-erro" class="alert hidden" role="alert"></div>
+          <button id="servidor-login-botao" type="submit" class="primary">Entrar</button>
+          <p class="micro">Problemas com a senha ou dificuldade de acesso? Procure o DFV. Por segurança, não compartilhe sua senha. A matrícula é uma senha provisória pública e não comprova identidade.</p>
+        </form>
+      </section>
+      <section id="step-change" class="intro hidden" aria-label="Troca obrigatória de senha">
+        <div class="intro-text"><div class="eyebrow">Segurança de acesso</div>
+          <h1>Defina sua <span>senha pessoal.</span></h1>
+          <p class="lead">Para continuar, substitua a senha provisória por uma senha numérica de exatamente 8 dígitos. Evite sequências e repetições.</p>
+        </div>
+        <form id="servidor-change-form" class="panel" novalidate>
+          <div class="panel-kicker">Primeiro acesso ou reset</div><h2>Troca obrigatória</h2>
+          <div class="field"><label for="servidor-nova-senha">Nova senha (8 dígitos)</label>
+            <input id="servidor-nova-senha" type="password" inputmode="numeric" autocomplete="new-password" minlength="8" maxlength="8" pattern="[0-9]{8}" required></div>
+          <div class="field"><label for="servidor-confirmar-senha">Confirme a nova senha</label>
+            <input id="servidor-confirmar-senha" type="password" inputmode="numeric" autocomplete="new-password" minlength="8" maxlength="8" pattern="[0-9]{8}" required></div>
+          <div id="servidor-change-erro" class="alert hidden" role="alert"></div>
+          <button id="servidor-change-botao" class="primary" type="submit">Salvar senha e continuar</button>
+          <button id="servidor-change-voltar" class="outline" type="button" style="margin-top:12px">Voltar ao login</button>
+          <p class="micro">A senha não é enviada por e-mail nem armazenada em texto puro. Se não reconhece uma ativação anterior, procure o DFV.</p>
+        </form>
+      </section>
+      <section id="step-entry" class="intro hidden" aria-label="Confirmação do servidor autenticado">
         <div class="intro-text">
           <div class="eyebrow">Planejamento anual · STTU</div>
           <h1>Suas férias, <span>bem planejadas.</span></h1>
-          <p class="lead">Informe quem está realizando o registro, escolha o servidor beneficiário e consulte as vagas disponíveis para selecionar <strong>dois períodos de 15 dias de férias</strong> em <strong>meses diferentes</strong>. A combinação do 2º período de um mês com o 1º do mês seguinte será identificada como programação única de 30 dias, exceto janeiro–fevereiro e agosto–setembro de 2027.</p>
+          <p class="lead">Entre com sua matrícula, confirme seu próprio cadastro e consulte as vagas disponíveis para selecionar <strong>dois períodos de 15 dias de férias</strong> em <strong>meses diferentes</strong>. A combinação do 2º período de um mês com o 1º do mês seguinte será identificada como programação única de 30 dias, exceto janeiro–fevereiro e agosto–setembro de 2027.</p>
           <div class="intro-points"><span>Campanha inicial: 2027</span><span>2 períodos de 15 dias</span></div>
         </div>
         <form id="entry-form" class="panel" novalidate>
           <div class="panel-kicker">Etapa 01 de 03</div>
-          <h2>Quem está registrando?</h2>
+          <h2>Servidor autenticado</h2>
+          <p class="desc" id="servidor-conta-resumo">Seu cadastro será preenchido automaticamente após o login.</p>
           
-          <div class="field"><label for="registrante-nome">Nome completo de quem está preenchendo</label>
-            <input id="registrante-nome" type="text" autocomplete="name" maxlength="150" placeholder="Digite seu nome completo" required>
+          <div class="field"><label for="registrante-nome">Nome completo do servidor (identificado pelo login)</label>
+            <input id="registrante-nome" type="text" autocomplete="off" maxlength="150" readonly required>
           </div>
-          <div class="field"><label for="registrante-email">E-mail de quem está preenchendo</label>
+          <div class="field"><label for="registrante-email">Seu e-mail para contato (não comprova identidade)</label>
             <input id="registrante-email" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="nome@exemplo.com" required>
-            <div class="input-hint">Essas informações serão registradas e aparecerão no comprovante.</div>
+            <div class="input-hint">O nome e a matrícula vêm da conta autenticada. Este e-mail serve apenas para contato.</div>
           </div>
           <div class="entry-divider" role="presentation"></div>
           <h3 class="beneficiary-title">Servidor beneficiário das férias</h3>
-          <p class="desc">Agora selecione o servidor que terá as férias solicitadas. Nome e matrícula serão vinculados ao cadastro oficial.</p>
+          <p class="desc">A solicitação só pode ser feita para a matrícula da conta autenticada. O cadastro abaixo é preenchido automaticamente.</p>
           <div class="field choose-list" id="roster-field">
             <label for="roster-search">Selecione seu nome e matrícula</label>
             <input id="roster-search" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="roster-results" autocomplete="off" placeholder="Clique ou pesquise nome / matrícula" required>
@@ -163,7 +200,7 @@
           </div>
           <div id="entry-error" class="alert hidden" role="alert"></div>
           <button type="submit" class="primary">Avançar para leitura das regras →</button>
-          <div class="micro">O nome e o e-mail de quem preencheu são informações declaradas, usadas para eventuais esclarecimentos. A solicitação só é registrada após a confirmação final.</div>
+          <div class="micro">A identificação de quem registra vem do login; o e-mail é declarado apenas para contato. A solicitação só é registrada após a confirmação final.</div>
         </form>
       </section>
 
@@ -171,15 +208,14 @@
         <div class="panel existing-panel">
           <div class="panel-kicker">Solicitação já registrada</div>
           <h1>Este servidor já escolheu as férias para <span id="existing-year">2027</span>.</h1>
-          <p>Não é necessário fazer outra solicitação. Para consultar e imprimir o comprovante anterior, informe o <strong>número do protocolo</strong> e o <strong>e-mail utilizado no registro original</strong>.</p>
+          <p>Não é necessário fazer outra solicitação. Para consultar seu comprovante anterior, informe o <strong>número do protocolo</strong>. O sistema verificará a matrícula da sua sessão.</p>
           <div class="notice" role="note" style="margin:16px 0;padding:14px 16px"><strong>Não tem o número do protocolo?</strong> Entre em contato com o <strong>DFV</strong> para consultar sua solicitação.</div>
           <form id="existing-form" novalidate>
             <div class="field"><label for="existing-protocol">Número do protocolo</label><input id="existing-protocol" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]+" placeholder="Ex.: 20270048" maxlength="12" required></div>
-            <div class="field"><label for="existing-email">E-mail informado no registro original</label><input id="existing-email" type="email" autocomplete="email" maxlength="254" placeholder="nome@exemplo.com" required></div>
             <div id="existing-error" class="alert hidden" role="alert"></div>
             <div class="existing-actions"><button id="existing-back" type="button" class="outline">← Voltar</button><button id="existing-submit" class="primary" type="submit">Consultar comprovante</button></div>
           </form>
-          <p class="micro">Se outro servidor preencheu o pedido, use o e-mail informado no registro original. Caso não tenha o número do protocolo, entre em contato com o DFV. A matrícula isolada não dá acesso ao comprovante.</p>
+          <p class="micro">Se não tiver o protocolo, entre em contato com o DFV. A consulta de comprovantes exige uma sessão autenticada.</p>
         </div>
       </section>
 
@@ -244,7 +280,7 @@
     const state = { nome:'',matricula:'',registrante_nome:'',registrante_email:'',aceite_regras:false,ano:2027,periodos:[],escolhidos:[],loading:false,intervalo:null };
     let servidores=[];
     let servidorSelecionado=null;
-    const demoServidores=[{"nome":"ADRIANA GOMES DA SILVA","matricula":"43.071-4","funcao_turno":"Tarde"},{"nome":"ADRIANO ANDRE GUEDES COSTA","matricula":"43.079-0","funcao_turno":"Adm"},{"nome":"ADRIANO NASCIMENTO DA FONSECA","matricula":"49.991-9","funcao_turno":"Corujão"},{"nome":"AFRANIO MEDEIROS DA COSTA","matricula":"43.151-6","funcao_turno":"Adm"},{"nome":"AGRICIO BELCHIOR BANDEIRA NETTO","matricula":"43.127-3","funcao_turno":"Manhã"},{"nome":"AILTON ANDRADE","matricula":"62.095-5","funcao_turno":"Manhã"},{"nome":"ALCINEIDE JUSTO SIQUEIRA","matricula":"62.100-5","funcao_turno":"Adm"},{"nome":"ALDREY LUIS MORAIS DA SILVA","matricula":"62.549-3","funcao_turno":"Adm"},{"nome":"ALDRIN MAGNO DANTAS SIQUEIRA","matricula":"43.080-3","funcao_turno":"Noite"},{"nome":"ALESSANDRA DORA DA SILVA COSTA","matricula":"43.199-1","funcao_turno":"Tarde"},{"nome":"ALEXANDRA BARROS DO NASCIMENTO","matricula":"49.953-6","funcao_turno":"Insp"},{"nome":"ALEXANDRE MAGNO FREITAS COSMO","matricula":"61.947-7","funcao_turno":"Tarde"},{"nome":"ALEXSANDRO NASCIMENTO BARBOSA","matricula":"43.072-2","funcao_turno":"Insp"},{"nome":"ALISSON EMANOEL DE OLIVEIRA FAGUNDES","matricula":"49.995-1","funcao_turno":"Insp Chefe"},{"nome":"ALLAN ARAUJO DE MEDEIROS","matricula":"43.073-1","funcao_turno":"Insp"},{"nome":"ALYENE PATRICIA CRUZ DE BRITO ALVES","matricula":"64.545-0","funcao_turno":"Tarde"},{"nome":"ANDERSON RODRIGO DO NASCIMENTO","matricula":"63.802-1","funcao_turno":"Noite"},{"nome":"ANDRE ALVES DE OLIVEIRA","matricula":"43.085-4","funcao_turno":"Adm"},{"nome":"ANDRÉ CORCINO DE LIMA FILHO","matricula":"00.387-5","funcao_turno":"Manhã"},{"nome":"ANDREA CASTRO GALVAO","matricula":"62.097-1","funcao_turno":"Insp"},{"nome":"ANDREZA CABRAL CAMARA NUNES","matricula":"61.710-5","funcao_turno":"Adm"},{"nome":"ANNE CAROLLINE MACEDO DE ARAUJO","matricula":"60.233-7","funcao_turno":"COTT"},{"nome":"BARBARA KALYANA DOS SANTOS G. ALVES","matricula":"43.102-8","funcao_turno":"Adm"},{"nome":"CARLOS EUBER DE FREITAS NEVES","matricula":"43.077-3","funcao_turno":"Manhã"},{"nome":"CARLYLE CAMARA DOS SANTOS","matricula":"43.150-8","funcao_turno":"Noite"},{"nome":"CARMOZINA REGIA DE MELO DANTAS","matricula":"43.084-6","funcao_turno":"COTT"},{"nome":"CAROLINA DE CASSIA DEFENTE","matricula":"43.101-0","funcao_turno":"Adm"},{"nome":"CHIARA LUCIA DE GUSMAO GONCALVES","matricula":"43.096-0","funcao_turno":"Adm"},{"nome":"CRISTIANE DE MACEDO E SILVA","matricula":"62.873-5","funcao_turno":"Manhã"},{"nome":"DANIEL ALBUQUERQUE EMERENCIANO","matricula":"43.090-1","funcao_turno":"Insp"},{"nome":"DANIELLE PEREIRA DE OLIVEIRA","matricula":"60.072-5","funcao_turno":"COTT"},{"nome":"DANILO CLAUDIO LIRA DOS SANTOS","matricula":"72.245-7","funcao_turno":"Manhã"},{"nome":"DENILSON ARAUJO DA COSTA","matricula":"60.090-3","funcao_turno":"Adm"},{"nome":"EDILSON FERREIRA DOS SANTOS","matricula":"00.417-1","funcao_turno":"Adm"},{"nome":"EDINASIO COSTA SOARES","matricula":"49.986-2","funcao_turno":"Tarde"},{"nome":"EDJA PAULA MAIA","matricula":"45.570-9","funcao_turno":"Adm"},{"nome":"EDSON SIQUEIRA DE LIMA","matricula":"00.469-3","funcao_turno":"Adm"},{"nome":"ELIZABETE RANYELA MORAIS DE MOURA","matricula":"43.198-2","funcao_turno":"Insp"},{"nome":"EVALDO FÉLIX FERREIRA","matricula":"00.518-5","funcao_turno":"Tarde"},{"nome":"FERNANDA FREITAS DE HOLANDA","matricula":"60.066-1","funcao_turno":"COTT"},{"nome":"FRANZ BIAGGIO FULCO GAAG","matricula":"65.247-4","funcao_turno":"Insp"},{"nome":"GENALDO AZEVEDO DA TRINDADE","matricula":"43.086-2","funcao_turno":"Insp"},{"nome":"HAILSON CABRAL DO NASCIMENTO","matricula":"00.375-1","funcao_turno":"Noite"},{"nome":"HARLLEY CAMPOS MARQUES","matricula":"65.420-5","funcao_turno":"Noite"},{"nome":"HEITOR RODRIGUES DE LIMA","matricula":"43.097-8","funcao_turno":"Adm"},{"nome":"HEMERSON MELO DA SILVA","matricula":"49.952-8","funcao_turno":"Manhã"},{"nome":"HERANDY DE ARAUJO CABRAL","matricula":"49.950-1","funcao_turno":"Adm"},{"nome":"HERQUILES LIMA DOS SANTOS","matricula":"43.149-4","funcao_turno":"Manhã"},{"nome":"HEWERTON MOURA DA SILVA","matricula":"43.098-6","funcao_turno":"Corujão"},{"nome":"ISABELA SILVA NICACIO DE BRITO","matricula":"60.234-5","funcao_turno":"Noite"},{"nome":"IVAN DE CARVALHO MEDEIROS","matricula":"00.431-6","funcao_turno":"Noite"},{"nome":"IVES SILVA DE SOUZA","matricula":"62.151-0","funcao_turno":"Insp"},{"nome":"JARDEL BEZERRA DE ANDRADE","matricula":"62.189-7","funcao_turno":"Tarde"},{"nome":"JARDS MEDEIROS DE OLIVEIRA","matricula":"62.826-3","funcao_turno":"Noite"},{"nome":"JEFFERSON STANLEY DA SILVA","matricula":"62.919-7","funcao_turno":"Adm"},{"nome":"JOÃO BATISTA MONTEIRO DE AQUINO","matricula":"00.482-1","funcao_turno":"Noite"},{"nome":"JOAO BATISTA ROCHA FILHO","matricula":"49.994-3","funcao_turno":"Adm"},{"nome":"JOÃO CLÁUDIO DE OLIVEIRA DE FARIA","matricula":"00.383-2","funcao_turno":"Noite"},{"nome":"JOAO MARIA ALMEIDA DE MOURA","matricula":"43.070-6","funcao_turno":"Noite"},{"nome":"JOAO MARIA MACEDO DA ROCHA","matricula":"43.201-6","funcao_turno":"Manhã"},{"nome":"JOAO PAULO DE OLIVEIRA","matricula":"43.082-0","funcao_turno":"Insp"},{"nome":"JOAO WILLAMS DA SILVA","matricula":"62.253-2","funcao_turno":"Manhã"},{"nome":"JORGE LUIZ BARROS DO NASCIMENTO","matricula":"62.431-4","funcao_turno":"Manhã"},{"nome":"JORGE LUIZ SIQUEIRA DE OLIVEIRA","matricula":"62.191-9","funcao_turno":"Manhã"},{"nome":"JOSE ALBERTO FREIRE DA COSTA","matricula":"42.766-7","funcao_turno":"Tarde"},{"nome":"JOSE EUDES BEZERRA","matricula":"49.985-4","funcao_turno":"Manhã"},{"nome":"JOSE GONCALVES MANGABEIRA DE MEDEIROS","matricula":"43.083-8","funcao_turno":"Noite"},{"nome":"JOSE ROOSEVELT MEDEIROS JUNIOR","matricula":"62.416-1","funcao_turno":"Manhã"},{"nome":"JOSEMAR DA SILVA DAMASCENO","matricula":"60.068-7","funcao_turno":"Corujão"},{"nome":"JOSEMAR TAVARES CAMARA JUNIOR","matricula":"43.152-4","funcao_turno":"Adm"},{"nome":"JOSENILSON TEIXEIRA DE SOUZA","matricula":"00.386-7","funcao_turno":"Manhã"},{"nome":"KASTEEN CARLOS DE AQUINO E SILVA","matricula":"43.076-5","funcao_turno":"Insp"},{"nome":"KLEBER SILVESTRE LUSTOSA","matricula":"49.825-4","funcao_turno":"COTT"},{"nome":"LAILTON RIBEIRO DA COSTA","matricula":"43.078-1","funcao_turno":"Manhã"},{"nome":"LEONARDO BATISTA DE SOUZA SILVA","matricula":"64.542-7","funcao_turno":"Manhã"},{"nome":"LEONARDO DA SILVEIRA LUCENA","matricula":"43.122-2","funcao_turno":"Adm"},{"nome":"MADSON LIMA CAVALCANTI DE OLIVEIRA","matricula":"49.989-7","funcao_turno":"Adm"},{"nome":"MARA LUCIA BARROS DE SOUZA","matricula":"70.665-5","funcao_turno":"Manhã"},{"nome":"MARCELO BATISTA DE ANDRADE","matricula":"61.952-3","funcao_turno":"Tarde"},{"nome":"MARCELO FRANCA DA SILVA","matricula":"60.073-3","funcao_turno":"Adm"},{"nome":"MARCELO ZAERDSON LINS DE MEDEIROS","matricula":"62.184-6","funcao_turno":"Corujão"},{"nome":"MARCILIO DE OLIVEIRA RODRIGUES","matricula":"49.951-0","funcao_turno":"Corujão"},{"nome":"MARCIO JOSE DA SILVA","matricula":"68.159-8","funcao_turno":"Insp"},{"nome":"MARCIO JOSE SA DANTAS LUZ","matricula":"45.833-3","funcao_turno":"Adm"},{"nome":"MARIA DE LOURDES DA SILVA FILHA","matricula":"43.200-8","funcao_turno":"Adm"},{"nome":"MARYANE CRISTINA LOPES P. DA ROCHA","matricula":"43.112-5","funcao_turno":"Adm"},{"nome":"MIGUEL ANGELO DE SANTANA","matricula":"62.092-1","funcao_turno":"Tarde"},{"nome":"NADJANIA MARIA DAMASCENO VALLE","matricula":"62.368-7","funcao_turno":"COTT"},{"nome":"NAOMI SUASSUNA DOS SANTOS","matricula":"60.237-0","funcao_turno":"Tarde"},{"nome":"NEUZELIDES PRISCILLA SILVA ANDRADE","matricula":"49.949-8","funcao_turno":"Tarde"},{"nome":"NEWDEMBERG FERREIRA GALVAO","matricula":"43.081-1","funcao_turno":"Insp"},{"nome":"NEWTON DE SOUZA PEREIRA FILHO","matricula":"60.064-4","funcao_turno":"Adm"},{"nome":"PATRICIA CRISTINA CAVALCANTE","matricula":"45.990-9","funcao_turno":"COTT"},{"nome":"RAIMUNDO NONATO DE MEDEIROS NETO","matricula":"00.249-6","funcao_turno":"Adm"},{"nome":"RAPHAELLE CAVALCANTE R. DE ARAUJO","matricula":"62.149-8","funcao_turno":"Manhã"},{"nome":"REGINA VICENCIA CRISPIM","matricula":"62.250-8","funcao_turno":"Adm"},{"nome":"RITA DE CASSIA SILVA","matricula":"49.992-7","funcao_turno":"Manhã"},{"nome":"ROBSON LUIZ DE AZEVEDO","matricula":"00.184-8","funcao_turno":"Adm"},{"nome":"RODRIGO COSTA","matricula":"43.087-1","funcao_turno":"Insp Chefe"},{"nome":"RONALDO MARINHO DE SOUZA","matricula":"62.825-5","funcao_turno":"COTT"},{"nome":"RONALDO TEIXEIRA DE ARAUJO","matricula":"62.257-5","funcao_turno":"Tarde"},{"nome":"ROSEMBERG PEREIRA","matricula":"00.137-6","funcao_turno":"Adm"},{"nome":"SANDRA DA SILVA BEZERRIL BACELAR","matricula":"61.712-1","funcao_turno":"Manhã"},{"nome":"SARAH POLLYANA DIAS DOS SANTOS","matricula":"43.154-1","funcao_turno":"COTT"},{"nome":"SEVERINO FERNANDES MAIA","matricula":"00.192-9","funcao_turno":"Manhã"},{"nome":"SYBELLE DE ARAUJO DANTAS","matricula":"63.386-1","funcao_turno":"Manhã"},{"nome":"TALITHA LOUISE FORTUNA BEZERRA","matricula":"49.990-1","funcao_turno":"Tarde"},{"nome":"THALES GALVAO DE ARAUJO","matricula":"63.803-0","funcao_turno":"Insp"},{"nome":"THALLES THIAGO MEDEIROS DE SOUZA","matricula":"49.988-9","funcao_turno":"Insp"},{"nome":"THIAGO DE LIRA BEZERRA","matricula":"43.075-7","funcao_turno":"Insp Chefe"},{"nome":"THIAGO HENRIQUE FERREIRA DA SILVA","matricula":"60.275-2","funcao_turno":"Insp"},{"nome":"VANESSA GALDINO DA SILVA","matricula":"61.955-8","funcao_turno":"Insp"},{"nome":"WANDERCLEY SILVA NEVES","matricula":"70.563-2","funcao_turno":"Insp"},{"nome":"WANDRE WAGNER DA SILVA","matricula":"62.367-9","funcao_turno":"Tarde"}];
+    const demoServidores=[{nome:'SERVIDORA DEMONSTRAÇÃO',matricula:'00.001-1',funcao_turno:'Manhã'},{nome:'SERVIDOR DEMONSTRAÇÃO',matricula:'00.002-2',funcao_turno:'Noite'}];
     function normalizarBusca(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();}
     function abrirLista(){el('roster-results').classList.remove('hidden');el('roster-search').setAttribute('aria-expanded','true');}
     function fecharLista(){el('roster-results').classList.add('hidden');el('roster-search').setAttribute('aria-expanded','false');}
@@ -286,9 +322,9 @@
         el('roster-help').textContent='Relação carregada: '+servidores.length+' servidores. Pesquise nome ou matrícula e clique no resultado.';
       }catch(ex){servidores=[];el('roster-help').textContent='Cadastro indisponível.';error('entry-error',ex.message||'Erro ao carregar a relação.');}
     }
-    el('roster-search').addEventListener('focus',renderizarLista);
-    el('roster-search').addEventListener('input',()=>{servidorSelecionado=null;mostrarSelecionado();renderizarLista();});
-    el('roster-search').addEventListener('keydown',e=>{
+    el('roster-search').addEventListener('focus',()=>{if(DEMO)renderizarLista();});
+    el('roster-search').addEventListener('input',()=>{if(DEMO){servidorSelecionado=null;mostrarSelecionado();renderizarLista();}});
+    el('roster-search').addEventListener('keydown',e=>{if(!DEMO)return;
       if(e.key==='Escape'){fecharLista();}
       else if(e.key==='ArrowDown'){
         if(el('roster-results').classList.contains('hidden'))renderizarLista();
@@ -320,7 +356,7 @@
       if(ano===2027&&mes===1)return '2026-12-31';
       const d=new Date(Date.UTC(ano,mes-1,1));d.setUTCDate(d.getUTCDate()-45);return d.toISOString().slice(0,10);
     }
-    function screen(n) { for (const name of ['entry','existing','rules','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
+    function screen(n) { for (const name of ['login','change','entry','existing','rules','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
     function dateBR(v){return v&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(8,10)+'/'+v.slice(5,7)+'/'+v.slice(0,4):'';}
@@ -398,7 +434,6 @@
     function abrirConsultaExistente(){
       el('existing-year').textContent=String(state.ano);
       el('existing-protocol').value='';
-      el('existing-email').value=state.registrante_email;
       error('existing-error','');
       screen('existing');
     }
@@ -406,16 +441,15 @@
     el('existing-form').addEventListener('submit',async e=>{
       e.preventDefault();error('existing-error','');
       const protocolo=el('existing-protocol').value.trim();
-      const email=el('existing-email').value.trim().toLowerCase();
-      if(!Number.isSafeInteger(numeroInternoProtocolo(state.ano,protocolo))||numeroInternoProtocolo(state.ano,protocolo)<1||!el('existing-email').validity.valid||!email){
-        error('existing-error','Informe o número do protocolo e o e-mail do registro original.');return;
+      if(!Number.isSafeInteger(numeroInternoProtocolo(state.ano,protocolo))||numeroInternoProtocolo(state.ano,protocolo)<1){
+        error('existing-error','Informe o número do protocolo.');return;
       }
       const button=el('existing-submit');button.disabled=true;button.textContent='Consultando...';
       try{
         let s;
         if(DEMO){
           const item=getDemo().find(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(state.matricula)
-            && Number(r.protocolo||0)===numeroInternoProtocolo(state.ano,protocolo) && String(r.registrante_email||'').toLowerCase()===email);
+            && Number(r.protocolo||0)===numeroInternoProtocolo(state.ano,protocolo));
           if(!item)throw Error('Comprovante não encontrado com os dados informados.');
           s={id:item.protocolo,ano:item.ano,nome:item.nome,matricula:item.matricula,
             funcao_turno:state.funcao_turno,registrado_por_nome:item.registrante_nome,
@@ -423,7 +457,7 @@
             ciencia_regras_em:item.ciencia_regras_em,escolhas:item.selecoes,reemissao:true};
         }else{
           const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
-            body:JSON.stringify({acao:'consultar_comprovante',ano:state.ano,matricula:state.matricula,protocolo,email})});
+            body:JSON.stringify({acao:'consultar_comprovante',ano:state.ano,matricula:state.matricula,protocolo})});
           const data=await r.json().catch(()=>({}));
           if(!r.ok)throw Error(data.erro||'Não foi possível localizar o comprovante.');
           s=data.solicitacao;
@@ -434,7 +468,7 @@
     });
     el('entry-form').addEventListener('submit',async e=>{
       e.preventDefault();error('entry-error','');
-      const responsavelNome=el('registrante-nome').value.replace(/\s+/g,' ').trim();
+      const responsavelNome=DEMO?el('registrante-nome').value.replace(/\s+/g,' ').trim():state.nome;
       const responsavelEmail=el('registrante-email').value.trim().toLowerCase();
       if(responsavelNome.length<5||!responsavelNome.includes(' ')){
         error('entry-error','Informe o nome completo de quem está preenchendo.');el('registrante-nome').focus();return;
@@ -442,11 +476,11 @@
       if(!el('registrante-email').validity.valid||!responsavelEmail||responsavelEmail.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(responsavelEmail)){
         error('entry-error','Informe um e-mail válido de quem está preenchendo.');el('registrante-email').focus();return;
       }
-      if(!servidorSelecionado){error('entry-error','Selecione o servidor beneficiário na lista oficial.');el('roster-search').focus();return;}
+      if(!servidorSelecionado){error('entry-error','A identidade do servidor não está disponível. Entre novamente.');screen('login');return;}
       const {nome,matricula,funcao_turno}=servidorSelecionado;
       try{await atualizarAnos();}catch(ex){error('entry-error',ex.message||'Erro ao consultar campanhas.');return;}
       state.nome=nome;state.matricula=matricula;state.funcao_turno=funcao_turno||'';state.registrante_nome=responsavelNome;state.registrante_email=responsavelEmail;
-      el('welcome').textContent=state.nome+' · '+state.matricula+' · '+state.funcao_turno+' · Registro por: '+state.registrante_nome;
+      el('welcome').textContent=state.nome+' · '+state.matricula+' · '+state.funcao_turno;
       // Evita que quem já registrou passe pela escolha de novos períodos.
       try{
         if(await verificarExistente(state.ano,state.matricula)){
@@ -571,9 +605,74 @@
       [['Registrado por',s.registrado_por_nome||state.registrante_nome],['E-mail informado',s.registrado_por_email||state.registrante_email],['Data e hora do registro',s.registrada_em||'—'],['Ciência das regras',s.ciencia_regras_em||'—']].forEach(addLine);
     }
     el('print').addEventListener('click',()=>window.print());
-    el('another').addEventListener('click',()=>{state.nome='';state.matricula='';state.funcao_turno='';state.registrante_nome='';state.registrante_email='';state.aceite_regras=false;el('rules-ack').checked=false;el('rules-next').disabled=true;state.escolhidos=[];state.periodos=[];el('entry-form').reset();servidorSelecionado=null;mostrarSelecionado();fecharLista();error('entry-error','');error('selection-error','');screen('entry');});
-    screen('entry');
-    carregarServidores();
+    async function sairServidor(){
+      clearInterval(state.intervalo);state.intervalo=null;
+      if(!DEMO){try{await fetch('/api/servidor-acesso',{method:'DELETE',credentials:'same-origin'});}catch{}}
+      state.nome='';state.matricula='';state.funcao_turno='';state.registrante_nome='';state.registrante_email='';state.aceite_regras=false;
+      state.escolhidos=[];state.periodos=[];servidorSelecionado=null;
+      el('entry-form').reset();el('servidor-login-form').reset();el('rules-ack').checked=false;
+      el('servidor-sair').classList.add('hidden');mostrarSelecionado();screen(DEMO?'entry':'login');
+    }
+    el('servidor-change-voltar').addEventListener('click',()=>{void sairServidor();});
+    el('another').addEventListener('click',()=>{void sairServidor();});
+    el('servidor-sair').addEventListener('click',()=>{void sairServidor();});
+    async function authApi(body){
+      const r=await fetch('/api/servidor-acesso',{method:'POST',credentials:'same-origin',cache:'no-store',
+        headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok)throw Error(data.erro||'Falha ao verificar o acesso.');
+      return data;
+    }
+    async function iniciarAcesso(sess){
+      if(!sess?.servidor){screen('login');return;}
+      const dados=sess.servidor;
+      state.nome=dados.nome;state.matricula=dados.matricula;state.funcao_turno=dados.funcao_turno||'';
+      state.registrante_nome=dados.nome;
+      servidorSelecionado={nome:dados.nome,matricula:dados.matricula,funcao_turno:dados.funcao_turno};
+      el('registrante-nome').value=dados.nome;
+      el('servidor-conta-resumo').textContent='Matrícula: '+dados.matricula+' · Função/Turno: '+(dados.funcao_turno||'—');
+      el('roster-search').value=dados.nome+' - '+dados.matricula;
+      el('roster-search').readOnly=true;
+      el('roster-field').classList.add('hidden');
+      mostrarSelecionado();
+      el('servidor-sair').classList.remove('hidden');
+      screen('entry');
+    }
+    el('servidor-login-form').addEventListener('submit',async e=>{
+      e.preventDefault();error('servidor-login-erro','');
+      const botao=el('servidor-login-botao');botao.disabled=true;
+      try{
+        const data=await authApi({acao:'entrar',matricula:el('servidor-login-matricula').value,
+          senha:el('servidor-login-senha').value});
+        el('servidor-login-senha').value='';
+        if(data.troca_obrigatoria){screen('change');return;}
+        await iniciarAcesso(data);
+      }catch(ex){error('servidor-login-erro',ex.message);}
+      finally{botao.disabled=false;}
+    });
+    el('servidor-change-form').addEventListener('submit',async e=>{
+      e.preventDefault();error('servidor-change-erro','');
+      const senha=el('servidor-nova-senha').value;
+      if(!/^\d{8}$/.test(senha)||senha!==el('servidor-confirmar-senha').value){
+        error('servidor-change-erro','Digite 8 números iguais nos dois campos.');return;
+      }
+      const botao=el('servidor-change-botao');botao.disabled=true;
+      try{const data=await authApi({acao:'trocar',nova_senha:senha});
+        el('servidor-nova-senha').value='';el('servidor-confirmar-senha').value='';
+        await iniciarAcesso(data);
+      }catch(ex){error('servidor-change-erro',ex.message);}
+      finally{botao.disabled=false;}
+    });
+    if(DEMO){
+      el('servidor-sair').classList.add('hidden');screen('entry');
+      carregarServidores();
+    }else{
+      screen('login');
+      fetch('/api/servidor-acesso',{cache:'no-store',credentials:'same-origin'})
+        .then(async r=>{const data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.erro||'Autenticação indisponível.');return data;})
+        .then(data=>{if(data.autenticado)return iniciarAcesso(data);if(data.troca_obrigatoria)screen('change');})
+        .catch(ex=>error('servidor-login-erro',ex.message));
+    }
     atualizarAnos().catch(()=>{});
   </script>
 </body>
