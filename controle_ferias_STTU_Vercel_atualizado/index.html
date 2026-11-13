@@ -35,21 +35,27 @@
     .confirmation{max-width:670px;margin:64px auto;background:var(--surface);border:1px solid #365343;border-radius:22px;padding:34px;box-shadow:0 25px 60px #0005}.checkmark{width:59px;height:59px;border-radius:50%;background:#1b4839;color:#70efb4;font-size:2rem;display:grid;place-items:center}.confirmation h1{font-size:2.1rem}.receipt{border:1px solid #344453;border-radius:15px;background:#101821;padding:19px 22px;margin:26px 0}.receipt-line{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #2a3541}.receipt-line:last-child{border-bottom:0}.receipt-line span{color:var(--muted)}.receipt-line strong{text-align:right;overflow-wrap:anywhere}.actions{display:flex;gap:10px}.actions .primary{width:auto;flex:1}.actions .outline{flex:1}
     @media(max-width:1070px){.intro{grid-template-columns:1fr 410px;gap:20px}.month-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:820px){.intro{grid-template-columns:1fr;min-height:0;padding:45px 0}.intro-text{max-width:710px}.panel{max-width:670px}.month-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.summary{gap:10px}}
     @media(max-width:570px){.layout{padding:12px 14px 100px}.logo{width:59px;height:59px}.header{gap:10px}.brand-sub{display:none}.header-right{display:none}.header-admin{font-size:.72rem;padding:8px}.intro{padding:36px 0 25px}.panel{padding:23px 18px}.intro-points span{font-size:.76rem}.topline{margin:29px 0 15px}.topline h1{font-size:1.85rem}.topline .outline{padding:9px;font-size:.8rem}.month-grid{grid-template-columns:1fr;gap:12px}.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:1/-1}.stat{padding:14px}.stat strong{font-size:1.6rem}.status-text{margin:0;width:100%;padding:0}.toolbar{gap:12px}.summary{bottom:7px;padding:12px 13px;flex-direction:column;align-items:stretch}.summary .primary{width:100%}.receipt-line{font-size:.86rem}.actions{flex-direction:column}.confirmation{padding:24px 17px;margin:32px 0}}
-    @media print{body{background:#fff;color:#111}.header,.footer,#step-existing,#step-rules,#step-selection,.actions,.notice,.demo-banner{display:none!important}.layout{max-width:none;padding:0}.confirmation{box-shadow:none;border:1px solid #aaa;background:#fff;color:#111;margin:0}.receipt{background:#fff;color:#111;border-color:#ccc}.receipt-line span{color:#555}}
+    @media print{body{background:#fff;color:#111}.header,.footer,#step-entry,#step-selection,.actions,.notice,.demo-banner{display:none!important}.layout{max-width:none;padding:0}.confirmation{box-shadow:none;border:1px solid #aaa;background:#fff;color:#111;margin:0}.receipt{background:#fff;color:#111;border-color:#ccc}.receipt-line span{color:#555}}
 
-    .receipt-heading{font-size:.82rem;font-weight:800;color:#e6c772;margin:19px 0 3px;padding-top:14px;border-top:1px solid #3a4755;text-transform:uppercase;letter-spacing:.035em}
-    /* Leitura das regras: uma etapa obrigatória entre identificação e calendário. */
+    .choose-list{position:relative}.roster-results{position:absolute;z-index:50;top:100%;left:0;right:0;max-height:285px;overflow:auto;background:#0f1c27;border:1px solid #687788;border-radius:12px;box-shadow:0 16px 48px #0009;padding:6px;margin-top:5px}
+    .roster-option{display:block;width:100%;text-align:left;background:transparent;color:#f3f6fa;border:0;border-radius:8px;padding:10px 11px;line-height:1.35}
+    .entry-divider{border-top:1px solid #3c4b5b;margin:20px 0 18px}.beneficiary-title{font-size:1.1rem;margin:0 0 7px;color:#f2d387;letter-spacing:-.01em}.receipt-heading{font-size:.82rem;font-weight:800;color:#e6c772;margin:19px 0 3px;padding-top:14px;border-top:1px solid #3a4755;text-transform:uppercase;letter-spacing:.035em}
+    .roster-option:hover,.roster-option:focus-visible{background:#33465a}.roster-option strong{display:block;font-size:.86rem}.roster-option small{color:#c4d3df;font-size:.78rem}
+    .roster-empty{color:#becbda;padding:11px;font-size:.86rem}.chosen-server{border:1px solid #53654c;background:#1c302b;border-radius:12px;padding:12px 14px;margin-top:12px}
+    .chosen-server strong{display:block;font-size:.92rem}.chosen-server span{color:#a9e2c7;font-size:.84rem}.choose-list .input-hint{margin-top:8px}
+
+    /* Etapa de regras, comprovantes e o formato compacto do calendário. */
     .rules-panel{max-width:760px;margin:clamp(28px,6vw,66px) auto 36px;padding:clamp(20px,4vw,34px)}
     .rules-panel h1{font-size:clamp(1.6rem,4vw,2.2rem);margin:8px 0 16px;letter-spacing:-.025em}
     .rules-text{background:#101a25;border:1px solid #43505e;border-radius:13px;padding:20px 22px;font-size:1rem;line-height:1.76;color:#e2ebf4}
     .rules-checkbox{display:flex;align-items:flex-start;gap:12px;margin:22px 0 18px;background:#202e3a;border:1px solid #526479;border-radius:12px;padding:15px;cursor:pointer;font-size:.96rem;font-weight:700}
     .rules-checkbox input{margin:3px 0 0;flex-shrink:0;width:20px;height:20px;accent-color:var(--accent2)}
     .rules-actions{display:flex;gap:10px}.rules-actions .outline{flex:0 0 auto}.rules-actions .primary{flex:1}
-    /* Seleção: somente informações essenciais, com cards baixos para celular. */
+    #step-selection{border-top:1px solid var(--line);padding-top:16px}
     #step-selection .topline{margin:24px 0 15px;gap:12px}
     #step-selection .topline h1{font-size:clamp(1.55rem,3.5vw,2rem);margin:4px 0 5px}
     #step-selection #welcome{font-size:.8rem;line-height:1.5}
-    #step-selection .toolbar{margin:10px 0 17px;gap:9px;align-items:center}
+    #step-selection .toolbar{margin:10px 0 17px;gap:9px;align-items:flex-end}
     #step-selection .year-block{width:150px}
     #step-selection .month-grid{gap:12px}
     #step-selection .month-header{padding:12px 12px 7px}
@@ -62,6 +68,14 @@
     #step-selection .slot-badge{font-size:.68rem;max-width:48%;padding:3px 6px}
     #step-selection .month.closed-month{opacity:.78}
     #step-selection .summary{margin-top:17px}
+    #modalidade-resumo.consolidado{color:#b3f3d4;font-weight:800}
+    #step-selection .toolbar .year-select,#step-selection .toolbar .refresh{box-sizing:border-box;height:43px;min-height:43px;padding-top:0;padding-bottom:0}
+    #step-selection .toolbar .refresh{display:inline-flex;align-items:center;justify-content:center;align-self:flex-end}
+    .existing-panel{max-width:650px;margin:48px auto;padding:clamp(18px,4vw,34px)}
+    .existing-panel h1{font-size:clamp(1.5rem,4vw,2.2rem);margin:10px 0 13px}
+    .existing-panel p{color:var(--muted)}
+    .existing-actions{display:flex;gap:10px;margin-top:16px}
+    .existing-actions .primary{flex:1}.existing-actions .outline{flex:0 0 auto}
     @media(max-width:570px){
       .rules-panel{padding:20px 16px;margin:21px 0}.rules-text{font-size:.91rem;padding:15px;line-height:1.65}
       .rules-actions{flex-direction:column-reverse}.rules-actions .primary{width:100%}
@@ -85,38 +99,10 @@
       #step-selection .chips{gap:4px;margin-top:5px}
       #step-selection .chip{font-size:.68rem;padding:3px 6px}
       #step-selection .sumtext{display:block;font-size:.67rem;line-height:1.4;margin-top:5px}
+      .existing-panel{margin:26px 0}.existing-actions{flex-direction:column-reverse}
     }
-    .existing-panel{max-width:650px;margin:48px auto;padding:clamp(18px,4vw,34px)}
-    .existing-panel h1{font-size:clamp(1.5rem,4vw,2.2rem);margin:10px 0 13px}
-    .existing-panel p{color:var(--muted)}
-    .existing-panel .field{margin:16px 0}
-    .existing-actions{display:flex;gap:10px;margin-top:16px}
-    .existing-actions .primary{flex:1}.existing-actions .outline{flex:0 0 auto}
-    @media(max-width:570px){.existing-panel{margin:26px 0}.existing-actions{flex-direction:column-reverse}}
-      #modalidade-resumo.consolidado{color:#b3f3d4;font-weight:800}
-
-    /* Etapa 03: alinhamento conforme o segundo print do usuário.
-       Somente apresentação; preserva ids, formulário e JavaScript. */
-    #step-selection {
-      border-top: 1px solid var(--line);
-      padding-top: 16px;
-    }
-    #step-selection .toolbar { align-items: flex-end; }
-    #step-selection .toolbar .year-select,
-    #step-selection .toolbar .refresh {
-      box-sizing: border-box;
-      height: 43px;
-      min-height: 43px;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-    #step-selection .toolbar .refresh {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      align-self: flex-end;
-    }
-</style>
+    @media print{#step-login,#step-change,#step-existing,#step-rules,#step-selection{display:none!important}}
+  </style>
 </head>
 <body>
   <div class="layout">
@@ -129,15 +115,12 @@
 
     <main>
       <section id="step-login" class="intro" aria-label="Acesso individual do servidor">
-        <div class="intro-text">
-          <div class="eyebrow">Controle individual · STTU</div>
-          <h1>Suas férias, <span>com acesso pessoal.</span></h1>
+        <div class="intro-text"><div class="eyebrow">Controle individual · STTU</div><h1>Suas férias, <span>com acesso pessoal.</span></h1>
           <p class="lead">Use sua matrícula funcional para acessar. No primeiro acesso, a senha provisória é a própria matrícula e sua alteração será obrigatória antes de escolher férias.</p>
           <div class="intro-points"><span>Campanha inicial: 2027</span><span>2 períodos de 15 dias</span></div>
         </div>
         <form id="servidor-login-form" class="panel" novalidate>
-          <div class="panel-kicker">Identificação do servidor</div>
-          <h2>Acesso ao sistema</h2>
+          <div class="panel-kicker">Identificação do servidor</div><h2>Acesso ao sistema</h2>
           <div class="field"><label for="servidor-login-matricula">Matrícula funcional</label>
             <input id="servidor-login-matricula" type="text" autocomplete="username" inputmode="text" maxlength="20" placeholder="Ex.: 00.000-0" required></div>
           <div class="field"><label for="servidor-login-senha">Senha</label>
@@ -148,10 +131,8 @@
         </form>
       </section>
       <section id="step-change" class="intro hidden" aria-label="Troca obrigatória de senha">
-        <div class="intro-text"><div class="eyebrow">Segurança de acesso</div>
-          <h1>Defina sua <span>senha pessoal.</span></h1>
-          <p class="lead">Para continuar, substitua a senha provisória por uma senha numérica de exatamente 8 dígitos. Evite sequências e repetições.</p>
-        </div>
+        <div class="intro-text"><div class="eyebrow">Segurança de acesso</div><h1>Defina sua <span>senha pessoal.</span></h1>
+          <p class="lead">Para continuar, substitua a senha provisória por uma senha numérica de exatamente 8 dígitos. Evite sequências e repetições.</p></div>
         <form id="servidor-change-form" class="panel" novalidate>
           <div class="panel-kicker">Primeiro acesso ou reset</div><h2>Troca obrigatória</h2>
           <div class="field"><label for="servidor-nova-senha">Nova senha (8 dígitos)</label>
@@ -164,21 +145,16 @@
           <p class="micro">A senha não é enviada por e-mail nem armazenada em texto puro. Se não reconhece uma ativação anterior, procure o DFV.</p>
         </form>
       </section>
-      <section id="step-existing" class="hidden" aria-label="Consulta de comprovante já registrado">
+      <section id="step-existing" class="hidden" aria-label="Comprovante de solicitação já realizada">
         <div class="panel existing-panel">
           <div class="panel-kicker">Solicitação já registrada</div>
-          <h1>Este servidor já escolheu as férias para <span id="existing-year">2027</span>.</h1>
-          <p>Não é necessário fazer outra solicitação. Para consultar seu comprovante anterior, informe o <strong>número do protocolo</strong>. O sistema verificará a matrícula da sua sessão.</p>
-          <div class="notice" role="note" style="margin:16px 0;padding:14px 16px"><strong>Não tem o número do protocolo?</strong> Entre em contato com o <strong>DFV</strong> para consultar sua solicitação.</div>
-          <form id="existing-form" novalidate>
-            <div class="field"><label for="existing-protocol">Número do protocolo</label><input id="existing-protocol" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]+" placeholder="Ex.: 20270048" maxlength="12" required></div>
-            <div id="existing-error" class="alert hidden" role="alert"></div>
-            <div class="existing-actions"><button id="existing-back" type="button" class="outline">← Sair da conta</button><button id="existing-submit" class="primary" type="submit">Consultar comprovante</button></div>
-          </form>
-          <p class="micro">Se não tiver o protocolo, entre em contato com o DFV. A consulta de comprovantes exige uma sessão autenticada.</p>
+          <h1>Suas férias de <span id="existing-year">2027</span> já foram solicitadas.</h1>
+          <p>Estamos localizando seu comprovante automaticamente usando a sua matrícula autenticada. <strong>Não é necessário informar o protocolo.</strong></p>
+          <p class="micro">Uma nova escolha de férias para este ano não é permitida enquanto existir uma solicitação registrada. Alterações e cancelamentos devem ser tratados com a administração (DFV).</p>
+          <div id="existing-error" class="alert hidden" role="alert"></div>
+          <div class="existing-actions"><button id="existing-back" type="button" class="outline">← Sair da conta</button><button id="existing-retry" class="primary" type="button">↻ Tentar novamente</button></div>
         </div>
       </section>
-
       <section id="step-rules" class="hidden" aria-label="Leitura obrigatória das regras de férias">
         <div class="panel rules-panel">
           <div class="panel-kicker">Etapa 01 de 02 · Leitura obrigatória</div>
@@ -186,19 +162,12 @@
           <div class="rules-text" id="rules-text">
             Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas serão exibidas quando definidas pela administração</strong>. Enquanto isso, o sistema indicará “Datas a definir” para cada período. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.
           </div>
-          <label class="rules-checkbox" for="rules-ack">
-            <input id="rules-ack" type="checkbox" aria-describedby="rules-text">
-            <span>Declaro que li e estou ciente das regras de solicitação de férias apresentadas acima.</span>
-          </label>
+          <label class="rules-checkbox" for="rules-ack"><input id="rules-ack" type="checkbox" aria-describedby="rules-text"><span>Declaro que li e estou ciente das regras de solicitação de férias apresentadas acima.</span></label>
           <div id="rules-error" class="alert hidden" role="alert"></div>
           <button id="rules-retry" class="outline hidden" type="button" style="margin-bottom:12px">↻ Tentar novamente</button>
-          <div class="rules-actions">
-            <button id="rules-back" type="button" class="outline">← Sair da conta</button>
-            <button id="rules-next" type="button" class="primary" disabled>Li e estou ciente · Escolher períodos →</button>
-          </div>
+          <div class="rules-actions"><button id="rules-back" type="button" class="outline">← Sair da conta</button><button id="rules-next" type="button" class="primary" disabled>Li e estou ciente · Escolher períodos →</button></div>
         </div>
       </section>
-
       <section id="step-selection" class="hidden" aria-label="Escolha dos períodos de férias">
         <div class="topline"><div><div class="eyebrow">Etapa 02 de 02 · Seleção anual</div><h1>Escolha seus períodos de férias</h1><p id="welcome">Selecione dois períodos de 15 dias em meses diferentes.</p></div><button id="back" type="button" class="outline">← Voltar às regras</button></div>
         <div class="toolbar"><div class="year-block"><label for="year">Ano da solicitação</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
@@ -208,7 +177,6 @@
         <div class="summary" aria-live="polite"><div><div class="sumlabel">Seus períodos selecionados</div><div class="chips" id="selected-chips"><span class="chip empty">1º período: não escolhido</span><span class="chip empty">2º período: não escolhido</span></div><div class="sumtext" id="modalidade-resumo">Obrigatório: dois meses diferentes</div></div><button id="confirm" type="button" class="primary" disabled><span class="idle">Confirmar solicitação →</span><span class="busy">Registrando...</span></button></div>
         <div class="notice">A seleção constitui solicitação de férias, sujeita à análise e aprovação administrativa.</div>
       </section>
-
       <section id="step-success" class="hidden" aria-label="Comprovante da solicitação">
         <div class="confirmation"><div class="checkmark" aria-hidden="true">✓</div><div id="receipt-status" class="eyebrow" style="margin-top:21px">Solicitação registrada</div><h1 id="receipt-title">Escolhas recebidas com sucesso.</h1><p id="receipt-subtitle" style="color:#b9c6d2">A solicitação foi registrada no sistema. Guarde o número de protocolo para conferência.</p><div id="receipt" class="receipt"></div><div class="actions"><button id="print" class="outline" type="button">Imprimir comprovante</button><button id="another" class="primary" type="button">Encerrar e voltar ao início</button></div><p class="micro">O registro não substitui a aprovação formal de férias pela administração.</p></div>
       </section>
@@ -221,21 +189,10 @@
     const mesesDisponiveis=Array.from({length:12},(_,i)=>i+1);
     const periodosDoMes=()=>[1,2];
     const el = id => document.getElementById(id);
-    // O protocolo público agrega o ano ao ID interno sem alterar a chave do Neon.
     function protocoloPublico(ano,id){
       const raw=String(id??'').trim();
       if(raw.startsWith(String(ano)) && /^\d{8}$/.test(raw))return raw;
       return /^\d+$/.test(raw)?String(ano)+raw.padStart(4,'0'):raw;
-    }
-    function numeroInternoProtocolo(ano,codigo){
-      const str=String(codigo??'').trim();
-      if(!/^\d+$/.test(str))return null;
-      if(str.length===8){
-        if(!str.startsWith(String(ano)))return null;
-        return Number(str.slice(4));
-      }
-      // Compatibilidade com comprovantes emitidos antes desta atualização.
-      return Number(str);
     }
     const DEMO = new URLSearchParams(window.location.search).get('demo') === '1';
     const demoStore = (() => { const memory = new Map(); return { getItem(k) { try { return localStorage.getItem(k); } catch { return memory.get(k) ?? null; } }, setItem(k,v) { memory.set(k, String(v)); try { localStorage.setItem(k,v); } catch {} } }; })();
@@ -272,15 +229,14 @@
       const info=state.periodos.find(v=>v.mes===Number(m)&&v.periodo===Number(p));
       return info?.data_inicio&&info?.data_fim?(dateBR(info.data_inicio)+' a '+dateBR(info.data_fim)):'Datas a definir';
     }
-    // Reconhece uma única programação de 30 dias (2 x 15), sem somar vagas nem mudar os prazos.
+
+    // A seleção de períodos consecutivos pode representar 30 dias, sem mudar as vagas reservadas.
     function classificacao30Dias(ano,selecoes,consultarDatas){
       if(!Array.isArray(selecoes)||selecoes.length!==2)return {tipo:'separados',rotulo:'Dois períodos de 15 dias'};
       const normalized=selecoes.map(s=>({mes:Number(s.mes),periodo:Number(s.periodo),data_inicio:s.data_inicio,data_fim:s.data_fim}));
       const first=normalized.find(s=>s.periodo===2),next=normalized.find(s=>s.periodo===1);
       if(!first||!next||next.mes!==first.mes+1)return {tipo:'separados',rotulo:'Dois períodos de 15 dias'};
-      if(Number(ano)===2027&&([1,8].includes(first.mes))){
-        return {tipo:'excecao',rotulo:'Dois períodos de 15 dias (exceção de 2027)'};
-      }
+      if(Number(ano)===2027&&([1,8].includes(first.mes)))return {tipo:'excecao',rotulo:'Dois períodos de 15 dias (exceção de 2027)'};
       let note='';
       if(consultarDatas){
         const lookup=s=>{
@@ -312,6 +268,7 @@
       if(!r.ok)throw Error(data.erro||'Não foi possível consultar as vagas.');
       return data;
     }
+
     async function reservar(payload){
       if(DEMO){
         const all=getDemo(); const m=matriculaNormalizada(payload.matricula);
@@ -323,59 +280,51 @@
         const solicitacao={id:Math.max(0,...all.map(r=>Number(r.protocolo)||0).filter(Number.isSafeInteger))+1,ano:payload.ano,nome:payload.nome,matricula:payload.matricula,escolhas:payload.selecoes,registrado_por_nome:payload.registrante_nome,registrado_por_email:payload.registrante_email,registrada_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'}),ciencia_regras_em:new Date().toLocaleString('pt-BR',{timeZone:'America/Fortaleza'})};
         all.push({...payload,protocolo:solicitacao.id,registrada_em:solicitacao.registrada_em,ciencia_regras_em:solicitacao.ciencia_regras_em});demoStore.setItem(demoKey(state.ano),JSON.stringify(all));return {solicitacao};
       }
-      const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const r=await fetch('/api/solicitar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data=await r.json().catch(()=>({}));
       if(!r.ok)throw Error(data.erro||'Não foi possível registrar a solicitação.');
       return data;
     }
     async function verificarExistente(ano, matricula){
       if(DEMO) return getDemo().some(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(matricula));
-      const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({acao:'verificar',ano,matricula})});
+      const r=await fetch('/api/solicitar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({acao:'verificar',ano})});
       const data=await r.json().catch(()=>({}));
-      if(!r.ok){
-        if(data.codigo==='CIENCIA_REGRAS_OBRIGATORIA'||String(data.erro||'').includes('ler e confirmar as regras'))
-          throw Error('A função de consulta não está atualizada. Substitua também api/solicitar.js no GitHub e verifique a publicação na Vercel.');
-        throw Error(data.erro||'Não foi possível consultar o histórico desta matrícula.');
-      }
+      if(!r.ok)throw Error(data.erro||'Não foi possível consultar o histórico desta matrícula.');
       return data.ja_solicitado===true;
     }
-    function abrirConsultaExistente(){
+    async function abrirConsultaExistente(){
       el('existing-year').textContent=String(state.ano);
-      el('existing-protocol').value='';
+      const matriculaConsultada=state.matricula;
       error('existing-error','');
+      const button=el('existing-retry');button.disabled=true;button.textContent='Consultando...';
       screen('existing');
-    }
-    el('existing-back').addEventListener('click',()=>{void sairServidor();});
-    el('existing-form').addEventListener('submit',async e=>{
-      e.preventDefault();error('existing-error','');
-      const protocolo=el('existing-protocol').value.trim();
-      if(!Number.isSafeInteger(numeroInternoProtocolo(state.ano,protocolo))||numeroInternoProtocolo(state.ano,protocolo)<1){
-        error('existing-error','Informe o número do protocolo.');return;
-      }
-      const button=el('existing-submit');button.disabled=true;button.textContent='Consultando...';
       try{
         let s;
         if(DEMO){
-          const item=getDemo().find(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(state.matricula)
-            && Number(r.protocolo||0)===numeroInternoProtocolo(state.ano,protocolo));
-          if(!item)throw Error('Comprovante não encontrado com os dados informados.');
+          const item=getDemo().find(r=>matriculaNormalizada(r.matricula)===matriculaNormalizada(state.matricula));
+          if(!item)throw Error('Nenhum comprovante encontrado para esta matrícula.');
           s={id:item.protocolo,ano:item.ano,nome:item.nome,matricula:item.matricula,
             funcao_turno:state.funcao_turno,registrado_por_nome:item.registrante_nome,
             registrado_por_email:item.registrante_email,registrada_em:item.registrada_em,
             ciencia_regras_em:item.ciencia_regras_em,escolhas:item.selecoes,reemissao:true};
         }else{
-          const r=await fetch('/api/solicitar',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
-            body:JSON.stringify({acao:'consultar_comprovante',ano:state.ano,matricula:state.matricula,protocolo})});
+          const r=await fetch('/api/solicitar',{method:'POST',credentials:'same-origin',cache:'no-store',
+            headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'consultar_comprovante_direto',ano:state.ano})});
           const data=await r.json().catch(()=>({}));
-          if(!r.ok)throw Error(data.erro||'Não foi possível localizar o comprovante.');
+          if(!r.ok)throw Error(data.erro||'Não foi possível consultar o comprovante.');
           s=data.solicitacao;
         }
-        clearInterval(state.intervalo);showReceipt(s);screen('success');
-      }catch(ex){error('existing-error',ex.message||'Erro ao consultar comprovante.');}
-      finally{button.disabled=false;button.textContent='Consultar comprovante';}
-    });
+        if(state.matricula!==matriculaConsultada)return; // Sessão alterada durante a consulta.
+        if(!s||!Array.isArray(s.escolhas)||s.escolhas.length!==2)
+          throw Error('O comprovante está incompleto. Entre em contato com o DFV.');
+        clearInterval(state.intervalo);state.intervalo=null;
+        showReceipt(s);screen('success');
+      }catch(ex){error('existing-error',ex.message||'Não foi possível consultar o comprovante.');}
+      finally{button.disabled=false;button.textContent='↻ Tentar novamente';}
+    }
+    el('existing-back').addEventListener('click',()=>{void sairServidor();});
+    el('existing-retry').addEventListener('click',()=>{void abrirConsultaExistente();});
     async function prepararLeituraObrigatoria(){
-      // A identidade foi verificada no servidor durante o login; não solicitar dados pessoais novamente.
       state.acesso_verificado=false;
       state.aceite_regras=false;
       el('rules-ack').checked=false;
@@ -384,18 +333,20 @@
       el('rules-retry').classList.add('hidden');
       screen('rules');
       if(!servidorSelecionado){
-        error('rules-error','A sessão não identificou o servidor. Saia e entre novamente.');
-        return;
+        error('rules-error','A sessão não identificou o servidor. Saia e entre novamente.');return;
       }
       const {nome,matricula,funcao_turno}=servidorSelecionado;
       state.nome=nome;state.matricula=matricula;state.funcao_turno=funcao_turno||'';
       state.registrante_nome=nome;state.registrante_email='';
       el('welcome').textContent=state.nome+' · '+state.matricula+' · '+state.funcao_turno;
       try{
-        await atualizarAnos();
-        // Se já houver solicitação, direciona à consulta do protocolo sem criar nova reserva.
+        // Consulta a matrícula em 2027 antes da verificação de campanha aberta.
         if(await verificarExistente(state.ano,state.matricula)){
-          abrirConsultaExistente();return;
+          void abrirConsultaExistente();return;
+        }
+        await atualizarAnos();
+        if(await verificarExistente(state.ano,state.matricula)){
+          void abrirConsultaExistente();return;
         }
         state.acesso_verificado=true;
       }catch(ex){
@@ -411,6 +362,9 @@
     el('rules-next').addEventListener('click',async()=>{
       if(!state.acesso_verificado||!el('rules-ack').checked)return;
       state.aceite_regras=true;
+      // Revalidar antes de expor o calendário.
+      try{if(await verificarExistente(state.ano,state.matricula)){void abrirConsultaExistente();return;}}
+      catch(ex){error('rules-error',ex.message||'Falha na verificação de registro.');return;}
       screen('selection');await carregar();
       if(state.intervalo)clearInterval(state.intervalo);
       state.intervalo=setInterval(()=>{if(!document.hidden && !el('step-selection').classList.contains('hidden'))carregar(true);},30000);
@@ -419,7 +373,12 @@
       clearInterval(state.intervalo);state.aceite_regras=false;
       el('rules-ack').checked=false;el('rules-next').disabled=true;screen('rules');
     });
-    el('year').addEventListener('change',async e=>{state.ano=Number(e.target.value);state.escolhidos=[];updateSelection();try{if(await verificarExistente(state.ano,state.matricula)){clearInterval(state.intervalo);abrirConsultaExistente();return;}}catch(ex){error('calendar-error',ex.message||'Não foi possível verificar a matrícula.');return;}await carregar();});
+    el('year').addEventListener('change',async e=>{
+      state.ano=Number(e.target.value);state.escolhidos=[];updateSelection();
+      try{if(await verificarExistente(state.ano,state.matricula)){clearInterval(state.intervalo);void abrirConsultaExistente();return;}}
+      catch(ex){error('calendar-error',ex.message||'Não foi possível verificar a matrícula.');return;}
+      await carregar();
+    });
     el('refresh').addEventListener('click',()=>carregar());
     async function carregar(silencioso=false){
       if(state.loading)return;
@@ -436,7 +395,6 @@
     }
     function render(){
       const root=el('months');root.replaceChildren();
-
       for (const m of mesesDisponiveis){
         const box=document.createElement('article');box.className='month';
         const head=document.createElement('div');head.className='month-header';
@@ -480,6 +438,7 @@
       if(state.escolhidos.length>=2){error('selection-error','Você já escolheu dois períodos. Clique em uma escolha para desmarcá-la antes de selecionar outra.');return;}
       state.escolhidos.push({mes:m,periodo:p});render();updateSelection();
     }
+
     function updateSelection(){
       const chips=el('selected-chips');chips.replaceChildren();
       for(let i=0;i<2;i++){
@@ -492,15 +451,26 @@
         label.textContent=state.escolhidos.length===2?classificacao.rotulo+(classificacao.aviso?' · '+classificacao.aviso:''):'Obrigatório: dois meses diferentes';
         label.classList.toggle('consolidado',classificacao.tipo==='continuo');
       }
-      el('confirm').disabled=state.escolhidos.length!==2||state.loading;
+      el('confirm').disabled=state.escolhidos.length!==2||state.loading||!state.aceite_regras;
     }
     el('confirm').addEventListener('click',async()=>{
-      if(state.escolhidos.length!==2)return;
+      if(state.escolhidos.length!==2||!state.aceite_regras)return;
       const button=el('confirm');button.disabled=true;button.classList.add('loading');error('selection-error','');
       try{
+        // Verificação de duplicidade adicional; a trava decisiva permanece no banco de dados.
+        if(await verificarExistente(state.ano,state.matricula)){
+          clearInterval(state.intervalo);void abrirConsultaExistente();return;
+        }
         const result=await reservar({ano:state.ano,nome:state.nome,matricula:state.matricula,selecoes:state.escolhidos,aceite_regras:state.aceite_regras});
         clearInterval(state.intervalo);showReceipt(result.solicitacao);screen('success');
-      }catch(ex){if(String(ex.message||'').includes('Já existe uma solicitação')){clearInterval(state.intervalo);abrirConsultaExistente();}else{error('selection-error',ex.message||'Erro inesperado.');await carregar(true);window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}}
+      }catch(ex){
+        if(String(ex.message||'').includes('Já existe uma solicitação')){
+          clearInterval(state.intervalo);void abrirConsultaExistente();
+        }else{
+          error('selection-error',ex.message||'Erro inesperado.');await carregar(true);
+          window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+        }
+      }
       finally{button.classList.remove('loading');button.disabled=state.escolhidos.length!==2;}
     });
     function showReceipt(s){
@@ -518,7 +488,6 @@
       pairs.forEach(addLine);
       const classif=classificacao30Dias(s.ano,s.escolhas,true);
       if(classif.aviso){const aviso=document.createElement('p');aviso.className='micro';aviso.textContent=classif.aviso;root.append(aviso);}
-
       const heading=document.createElement('div');heading.className='receipt-heading';heading.textContent='Informações adicionais · registro da solicitação';root.append(heading);
       if(s.reemissao){const nota=document.createElement('div');nota.className='micro';nota.textContent='Reemissão: as datas exibidas seguem a configuração atual do calendário e podem ter sido alteradas desde a solicitação original. O protocolo, o ano e os períodos escolhidos são os registrados.';root.append(nota);}
       [['Registrado por',s.registrado_por_nome||state.registrante_nome],...(s.registrado_por_email&&!String(s.registrado_por_email).endsWith('.invalid')?[['E-mail informado',s.registrado_por_email]]:[]),['Data e hora do registro',s.registrada_em||'—'],['Ciência das regras',s.ciencia_regras_em||'—']].forEach(addLine);
@@ -578,7 +547,6 @@
       finally{botao.disabled=false;}
     });
     if(DEMO){
-      // No modo demonstrativo, utilizar um cadastro fictício sem exigir nome/matrícula.
       servidorSelecionado=demoServidores[0];
       state.nome=servidorSelecionado.nome;
       state.matricula=servidorSelecionado.matricula;
@@ -593,6 +561,6 @@
         .catch(ex=>error('servidor-login-erro',ex.message));
     }
     atualizarAnos().catch(()=>{});
-  </script>
+</script>
 </body>
 </html>
