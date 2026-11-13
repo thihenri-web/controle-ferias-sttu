@@ -1,5 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import {getServidor,normalizeMatricula,serverOrigin} from '../lib/servidor-auth.js';
+import servidorAcessoHandler from '../lib/servidor-acesso.js';
 
 const mensagens = {
   'ANO_INVALIDO': 'Ano inválido.',
@@ -36,6 +37,9 @@ function tipoDeSolicitacao(ano,periodos){
 }
 
 export default async function handler(req, res) {
+  // Compartilhamento da mesma Function: ?acesso=1 encaminha apenas autenticacao.
+  // O fluxo de ferias continua separado e intacto abaixo.
+  if (req.query?.acesso === '1') return servidorAcessoHandler(req, res);
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   // Diagnóstico seguro da versão publicada; não retorna dados ou credenciais.
   if (req.method === 'GET') return res.status(200).json({ ok:true, versao:'2027.11-servidor-autenticado', consulta_matricula:'sessao', comprovante:'sessao' });
