@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import {getServidor,normalizeMatricula,serverOrigin} from '../lib/servidor-auth.js';
 
 const mensagens = {
   'ANO_INVALIDO': 'Ano inválido.',
@@ -37,18 +38,28 @@ function tipoDeSolicitacao(ano,periodos){
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   // Diagnóstico seguro da versão publicada; não retorna dados ou credenciais.
-  if (req.method === 'GET') return res.status(200).json({ ok:true, versao:'2027.11-protocolo', consulta_matricula:true, comprovante:true });
+  if (req.method === 'GET') return res.status(200).json({ ok:true, versao:'2027.11-servidor-autenticado', consulta_matricula:'sessao', comprovante:'sessao' });
   if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido.' });
+  if(!serverOrigin(req))return res.status(403).json({erro:'Origem inválida.'});
   if (!process.env.DATABASE_URL) {
     return res.status(503).json({ erro: 'Banco de dados não configurado. Conecte o Neon à Vercel.' });
   }
   try {
     const b = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    const ano = Number(b.ano), nome = String(b.nome || '').trim();
-    const matricula = String(b.matricula || '').trim();
-    const registranteNome = String(b.registrante_nome || '').replace(/\s+/g, ' ').trim();
+    // A matrícula e o nome vêm sempre do cookie autenticado e confirmado no Neon.
+    // Não aceitamos declarações de identidade do navegador.
+    const sqlAuth=neon(process.env.DATABASE_URL);
+    const titular=await getServidor(req,sqlAuth);
+    if(!titular)return res.status(401).json({erro:'Faça login com sua matrícula para continuar.'});
+    if(b.matricula&&normalizeMatricula(b.matricula)!==titular.matricula)
+      return res.status(403).json({erro:'Não é permitido solicitar férias para outra matrícula.'});
+    if(b.nome&&String(b.nome).trim()!==titular.nome)
+      return res.status(403).json({erro:'O nome informado não corresponde à conta autenticada.'});
+    const ano=Number(b.ano),nome=titular.nome;
+    const matricula=titular.matricula;
+    const registranteNome=titular.nome;
     const registranteEmail = String(b.registrante_email || '').trim().toLowerCase();
-    // Antes da seleção, devolver somente um indicador de existência, sem dados pessoais.
+    // Consulta vinculada à matrícula autenticada; não permite pesquisar terceiros.
     if (b.acao === 'verificar') {
       if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
           !/^[0-9]{4,14}$/.test(matricula.replace(/\D/g, ''))) {
@@ -63,11 +74,9 @@ export default async function handler(req, res) {
         LIMIT 1`;
       return res.status(200).json({ ja_solicitado: rows.length > 0 });
     }
-    // Reemissão: protocolo + e-mail informado no pedido + matrícula + ano.
-    // Nunca devolver nome, e-mail, escolhas ou datas no indicador público acima.
+    // Reemissão: protocolo + matrícula autenticada + ano, inclusive pedidos históricos.
     if (b.acao === 'consultar_comprovante') {
       const digits = matricula.replace(/\D/g, '');
-      const email = String(b.email || '').trim().toLowerCase();
       const rawProtocolo = String(b.protocolo ?? '').trim();
       const anoPrefixo = String(ano);
       const protocoloCorreto = /^\d{8}$/.test(rawProtocolo)
@@ -76,9 +85,8 @@ export default async function handler(req, res) {
       const protocolo = Number(/^\d{8}$/.test(rawProtocolo) ? rawProtocolo.slice(4) : rawProtocolo);
       if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
           !/^[0-9]{4,14}$/.test(digits) ||
-          !protocoloCorreto || !Number.isSafeInteger(protocolo) || protocolo < 1 ||
-          email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return res.status(400).json({ erro: 'Preencha protocolo e e-mail válidos.' });
+          !protocoloCorreto || !Number.isSafeInteger(protocolo) || protocolo < 1) {
+        return res.status(400).json({ erro: 'Informe um protocolo válido.' });
       }
       const sql = neon(process.env.DATABASE_URL);
       const rows = await sql`
@@ -100,7 +108,6 @@ export default async function handler(req, res) {
           ON p2.ano=s.ano AND p2.mes=s.mes_2 AND p2.periodo=s.periodo_2
         WHERE s.id=${protocolo} AND s.ano=${ano}
           AND regexp_replace(s.matricula,'[^0-9]','','g')=${digits}
-          AND lower(btrim(coalesce(s.registrado_por_email,'')))=${email}
         LIMIT 1`;
       if (!rows.length) return res.status(404).json({
         erro: 'Comprovante não encontrado com os dados informados. Caso não tenha o número do protocolo, entre em contato com o DFV.'
