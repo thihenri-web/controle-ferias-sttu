@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#0d121a">
+<title>Histórico de acessos administrativos · STTU</title>
+<style>
+:root{color-scheme:dark;--bg:#0d121a;--card:#151e29;--line:#344250;--fg:#f1f4f8;--muted:#b8c5d2;--gold:#f0c657;--red:#d44f58;--green:#40cb98}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--gold)}
+header{border-bottom:1px solid var(--line);background:#101720;padding:18px max(16px,calc((100vw - 1150px)/2));display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+header img{width:55px;height:55px;object-fit:contain;border-radius:10px;background:#fff;padding:3px}
+header strong{font-size:1.1rem}header a{margin-left:auto;text-decoration:none;border:1px solid var(--line);border-radius:9px;padding:9px 14px}
+main{max-width:1150px;margin:auto;padding:24px 16px 50px}h1{margin:0;font-size:1.55rem}h2{font-size:1.05rem;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);padding:18px;border-radius:13px;margin:18px 0}.muted{color:var(--muted)}
+.controls{display:flex;align-items:end;flex-wrap:wrap;gap:10px}label{display:grid;gap:5px}input,select,button{font:inherit;color:var(--fg);background:#202d3c;border:1px solid #546476;padding:10px 12px;border-radius:9px}input{min-width:260px}button{cursor:pointer;font-weight:650}button:hover{background:#314359}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}button:disabled{opacity:.55;cursor:wait}
+.info{border-left:3px solid var(--gold);padding:10px 13px;background:#26291f;color:#f7e1aa;border-radius:4px}
+.status{min-height:22px}.error{color:#ffb1b9}.success{color:var(--green)}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:670px}th,td{padding:12px;text-align:left;border-bottom:1px solid var(--line)}th{background:#202c3a;color:#e5edf5;position:sticky;top:0}tr:hover td{background:#1b2938}tr:last-child td{border-bottom:0}
+.tag{font-size:.8rem;font-weight:700;border-radius:6px;padding:3px 6px;display:inline-block;background:#303c4a}.tag.success{background:#17382e;color:#8be6bb}.tag.fail{background:#4d242d;color:#ffd4d8}
+@media(max-width:650px){header a{margin-left:0;width:100%;text-align:center}input,.controls button,.controls label{width:100%}}
+</style>
+</head>
+<body>
+<header><img src="./assets/brasao-sttu.jpg" alt="Brasão STTU"><div><strong>STTU · Natal/RN</strong><div class="muted">Controle de férias 2027</div></div><a href="./admin.html">Voltar à administração</a></header>
+<main>
+<div class="muted">Segurança · administração</div>
+<h1>Histórico de acessos administrativos</h1>
+<p class="muted">Registros de entradas, tentativas recusadas, bloqueios temporários e saídas. Disponível somente aos perfis com permissão de administração.</p>
+<div class="info">Para visualizar, entre antes no painel administrativo com uma conta autorizada. Senhas, cookies e endereços IP não são exibidos nem armazenados neste histórico.</div>
+<div class="card">
+  <div class="controls">
+    <label>Pesquisar por login ou evento<input id="busca" placeholder="Ex.: ANDREA-CASTRO ou ENTRADA" maxlength="80"></label>
+    <label>Evento<select id="evento"><option value="">Todos</option><option>ENTRADA</option><option>ENTRADA_RECUSADA</option><option>BLOQUEIO</option><option>SAIDA</option></select></label>
+    <button type="button" id="atualizar">Atualizar histórico</button>
+    <button type="button" id="csv" disabled>Exportar CSV</button>
+  </div>
+  <p id="status" class="status muted" role="status">Verificando acesso...</p>
+  <div class="muted" id="usuario"></div>
+</div>
+<div class="tablewrap"><table><thead><tr><th>Data / hora (Natal)</th><th>Login</th><th>Perfil</th><th>Evento</th></tr></thead><tbody id="registros"><tr><td colspan="4">Carregando...</td></tr></tbody></table></div>
+<p id="total" class="muted"></p>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let all=[];
+const EVENTS={ENTRADA:'Entrada autorizada',ENTRADA_RECUSADA:'Entrada recusada',BLOQUEIO:'Bloqueio temporário',SAIDA:'Saída do sistema'};
+function status(text,isError=false){$('status').textContent=text;$('status').className='status '+(isError?'error':'muted');}
+function show(){
+ const q=$('busca').value.trim().toUpperCase(),event=$('evento').value;
+ const visible=all.filter(x=>(!event||x.evento===event)&&(!q||(x.usuario+' '+x.evento+' '+(x.perfil||'')).toUpperCase().includes(q)));
+ const root=$('registros');root.replaceChildren();
+ if(!visible.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=4;td.textContent='Nenhum registro encontrado.';tr.append(td);root.append(tr);}
+ for(const x of visible){const tr=document.createElement('tr');
+   for(const val of [x.data_hora,x.usuario,x.perfil||'—']){const td=document.createElement('td');td.textContent=val;tr.append(td);}
+   const td=document.createElement('td'),span=document.createElement('span');span.className='tag '+(x.evento==='ENTRADA'?'success':x.evento==='BLOQUEIO'||x.evento==='ENTRADA_RECUSADA'?'fail':'');span.textContent=EVENTS[x.evento]||x.evento;td.append(span);tr.append(td);root.append(tr);}
+ $('total').textContent=`${visible.length} registro(s) exibido(s) de ${all.length} disponíveis.`;
+ return visible;
+}
+function csvSafe(value){let text=String(value??'');if(/^[=+@\-\t\r]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';}
+function download(){
+ const rows=[['Data/hora','Usuario','Perfil','Evento'],...show().map(x=>[x.data_hora,x.usuario,x.perfil,EVENTS[x.evento]||x.evento])];
+ const data='\ufeff'+rows.map(r=>r.map(csvSafe).join(';')).join('\r\n');
+ const blob=new Blob([data],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
+ const a=document.createElement('a');a.href=url;a.download='sttu_auditoria_acessos_2027.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function load(){
+ $('atualizar').disabled=true;status('Consultando histórico...');
+ try{
+  const sessResp=await fetch('/api/admin-login',{credentials:'same-origin',cache:'no-store'});
+  const sess=await sessResp.json();
+  if(!sess.autenticado)throw Error('Acesso não autenticado. Faça login em admin.html e abra esta página novamente.');
+  if(!sess.permissoes?.editar)throw Error('Seu perfil é de consulta ou cancelamento e não pode ver o histórico de acessos.');
+  $('usuario').textContent='Conectado: '+sess.usuario;
+  const r=await fetch('/api/admin-login?auditoria=1&limite=250',{credentials:'same-origin',cache:'no-store'});
+  const body=await r.json();if(!r.ok)throw Error(body.erro||'Não foi possível consultar a auditoria.');
+  all=Array.isArray(body.registros)?body.registros:[];show();$('csv').disabled=!all.length;
+  status('Consulta concluída. Exibidos os 250 registros mais recentes, no máximo.');
+ }catch(e){all=[];show();$('csv').disabled=true;status(e.message,true);}
+ finally{$('atualizar').disabled=false;}
+}
+$('atualizar').addEventListener('click',load);
+$('csv').addEventListener('click',download);
+$('busca').addEventListener('input',show);
+$('evento').addEventListener('change',show);
+load();
+</script>
+</body>
+</html>
