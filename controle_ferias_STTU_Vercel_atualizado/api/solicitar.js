@@ -1,7 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import {getServidor,normalizeMatricula,serverOrigin} from '../lib/servidor-auth.js';
 import servidorAcessoHandler from '../lib/servidor-acesso.js';
-
 const mensagens = {
   'ANO_INVALIDO': 'Ano inválido.',
   'ANO_BLOQUEADO': 'Este ano ainda não foi liberado pela administração.',
@@ -20,13 +19,11 @@ const mensagens = {
   'REGISTRANTE_EMAIL_INVALIDO': 'Informe um e-mail válido de quem está fazendo a solicitação.',
   'CIENCIA_REGRAS_OBRIGATORIA': 'É necessário ler e confirmar as regras de solicitação de férias.'
 };
-
 // O ID numérico permanece interno; o código visível incorpora o ano.
 function protocoloPublico(ano,id){
   const n=Number(id);
   return Number.isSafeInteger(n)&&n>0?String(ano)+String(n).padStart(4,'0'):null;
 }
-
 // Rótulo informativo; cada escolha continua reservando sua própria vaga/cota.
 function tipoDeSolicitacao(ano,periodos){
   if(!Array.isArray(periodos)||periodos.length!==2)return '15+15';
@@ -35,7 +32,6 @@ function tipoDeSolicitacao(ano,periodos){
   if(Number(ano)===2027&&(Number(a.mes)===1||Number(a.mes)===8))return '15+15';
   return '30';
 }
-
 export default async function handler(req, res) {
   // Compartilhamento da mesma Function: ?acesso=1 encaminha apenas autenticacao.
   // O fluxo de ferias continua separado e intacto abaixo.
@@ -80,19 +76,20 @@ export default async function handler(req, res) {
         LIMIT 1`;
       return res.status(200).json({ ja_solicitado: rows.length > 0 });
     }
-    // Reemissão: protocolo + matrícula autenticada + ano, inclusive pedidos históricos.
-    if (b.acao === 'consultar_comprovante') {
+    // Reemissão: diretamente pela matrícula autenticada ou por protocolo, para compatibilidade.
+    if (b.acao === 'consultar_comprovante' || b.acao === 'consultar_comprovante_direto') {
+      const consultaDireta = b.acao === 'consultar_comprovante_direto';
       const digits = matricula.replace(/\D/g, '');
       const rawProtocolo = String(b.protocolo ?? '').trim();
       const anoPrefixo = String(ano);
-      const protocoloCorreto = /^\d{8}$/.test(rawProtocolo)
+      const protocoloCorreto = consultaDireta || (/^\d{8}$/.test(rawProtocolo)
         ? rawProtocolo.startsWith(anoPrefixo)
-        : /^\d{1,7}$/.test(rawProtocolo);
-      const protocolo = Number(/^\d{8}$/.test(rawProtocolo) ? rawProtocolo.slice(4) : rawProtocolo);
+        : /^\d{1,7}$/.test(rawProtocolo));
+      const protocolo = consultaDireta ? 0 : Number(/^\d{8}$/.test(rawProtocolo) ? rawProtocolo.slice(4) : rawProtocolo);
       if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
           !/^[0-9]{4,14}$/.test(digits) ||
-          !protocoloCorreto || !Number.isSafeInteger(protocolo) || protocolo < 1) {
-        return res.status(400).json({ erro: 'Informe um protocolo válido.' });
+          !protocoloCorreto || (!consultaDireta && (!Number.isSafeInteger(protocolo) || protocolo < 1))) {
+        return res.status(400).json({ erro: 'Dados de consulta inválidos.' });
       }
       const sql = neon(process.env.DATABASE_URL);
       const rows = await sql`
@@ -112,11 +109,13 @@ export default async function handler(req, res) {
           ON p1.ano=s.ano AND p1.mes=s.mes_1 AND p1.periodo=s.periodo_1
         LEFT JOIN public.sttu_ferias_periodos_config p2
           ON p2.ano=s.ano AND p2.mes=s.mes_2 AND p2.periodo=s.periodo_2
-        WHERE s.id=${protocolo} AND s.ano=${ano}
+        WHERE s.ano=${ano}
           AND regexp_replace(s.matricula,'[^0-9]','','g')=${digits}
+          AND (${consultaDireta} OR s.id=${protocolo})
+        ORDER BY s.id DESC
         LIMIT 1`;
       if (!rows.length) return res.status(404).json({
-        erro: 'Comprovante não encontrado com os dados informados. Caso não tenha o número do protocolo, entre em contato com o DFV.'
+        erro: consultaDireta ? 'Não foi possível localizar a solicitação desta matrícula. Entre em contato com o DFV.' : 'Comprovante não encontrado com os dados informados. Caso não tenha o número do protocolo, entre em contato com o DFV.'
       });
       const s = rows[0];
       return res.status(200).json({ sucesso:true, solicitacao:{
