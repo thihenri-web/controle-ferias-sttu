@@ -35,14 +35,9 @@
     .confirmation{max-width:670px;margin:64px auto;background:var(--surface);border:1px solid #365343;border-radius:22px;padding:34px;box-shadow:0 25px 60px #0005}.checkmark{width:59px;height:59px;border-radius:50%;background:#1b4839;color:#70efb4;font-size:2rem;display:grid;place-items:center}.confirmation h1{font-size:2.1rem}.receipt{border:1px solid #344453;border-radius:15px;background:#101821;padding:19px 22px;margin:26px 0}.receipt-line{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #2a3541}.receipt-line:last-child{border-bottom:0}.receipt-line span{color:var(--muted)}.receipt-line strong{text-align:right;overflow-wrap:anywhere}.actions{display:flex;gap:10px}.actions .primary{width:auto;flex:1}.actions .outline{flex:1}
     @media(max-width:1070px){.intro{grid-template-columns:1fr 410px;gap:20px}.month-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:820px){.intro{grid-template-columns:1fr;min-height:0;padding:45px 0}.intro-text{max-width:710px}.panel{max-width:670px}.month-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.summary{gap:10px}}
     @media(max-width:570px){.layout{padding:12px 14px 100px}.logo{width:59px;height:59px}.header{gap:10px}.brand-sub{display:none}.header-right{display:none}.header-admin{font-size:.72rem;padding:8px}.intro{padding:36px 0 25px}.panel{padding:23px 18px}.intro-points span{font-size:.76rem}.topline{margin:29px 0 15px}.topline h1{font-size:1.85rem}.topline .outline{padding:9px;font-size:.8rem}.month-grid{grid-template-columns:1fr;gap:12px}.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:1/-1}.stat{padding:14px}.stat strong{font-size:1.6rem}.status-text{margin:0;width:100%;padding:0}.toolbar{gap:12px}.summary{bottom:7px;padding:12px 13px;flex-direction:column;align-items:stretch}.summary .primary{width:100%}.receipt-line{font-size:.86rem}.actions{flex-direction:column}.confirmation{padding:24px 17px;margin:32px 0}}
-    @media print{body{background:#fff;color:#111}.header,.footer,#step-entry,#step-existing,#step-rules,#step-selection,.actions,.notice,.demo-banner{display:none!important}.layout{max-width:none;padding:0}.confirmation{box-shadow:none;border:1px solid #aaa;background:#fff;color:#111;margin:0}.receipt{background:#fff;color:#111;border-color:#ccc}.receipt-line span{color:#555}}
+    @media print{body{background:#fff;color:#111}.header,.footer,#step-existing,#step-rules,#step-selection,.actions,.notice,.demo-banner{display:none!important}.layout{max-width:none;padding:0}.confirmation{box-shadow:none;border:1px solid #aaa;background:#fff;color:#111;margin:0}.receipt{background:#fff;color:#111;border-color:#ccc}.receipt-line span{color:#555}}
 
-    .choose-list{position:relative}.roster-results{position:absolute;z-index:50;top:100%;left:0;right:0;max-height:285px;overflow:auto;background:#0f1c27;border:1px solid #687788;border-radius:12px;box-shadow:0 16px 48px #0009;padding:6px;margin-top:5px}
-    .roster-option{display:block;width:100%;text-align:left;background:transparent;color:#f3f6fa;border:0;border-radius:8px;padding:10px 11px;line-height:1.35}
-    .entry-divider{border-top:1px solid #3c4b5b;margin:20px 0 18px}.beneficiary-title{font-size:1.1rem;margin:0 0 7px;color:#f2d387;letter-spacing:-.01em}.receipt-heading{font-size:.82rem;font-weight:800;color:#e6c772;margin:19px 0 3px;padding-top:14px;border-top:1px solid #3a4755;text-transform:uppercase;letter-spacing:.035em}
-    .roster-option:hover,.roster-option:focus-visible{background:#33465a}.roster-option strong{display:block;font-size:.86rem}.roster-option small{color:#c4d3df;font-size:.78rem}
-    .roster-empty{color:#becbda;padding:11px;font-size:.86rem}.chosen-server{border:1px solid #53654c;background:#1c302b;border-radius:12px;padding:12px 14px;margin-top:12px}
-    .chosen-server strong{display:block;font-size:.92rem}.chosen-server span{color:#a9e2c7;font-size:.84rem}.choose-list .input-hint{margin-top:8px}
+    .receipt-heading{font-size:.82rem;font-weight:800;color:#e6c772;margin:19px 0 3px;padding-top:14px;border-top:1px solid #3a4755;text-transform:uppercase;letter-spacing:.035em}
     /* Leitura das regras: uma etapa obrigatória entre identificação e calendário. */
     .rules-panel{max-width:760px;margin:clamp(28px,6vw,66px) auto 36px;padding:clamp(20px,4vw,34px)}
     .rules-panel h1{font-size:clamp(1.6rem,4vw,2.2rem);margin:8px 0 16px;letter-spacing:-.025em}
@@ -169,41 +164,6 @@
           <p class="micro">A senha não é enviada por e-mail nem armazenada em texto puro. Se não reconhece uma ativação anterior, procure o DFV.</p>
         </form>
       </section>
-      <section id="step-entry" class="intro hidden" aria-label="Confirmação do servidor autenticado">
-        <div class="intro-text">
-          <div class="eyebrow">Planejamento anual · STTU</div>
-          <h1>Suas férias, <span>bem planejadas.</span></h1>
-          <p class="lead">Entre com sua matrícula, confirme seu próprio cadastro e consulte as vagas disponíveis para selecionar <strong>dois períodos de 15 dias de férias</strong> em <strong>meses diferentes</strong>. A combinação do 2º período de um mês com o 1º do mês seguinte será identificada como programação única de 30 dias, exceto janeiro–fevereiro e agosto–setembro de 2027.</p>
-          <div class="intro-points"><span>Campanha inicial: 2027</span><span>2 períodos de 15 dias</span></div>
-        </div>
-        <form id="entry-form" class="panel" novalidate>
-          <div class="panel-kicker">Etapa 01 de 03</div>
-          <h2>Servidor autenticado</h2>
-          <p class="desc" id="servidor-conta-resumo">Seu cadastro será preenchido automaticamente após o login.</p>
-          
-          <div class="field"><label for="registrante-nome">Nome completo do servidor (identificado pelo login)</label>
-            <input id="registrante-nome" type="text" autocomplete="off" maxlength="150" readonly required>
-          </div>
-          <div class="field"><label for="registrante-email">Seu e-mail para contato (não comprova identidade)</label>
-            <input id="registrante-email" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="nome@exemplo.com" required>
-            <div class="input-hint">O nome e a matrícula vêm da conta autenticada. Este e-mail serve apenas para contato.</div>
-          </div>
-          <div class="entry-divider" role="presentation"></div>
-          <h3 class="beneficiary-title">Servidor beneficiário das férias</h3>
-          <p class="desc">A solicitação só pode ser feita para a matrícula da conta autenticada. O cadastro abaixo é preenchido automaticamente.</p>
-          <div class="field choose-list" id="roster-field">
-            <label for="roster-search">Selecione seu nome e matrícula</label>
-            <input id="roster-search" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="roster-results" autocomplete="off" placeholder="Clique ou pesquise nome / matrícula" required>
-            <div id="roster-results" class="roster-results hidden" role="listbox" aria-label="Servidores cadastrados"></div>
-            <div class="input-hint" id="roster-help">Clique no campo para abrir a lista ou digite parte do nome ou da matrícula.</div>
-            <div id="chosen-server" class="chosen-server hidden" aria-live="polite"><strong id="chosen-name"></strong><span id="chosen-registration"></span></div>
-          </div>
-          <div id="entry-error" class="alert hidden" role="alert"></div>
-          <button type="submit" class="primary">Avançar para leitura das regras →</button>
-          <div class="micro">A identificação de quem registra vem do login; o e-mail é declarado apenas para contato. A solicitação só é registrada após a confirmação final.</div>
-        </form>
-      </section>
-
       <section id="step-existing" class="hidden" aria-label="Consulta de comprovante já registrado">
         <div class="panel existing-panel">
           <div class="panel-kicker">Solicitação já registrada</div>
@@ -213,7 +173,7 @@
           <form id="existing-form" novalidate>
             <div class="field"><label for="existing-protocol">Número do protocolo</label><input id="existing-protocol" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]+" placeholder="Ex.: 20270048" maxlength="12" required></div>
             <div id="existing-error" class="alert hidden" role="alert"></div>
-            <div class="existing-actions"><button id="existing-back" type="button" class="outline">← Voltar</button><button id="existing-submit" class="primary" type="submit">Consultar comprovante</button></div>
+            <div class="existing-actions"><button id="existing-back" type="button" class="outline">← Sair da conta</button><button id="existing-submit" class="primary" type="submit">Consultar comprovante</button></div>
           </form>
           <p class="micro">Se não tiver o protocolo, entre em contato com o DFV. A consulta de comprovantes exige uma sessão autenticada.</p>
         </div>
@@ -221,7 +181,7 @@
 
       <section id="step-rules" class="hidden" aria-label="Leitura obrigatória das regras de férias">
         <div class="panel rules-panel">
-          <div class="panel-kicker">Etapa 02 de 03 · Leitura obrigatória</div>
+          <div class="panel-kicker">Etapa 01 de 02 · Leitura obrigatória</div>
           <h1>Calendário de vagas</h1>
           <div class="rules-text" id="rules-text">
             Cada escolha corresponde a <strong>um período de 15 dias</strong>. As <strong>datas serão exibidas quando definidas pela administração</strong>. Enquanto isso, o sistema indicará “Datas a definir” para cada período. A administração define quais períodos de cada mês ficam disponíveis. O prazo de solicitação permanece em <strong>45 dias antes do primeiro dia do mês</strong>, com exceção de janeiro de 2027. Meses ou períodos bloqueados permanecem visíveis, mas não podem ser escolhidos. Anos seguintes dependem de liberação administrativa.
@@ -230,15 +190,17 @@
             <input id="rules-ack" type="checkbox" aria-describedby="rules-text">
             <span>Declaro que li e estou ciente das regras de solicitação de férias apresentadas acima.</span>
           </label>
+          <div id="rules-error" class="alert hidden" role="alert"></div>
+          <button id="rules-retry" class="outline hidden" type="button" style="margin-bottom:12px">↻ Tentar novamente</button>
           <div class="rules-actions">
-            <button id="rules-back" type="button" class="outline">← Voltar aos dados</button>
+            <button id="rules-back" type="button" class="outline">← Sair da conta</button>
             <button id="rules-next" type="button" class="primary" disabled>Li e estou ciente · Escolher períodos →</button>
           </div>
         </div>
       </section>
 
       <section id="step-selection" class="hidden" aria-label="Escolha dos períodos de férias">
-        <div class="topline"><div><div class="eyebrow">Etapa 03 de 03 · Seleção anual</div><h1>Escolha seus períodos de férias</h1><p id="welcome">Selecione dois períodos de 15 dias em meses diferentes.</p></div><button id="back" type="button" class="outline">← Alterar dados</button></div>
+        <div class="topline"><div><div class="eyebrow">Etapa 02 de 02 · Seleção anual</div><h1>Escolha seus períodos de férias</h1><p id="welcome">Selecione dois períodos de 15 dias em meses diferentes.</p></div><button id="back" type="button" class="outline">← Voltar às regras</button></div>
         <div class="toolbar"><div class="year-block"><label for="year">Ano da solicitação</label><select id="year" class="year-select"></select></div><button type="button" class="refresh" id="refresh">↻ Atualizar vagas</button><span id="update-status" class="status-text" role="status" aria-live="polite"></span></div>
         <div id="calendar-error" class="alert hidden" role="alert"></div>
         <div id="months" class="month-grid" aria-label="Meses e períodos disponíveis"></div>
@@ -277,63 +239,9 @@
     }
     const DEMO = new URLSearchParams(window.location.search).get('demo') === '1';
     const demoStore = (() => { const memory = new Map(); return { getItem(k) { try { return localStorage.getItem(k); } catch { return memory.get(k) ?? null; } }, setItem(k,v) { memory.set(k, String(v)); try { localStorage.setItem(k,v); } catch {} } }; })();
-    const state = { nome:'',matricula:'',registrante_nome:'',registrante_email:'',aceite_regras:false,ano:2027,periodos:[],escolhidos:[],loading:false,intervalo:null };
-    let servidores=[];
+    const state = { nome:'',matricula:'',registrante_nome:'',registrante_email:'',aceite_regras:false,acesso_verificado:false,ano:2027,periodos:[],escolhidos:[],loading:false,intervalo:null };
     let servidorSelecionado=null;
-    const demoServidores=[{nome:'SERVIDORA DEMONSTRAÇÃO',matricula:'00.001-1',funcao_turno:'Manhã'},{nome:'SERVIDOR DEMONSTRAÇÃO',matricula:'00.002-2',funcao_turno:'Noite'}];
-    function normalizarBusca(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();}
-    function abrirLista(){el('roster-results').classList.remove('hidden');el('roster-search').setAttribute('aria-expanded','true');}
-    function fecharLista(){el('roster-results').classList.add('hidden');el('roster-search').setAttribute('aria-expanded','false');}
-    function mostrarSelecionado(){
-      el('chosen-server').classList.toggle('hidden',!servidorSelecionado);
-      el('chosen-name').textContent=servidorSelecionado?.nome||'';
-      el('chosen-registration').textContent=servidorSelecionado?'Matrícula: '+servidorSelecionado.matricula+' · Função/Turno: '+(servidorSelecionado.funcao_turno||'—'):'';
-    }
-    function selecionarServidor(s){
-      servidorSelecionado=s;
-      el('roster-search').value=s.nome+' - '+s.matricula;
-      mostrarSelecionado();fecharLista();error('entry-error','');
-    }
-    function renderizarLista(){
-      const query=normalizarBusca(el('roster-search').value);
-      const matches=servidores.filter(s=>normalizarBusca(s.nome+' '+s.matricula+' '+s.matricula.replace(/\D/g,'')).includes(query));
-      const root=el('roster-results');root.replaceChildren();
-      if(!matches.length){const msg=document.createElement('div');msg.className='roster-empty';msg.textContent='Nenhum servidor encontrado nesta relação.';root.append(msg);}
-      for(const s of matches.slice(0,35)){
-        const item=document.createElement('button');item.type='button';item.className='roster-option';item.setAttribute('role','option');
-        const name=document.createElement('strong');name.textContent=s.nome;
-        const matricula=document.createElement('small');matricula.textContent='Matrícula: '+s.matricula;
-        item.append(name,matricula);item.addEventListener('click',()=>selecionarServidor(s));root.append(item);
-      }
-      if(matches.length>35){const hint=document.createElement('div');hint.className='roster-empty';hint.textContent='Mostrando 35 de '+matches.length+'. Digite mais letras para refinar a busca.';root.append(hint);}
-      abrirLista();
-    }
-    async function carregarServidores(){
-      el('roster-help').textContent='Carregando relação de servidores...';
-      try{
-        if(DEMO)servidores=demoServidores;
-        else{
-          const resp=await fetch('/api/servidores',{cache:'no-store'});
-          const data=await resp.json().catch(()=>({}));
-          if(!resp.ok)throw Error(data.erro||'Não foi possível consultar o cadastro.');
-          servidores=Array.isArray(data.servidores)?data.servidores:[];
-        }
-        if(!servidores.length)throw Error('O cadastro de servidores está vazio. Informe a administração.');
-        el('roster-help').textContent='Relação carregada: '+servidores.length+' servidores. Pesquise nome ou matrícula e clique no resultado.';
-      }catch(ex){servidores=[];el('roster-help').textContent='Cadastro indisponível.';error('entry-error',ex.message||'Erro ao carregar a relação.');}
-    }
-    el('roster-search').addEventListener('focus',()=>{if(DEMO)renderizarLista();});
-    el('roster-search').addEventListener('input',()=>{if(DEMO){servidorSelecionado=null;mostrarSelecionado();renderizarLista();}});
-    el('roster-search').addEventListener('keydown',e=>{if(!DEMO)return;
-      if(e.key==='Escape'){fecharLista();}
-      else if(e.key==='ArrowDown'){
-        if(el('roster-results').classList.contains('hidden'))renderizarLista();
-        const primeiro=el('roster-results').querySelector('button');
-        if(primeiro){e.preventDefault();primeiro.focus();}
-      }
-    });
-    document.addEventListener('pointerdown',e=>{if(!el('roster-field').contains(e.target))fecharLista();});
-
+    const demoServidores=[{nome:'SERVIDORA DEMONSTRAÇÃO',matricula:'00.001-1',funcao_turno:'Manhã'}];
     if (DEMO) el('demo-banner').classList.remove('hidden');
     async function atualizarAnos(){
       const anos=DEMO?[2027]:(await (async()=>{
@@ -356,7 +264,7 @@
       if(ano===2027&&mes===1)return '2026-12-31';
       const d=new Date(Date.UTC(ano,mes-1,1));d.setUTCDate(d.getUTCDate()-45);return d.toISOString().slice(0,10);
     }
-    function screen(n) { for (const name of ['login','change','entry','existing','rules','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
+    function screen(n) { for (const name of ['login','change','existing','rules','selection','success']) el('step-'+name).classList.toggle('hidden',n!==name); window.scrollTo({top:0,behavior:'instant'}); }
     function error(id,text) { const e=el(id); e.textContent=text||'';e.classList.toggle('hidden',!text); }
     function idPeriod(m,p) {return m+'-'+p;}
     function dateBR(v){return v&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(8,10)+'/'+v.slice(5,7)+'/'+v.slice(0,4):'';}
@@ -437,7 +345,7 @@
       error('existing-error','');
       screen('existing');
     }
-    el('existing-back').addEventListener('click',()=>screen('entry'));
+    el('existing-back').addEventListener('click',()=>{void sairServidor();});
     el('existing-form').addEventListener('submit',async e=>{
       e.preventDefault();error('existing-error','');
       const protocolo=el('existing-protocol').value.trim();
@@ -466,40 +374,51 @@
       }catch(ex){error('existing-error',ex.message||'Erro ao consultar comprovante.');}
       finally{button.disabled=false;button.textContent='Consultar comprovante';}
     });
-    el('entry-form').addEventListener('submit',async e=>{
-      e.preventDefault();error('entry-error','');
-      const responsavelNome=DEMO?el('registrante-nome').value.replace(/\s+/g,' ').trim():state.nome;
-      const responsavelEmail=el('registrante-email').value.trim().toLowerCase();
-      if(responsavelNome.length<5||!responsavelNome.includes(' ')){
-        error('entry-error','Informe o nome completo de quem está preenchendo.');el('registrante-nome').focus();return;
+    async function prepararLeituraObrigatoria(){
+      // A identidade foi verificada no servidor durante o login; não solicitar dados pessoais novamente.
+      state.acesso_verificado=false;
+      state.aceite_regras=false;
+      el('rules-ack').checked=false;
+      el('rules-next').disabled=true;
+      error('rules-error','');
+      el('rules-retry').classList.add('hidden');
+      screen('rules');
+      if(!servidorSelecionado){
+        error('rules-error','A sessão não identificou o servidor. Saia e entre novamente.');
+        return;
       }
-      if(!el('registrante-email').validity.valid||!responsavelEmail||responsavelEmail.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(responsavelEmail)){
-        error('entry-error','Informe um e-mail válido de quem está preenchendo.');el('registrante-email').focus();return;
-      }
-      if(!servidorSelecionado){error('entry-error','A identidade do servidor não está disponível. Entre novamente.');screen('login');return;}
       const {nome,matricula,funcao_turno}=servidorSelecionado;
-      try{await atualizarAnos();}catch(ex){error('entry-error',ex.message||'Erro ao consultar campanhas.');return;}
-      state.nome=nome;state.matricula=matricula;state.funcao_turno=funcao_turno||'';state.registrante_nome=responsavelNome;state.registrante_email=responsavelEmail;
+      state.nome=nome;state.matricula=matricula;state.funcao_turno=funcao_turno||'';
+      state.registrante_nome=nome;state.registrante_email='';
       el('welcome').textContent=state.nome+' · '+state.matricula+' · '+state.funcao_turno;
-      // Evita que quem já registrou passe pela escolha de novos períodos.
       try{
+        await atualizarAnos();
+        // Se já houver solicitação, direciona à consulta do protocolo sem criar nova reserva.
         if(await verificarExistente(state.ano,state.matricula)){
           abrirConsultaExistente();return;
         }
-      }catch(ex){error('entry-error',ex.message||'Falha ao conferir solicitações existentes.');return;}
-      state.aceite_regras=false;el('rules-ack').checked=false;el('rules-next').disabled=true;
-      screen('rules');
+        state.acesso_verificado=true;
+      }catch(ex){
+        error('rules-error',ex.message||'Não foi possível verificar os dados da solicitação.');
+        el('rules-retry').classList.remove('hidden');
+      }
+    }
+    el('rules-retry').addEventListener('click',()=>{void prepararLeituraObrigatoria();});
+    el('rules-ack').addEventListener('change',e=>{
+      el('rules-next').disabled=!state.acesso_verificado||!e.target.checked;
     });
-    el('rules-ack').addEventListener('change',e=>{el('rules-next').disabled=!e.target.checked;});
-    el('rules-back').addEventListener('click',()=>{state.aceite_regras=false;screen('entry');});
+    el('rules-back').addEventListener('click',()=>{void sairServidor();});
     el('rules-next').addEventListener('click',async()=>{
-      if(!el('rules-ack').checked)return;
+      if(!state.acesso_verificado||!el('rules-ack').checked)return;
       state.aceite_regras=true;
       screen('selection');await carregar();
       if(state.intervalo)clearInterval(state.intervalo);
       state.intervalo=setInterval(()=>{if(!document.hidden && !el('step-selection').classList.contains('hidden'))carregar(true);},30000);
     });
-    el('back').addEventListener('click',()=>{clearInterval(state.intervalo);state.aceite_regras=false;screen('entry');});
+    el('back').addEventListener('click',()=>{
+      clearInterval(state.intervalo);state.aceite_regras=false;
+      el('rules-ack').checked=false;el('rules-next').disabled=true;screen('rules');
+    });
     el('year').addEventListener('change',async e=>{state.ano=Number(e.target.value);state.escolhidos=[];updateSelection();try{if(await verificarExistente(state.ano,state.matricula)){clearInterval(state.intervalo);abrirConsultaExistente();return;}}catch(ex){error('calendar-error',ex.message||'Não foi possível verificar a matrícula.');return;}await carregar();});
     el('refresh').addEventListener('click',()=>carregar());
     async function carregar(silencioso=false){
@@ -579,7 +498,7 @@
       if(state.escolhidos.length!==2)return;
       const button=el('confirm');button.disabled=true;button.classList.add('loading');error('selection-error','');
       try{
-        const result=await reservar({ano:state.ano,nome:state.nome,matricula:state.matricula,selecoes:state.escolhidos,registrante_nome:state.registrante_nome,registrante_email:state.registrante_email,aceite_regras:state.aceite_regras});
+        const result=await reservar({ano:state.ano,nome:state.nome,matricula:state.matricula,selecoes:state.escolhidos,aceite_regras:state.aceite_regras});
         clearInterval(state.intervalo);showReceipt(result.solicitacao);screen('success');
       }catch(ex){if(String(ex.message||'').includes('Já existe uma solicitação')){clearInterval(state.intervalo);abrirConsultaExistente();}else{error('selection-error',ex.message||'Erro inesperado.');await carregar(true);window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}}
       finally{button.classList.remove('loading');button.disabled=state.escolhidos.length!==2;}
@@ -600,18 +519,19 @@
       const classif=classificacao30Dias(s.ano,s.escolhas,true);
       if(classif.aviso){const aviso=document.createElement('p');aviso.className='micro';aviso.textContent=classif.aviso;root.append(aviso);}
 
-      const heading=document.createElement('div');heading.className='receipt-heading';heading.textContent='Informações adicionais · responsável pelo preenchimento';root.append(heading);
+      const heading=document.createElement('div');heading.className='receipt-heading';heading.textContent='Informações adicionais · registro da solicitação';root.append(heading);
       if(s.reemissao){const nota=document.createElement('div');nota.className='micro';nota.textContent='Reemissão: as datas exibidas seguem a configuração atual do calendário e podem ter sido alteradas desde a solicitação original. O protocolo, o ano e os períodos escolhidos são os registrados.';root.append(nota);}
-      [['Registrado por',s.registrado_por_nome||state.registrante_nome],['E-mail informado',s.registrado_por_email||state.registrante_email],['Data e hora do registro',s.registrada_em||'—'],['Ciência das regras',s.ciencia_regras_em||'—']].forEach(addLine);
+      [['Registrado por',s.registrado_por_nome||state.registrante_nome],...(s.registrado_por_email&&!String(s.registrado_por_email).endsWith('.invalid')?[['E-mail informado',s.registrado_por_email]]:[]),['Data e hora do registro',s.registrada_em||'—'],['Ciência das regras',s.ciencia_regras_em||'—']].forEach(addLine);
     }
     el('print').addEventListener('click',()=>window.print());
     async function sairServidor(){
       clearInterval(state.intervalo);state.intervalo=null;
       if(!DEMO){try{await fetch('/api/solicitar?acesso=1',{method:'DELETE',credentials:'same-origin'});}catch{}}
-      state.nome='';state.matricula='';state.funcao_turno='';state.registrante_nome='';state.registrante_email='';state.aceite_regras=false;
+      state.nome='';state.matricula='';state.funcao_turno='';state.registrante_nome='';state.registrante_email='';state.aceite_regras=false;state.acesso_verificado=false;
       state.escolhidos=[];state.periodos=[];servidorSelecionado=null;
-      el('entry-form').reset();el('servidor-login-form').reset();el('rules-ack').checked=false;
-      el('servidor-sair').classList.add('hidden');mostrarSelecionado();screen(DEMO?'entry':'login');
+      el('servidor-login-form').reset();el('rules-ack').checked=false;
+      el('servidor-sair').classList.add('hidden');
+      if(DEMO){void iniciarAcesso({servidor:demoServidores[0]});}else{screen('login');}
     }
     el('servidor-change-voltar').addEventListener('click',()=>{void sairServidor();});
     el('another').addEventListener('click',()=>{void sairServidor();});
@@ -629,14 +549,8 @@
       state.nome=dados.nome;state.matricula=dados.matricula;state.funcao_turno=dados.funcao_turno||'';
       state.registrante_nome=dados.nome;
       servidorSelecionado={nome:dados.nome,matricula:dados.matricula,funcao_turno:dados.funcao_turno};
-      el('registrante-nome').value=dados.nome;
-      el('servidor-conta-resumo').textContent='Matrícula: '+dados.matricula+' · Função/Turno: '+(dados.funcao_turno||'—');
-      el('roster-search').value=dados.nome+' - '+dados.matricula;
-      el('roster-search').readOnly=true;
-      el('roster-field').classList.add('hidden');
-      mostrarSelecionado();
       el('servidor-sair').classList.remove('hidden');
-      screen('entry');
+      await prepararLeituraObrigatoria();
     }
     el('servidor-login-form').addEventListener('submit',async e=>{
       e.preventDefault();error('servidor-login-erro','');
@@ -664,8 +578,13 @@
       finally{botao.disabled=false;}
     });
     if(DEMO){
-      el('servidor-sair').classList.add('hidden');screen('entry');
-      carregarServidores();
+      // No modo demonstrativo, utilizar um cadastro fictício sem exigir nome/matrícula.
+      servidorSelecionado=demoServidores[0];
+      state.nome=servidorSelecionado.nome;
+      state.matricula=servidorSelecionado.matricula;
+      state.funcao_turno=servidorSelecionado.funcao_turno;
+      state.registrante_nome=servidorSelecionado.nome;
+      el('servidor-sair').classList.add('hidden');void prepararLeituraObrigatoria();
     }else{
       screen('login');
       fetch('/api/solicitar?acesso=1',{cache:'no-store',credentials:'same-origin'})
