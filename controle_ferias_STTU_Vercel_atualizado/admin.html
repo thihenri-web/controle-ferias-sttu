@@ -1235,7 +1235,7 @@ $('reset-servidor-form').addEventListener('submit',async event=>{
  if(!confirm('Você conferiu a identidade do titular?\n\nRedefinir a senha de '+matricula+' para a matrícula provisória?\nAs sessões anteriores serão invalidadas. As férias já solicitadas permanecem inalteradas.'))return;
  const botao=$('reset-servidor-btn');botao.disabled=true;
  try{
-   const data=await req('/api/servidor-acesso',{method:'POST',headers:{'Content-Type':'application/json'},
+   const data=await req('/api/solicitar?acesso=1',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({acao:'reset',matricula,motivo})});
    aviso.textContent=data.mensagem||'Acesso redefinido.';show('reset-servidor-msg',true);
    $('reset-matricula').value='';$('reset-motivo').value='';

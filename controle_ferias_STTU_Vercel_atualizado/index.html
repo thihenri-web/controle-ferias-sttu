@@ -607,7 +607,7 @@
     el('print').addEventListener('click',()=>window.print());
     async function sairServidor(){
       clearInterval(state.intervalo);state.intervalo=null;
-      if(!DEMO){try{await fetch('/api/servidor-acesso',{method:'DELETE',credentials:'same-origin'});}catch{}}
+      if(!DEMO){try{await fetch('/api/solicitar?acesso=1',{method:'DELETE',credentials:'same-origin'});}catch{}}
       state.nome='';state.matricula='';state.funcao_turno='';state.registrante_nome='';state.registrante_email='';state.aceite_regras=false;
       state.escolhidos=[];state.periodos=[];servidorSelecionado=null;
       el('entry-form').reset();el('servidor-login-form').reset();el('rules-ack').checked=false;
@@ -617,7 +617,7 @@
     el('another').addEventListener('click',()=>{void sairServidor();});
     el('servidor-sair').addEventListener('click',()=>{void sairServidor();});
     async function authApi(body){
-      const r=await fetch('/api/servidor-acesso',{method:'POST',credentials:'same-origin',cache:'no-store',
+      const r=await fetch('/api/solicitar?acesso=1',{method:'POST',credentials:'same-origin',cache:'no-store',
         headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
       const data=await r.json().catch(()=>({}));
       if(!r.ok)throw Error(data.erro||'Falha ao verificar o acesso.');
@@ -668,7 +668,7 @@
       carregarServidores();
     }else{
       screen('login');
-      fetch('/api/servidor-acesso',{cache:'no-store',credentials:'same-origin'})
+      fetch('/api/solicitar?acesso=1',{cache:'no-store',credentials:'same-origin'})
         .then(async r=>{const data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.erro||'Autenticação indisponível.');return data;})
         .then(data=>{if(data.autenticado)return iniciarAcesso(data);if(data.troca_obrigatoria)screen('change');})
         .catch(ex=>error('servidor-login-erro',ex.message));
