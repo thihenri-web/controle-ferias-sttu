@@ -62,7 +62,9 @@ export default async function handler(req, res) {
     const ano=Number(b.ano),nome=titular.nome;
     const matricula=titular.matricula;
     const registranteNome=titular.nome;
-    const registranteEmail = String(b.registrante_email || '').trim().toLowerCase();
+    // Marcador técnico explícito para compatibilidade com a função antiga do Neon.
+    // O servidor não fornece e-mail nesta versão; .invalid nunca recebe mensagens.
+    const registranteEmail = String(b.registrante_email || '').trim().toLowerCase() || 'nao-informado@sttu.invalid';
     // Consulta vinculada à matrícula autenticada; não permite pesquisar terceiros.
     if (b.acao === 'verificar') {
       if (!Number.isInteger(ano) || ano < 2027 || ano > 2100 ||
