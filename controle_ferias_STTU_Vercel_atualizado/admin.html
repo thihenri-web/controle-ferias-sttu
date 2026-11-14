@@ -363,7 +363,7 @@ body.admin-receipt-open{overflow:hidden}
 #reset-servidor-form .reset-search-col label{margin:0 0 1px}
 #reset-servidor-form .reset-search-col .input{width:100%;min-width:0}
 #reset-servidor-form #reset-consultar{width:100%;min-height:40px;align-self:stretch;padding:10px 6px}
-#reset-servidor-form .reset-identity-box{min-width:0}
+#reset-servidor-form .reset-identity-box{grid-column:2;grid-row:1;min-width:0}
 #reset-servidor-form .reset-identity-box .identity-result{min-height:92px;justify-content:center;margin-top:0}
 #reset-servidor-form .reset-bottom-grid{display:grid;grid-template-columns:minmax(0,1fr) 174px;gap:14px;align-items:end;margin-top:12px}
 #reset-servidor-form .reset-reason-field{min-width:0}
@@ -371,6 +371,7 @@ body.admin-receipt-open{overflow:hidden}
 #reset-servidor-form #reset-servidor-btn{width:100%;min-height:43px}
 @media(max-width:650px){
   #reset-servidor-form .reset-top-grid{grid-template-columns:1fr;gap:14px}
+  #reset-servidor-form .reset-identity-box{grid-column:1;grid-row:auto}
   #reset-servidor-form .reset-search-col{max-width:none}
   #reset-servidor-form .reset-bottom-grid{grid-template-columns:1fr;gap:12px}
   #reset-servidor-form #reset-servidor-btn{width:100%}
