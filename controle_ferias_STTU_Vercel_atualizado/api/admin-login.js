@@ -63,6 +63,14 @@ export default async function handler(req,res){
   if(!process.env.DATABASE_URL)return res.status(503).json({erro:'Banco de dados não configurado.'});
   let b;try{b=typeof req.body==='string'?JSON.parse(req.body):req.body||{};}
   catch{return res.status(400).json({erro:'Dados inválidos.'});}
+  // A sessão somente é renovada por atividade humana registrada pelo painel.
+  // Não reexecutar login nem contabilizar tentativas para essa operação.
+  if(b.acao==='renovar'){
+    const active=getAdminSession(req);
+    if(!active)return res.status(401).json({erro:'Sessão expirada. Faça login novamente.'});
+    setSessionCookie(res,createSession(active));
+    return res.status(200).json(publicSession(req));
+  }
   const usuario=String(b.usuario||'').trim().toUpperCase(),senha=String(b.senha||'');
   if(usuario.length>64||senha.length>256||!usuario||!senha)
     return res.status(400).json({erro:'Informe usuário e senha.'});
