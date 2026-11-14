@@ -33,13 +33,15 @@ async function registrarPeloAdmin(req,res){
  let body;try{body=typeof req.body==='string'?JSON.parse(req.body):req.body||{};}
  catch{return res.status(400).json({erro:'Dados inválidos.'});}
  const ano=Number(body.ano),matricula=String(body.matricula||'').replace(/\D/g,''),
-   email=String(body.email||'').trim().toLowerCase(),selecoes=body.selecoes;
- if(!validYear(ano)|| !/^\d{4,14}$/.test(matricula)||email.length>254||
-   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||body.aceite_regras!==true||
+   selecoes=body.selecoes;
+ // Compatibilidade com a função de gravação existente no Neon.
+ // Não é endereço de contato: o domínio reservado .invalid não recebe e-mails.
+ const emailTecnico='nao-informado@sttu.invalid';
+ if(!validYear(ano)|| !/^\d{4,14}$/.test(matricula)||body.aceite_regras!==true||
    !Array.isArray(selecoes)||selecoes.length!==2||
    selecoes.some(s=>!Number.isInteger(s.mes)||s.mes<1||s.mes>12||![1,2].includes(s.periodo))||
    selecoes[0].mes===selecoes[1].mes)
-   return res.status(400).json({erro:'Identifique o servidor, informe e-mail válido, confirme as regras e escolha dois meses diferentes.'});
+   return res.status(400).json({erro:'Identifique o servidor por nome ou matrícula, confirme as regras e escolha dois meses diferentes.'});
  const admin=getAdminSession(req);
  if(!admin)return res.status(401).json({erro:'Sessão administrativa expirada.'});
  try{
@@ -52,7 +54,7 @@ async function registrarPeloAdmin(req,res){
    const rows=await sql`SELECT sttu_registrar_ferias_com_ciencia(
      ${ano},${titular.nome},${titular.matricula},
      ${selecoes[0].mes},${selecoes[0].periodo},${selecoes[1].mes},${selecoes[1].periodo},
-     ${registrante},${email},${true}
+     ${registrante},${emailTecnico},${true}
    ) AS solicitacao`;
    const created=rows[0]?.solicitacao;
    if(!created?.id)return res.status(503).json({erro:'O banco não confirmou a criação do protocolo.'});
