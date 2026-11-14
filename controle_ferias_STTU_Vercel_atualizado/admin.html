@@ -63,12 +63,14 @@ footer{max-width:1320px;margin:0 auto 25px;padding:0 20px;color:#8b9bad;font-siz
 .quota-total{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .quota-total strong{font-size:.98rem}
 .quota-total .ok{color:var(--green)}.quota-total .bad{color:#ffb4b4}
-.quota-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.quota-action-card{background:#101a24;border:1px solid var(--line);border-radius:11px;padding:12px}
-.quota-action-card .btn{margin-top:9px}
+.quota-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,.75fr) minmax(0,1fr);gap:12px;margin-top:14px;align-items:stretch}
+.quota-action-card,.quota-save-center{background:#101a24;border:1px solid var(--line);border-radius:11px;padding:14px;min-height:96px;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.quota-action-card .quota-total{line-height:1.5;align-items:center}
+.quota-save-center{align-items:center;text-align:center}
+.quota-save-center .btn{min-height:48px;width:100%;max-width:300px;margin:0;white-space:normal;line-height:1.25}
 .quota-footer-note{margin:10px 0 0}
 @media(max-width:820px){.registry-filters{grid-template-columns:1fr 1fr}.registry-filters>div:nth-child(2){grid-column:1/-1}}
-@media(max-width:540px){.quota-toolbar{grid-template-columns:1fr}.quota-table th,.quota-table td{padding:8px 5px}.quota-table .q-name{font-size:.79rem}.quota-cell{gap:4px}.quota-cell input{width:62px;padding:6px}.quota-actions{grid-template-columns:1fr}.registry-filters{grid-template-columns:1fr}.registry-filters>div:nth-child(2){grid-column:auto}}
+@media(max-width:540px){.quota-toolbar{grid-template-columns:1fr}.quota-table th,.quota-table td{padding:8px 5px}.quota-table .q-name{font-size:.79rem}.quota-cell{gap:4px}.quota-cell input{width:62px;padding:6px}.quota-actions{grid-template-columns:1fr}.quota-action-card,.quota-save-center{min-height:76px}.registry-filters{grid-template-columns:1fr}.registry-filters>div:nth-child(2){grid-column:auto}}
 .registry-placeholder{padding:18px;border:1px dashed #445264;background:#111b26;border-radius:12px;color:var(--muted);font-size:.89rem;margin-top:8px}
 .registry-placeholder strong{color:var(--text)}
 
@@ -151,6 +153,136 @@ body:not(.role-admin) #year-status{opacity:.75;cursor:not-allowed}
 body.role-viewer .cancel-button{display:none!important}
 @media(max-width:650px){.dev-credit{text-align:left}}
 
+/* STTU — correção pontual de alinhamento dos 12 cards de ocupação mensal.
+   Mantém gráficos, dados, permissões e demais estilos sem alterações. */
+#dashboard-bar-chart.bar-chart{
+  align-items:stretch;
+  grid-auto-rows:1fr;
+  min-height:0;
+}
+#dashboard-bar-chart .bar-item{
+  display:grid;
+  grid-template-rows:46px 170px minmax(68px,auto);
+  align-content:start;
+  align-self:stretch;
+  gap:8px;
+  min-width:0;
+}
+#dashboard-bar-chart .bar-top{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  align-content:flex-end;
+  justify-content:flex-start;
+  column-gap:7px;
+  row-gap:3px;
+  height:46px;
+  min-height:46px;
+  box-sizing:border-box;
+}
+#dashboard-bar-chart .bar-top strong{
+  white-space:nowrap;
+  font-size:.78rem;
+  line-height:1.2;
+}
+#dashboard-bar-chart .bar-top small{
+  text-align:left;
+  line-height:1.2;
+  font-size:.66rem;
+}
+#dashboard-bar-chart .bar-track{
+  box-sizing:border-box;
+  height:170px;
+  min-height:170px;
+  align-self:start;
+  margin:0;
+}
+#dashboard-bar-chart .bar-bottom{
+  min-height:68px;
+  align-self:start;
+  text-align:left;
+  gap:3px;
+}
+#dashboard-bar-chart .bar-bottom strong{line-height:1.25;}
+#dashboard-bar-chart .bar-bottom small{line-height:1.3;}
+@media(max-width:920px){
+  #dashboard-bar-chart .bar-item{grid-template-rows:46px 132px minmax(68px,auto);}
+  #dashboard-bar-chart .bar-track{height:132px;min-height:132px;}
+}
+@media(max-width:550px){
+  #dashboard-bar-chart .bar-item{grid-template-rows:46px 112px minmax(68px,auto);}
+  #dashboard-bar-chart .bar-track{height:112px;min-height:112px;}
+}
+
+/* Períodos por mês: controles simples, sem operações individuais em cada cartão. */
+.config-month{display:flex;flex-direction:column;gap:0}
+.config-line{display:block;padding:12px 0}
+.config-period-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.config-block{display:inline-flex;align-items:center;gap:6px;margin:0;cursor:pointer;font-size:.72rem;font-weight:800;white-space:nowrap;color:#fff}
+.config-block input{height:17px;width:17px;accent-color:#e45c65;cursor:pointer}
+.config-block .block-status{border:1px solid #28815b;border-radius:7px;background:#123c2e;color:#87e9af;padding:5px 7px}
+.config-block.is-blocked .block-status{color:#fff;background:#81333e;border-color:#bc5660}
+.config-month-actions{display:flex;flex-direction:column;gap:6px;padding-top:12px;margin-top:auto;border-top:1px solid #293846}
+.config-month-actions .btn{width:100%;white-space:normal;text-align:center}
+.config-month-actions small{font-size:.71rem;color:#a8bbcd;line-height:1.4}
+.config-compact-note{font-size:.72rem;color:#afc1d3;margin:7px 0 0}
+.config-month .config-capacity .input{width:75px}
+@media(max-width:630px){.config-month-actions .btn{width:100%}}
+
+/* Alinhamento dos cartões mensais, mantendo cabeçalhos, controles e ações na mesma linha. */
+#period-config{align-items:stretch;grid-auto-flow:row}
+#period-config .config-month{
+  display:grid;
+  grid-template-rows:44px minmax(215px,1fr) minmax(215px,1fr) minmax(88px,auto);
+  gap:0;min-width:0;height:100%;align-items:stretch;
+}
+#period-config .config-month h3{
+  margin:0;display:flex;align-items:center;justify-content:center;
+  min-width:0;text-align:center;line-height:1.2;
+}
+#period-config .config-line{
+  display:grid;grid-template-columns:minmax(0,1fr);
+  grid-template-rows:minmax(36px,auto) minmax(42px,auto) minmax(42px,auto) minmax(74px,auto);
+  gap:5px;min-width:0;min-height:0;padding:10px 0 12px;align-content:stretch;
+}
+#period-config .config-period-head{
+  display:grid;grid-template-columns:minmax(0,1fr) max-content;
+  gap:8px;align-items:center;min-width:0;min-height:36px;
+}
+#period-config .config-period-head strong{min-width:0;line-height:1.2}
+#period-config .config-block{justify-content:flex-end;min-width:0}
+#period-config .config-compact-note{
+  min-height:0;margin:0;line-height:1.4;align-self:center;
+}
+#period-config .config-capacity{margin:0;align-self:center;min-width:0}
+#period-config .config-dates{
+  margin:0;align-self:end;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0;
+}
+#period-config .config-dates>div{min-width:0}
+#period-config .config-dates .input{min-width:0;width:100%}
+#period-config .config-month-actions{margin:0;justify-content:end;align-items:stretch}
+#period-config .config-month-actions small{min-height:2.5em;display:block}
+@media(max-width:380px){
+  #period-config .config-month{grid-template-rows:40px minmax(230px,auto) minmax(230px,auto) minmax(90px,auto)}
+  #period-config .config-period-head{grid-template-columns:minmax(0,1fr) auto}
+  #period-config .config-block{font-size:.67rem;gap:4px}
+  #period-config .config-block .block-status{padding:5px}
+}
+
+/* LIBERADO / BLOQUEADO: cartões de status com dimensões idênticas. */
+#period-config .config-block .block-status {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: 108px;
+  min-width: 108px;
+  height: 30px;
+  padding: 0 6px;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
 /* STTU-HISTORICO-UNIFICADO-V1: resultados sob demanda */
 .audit-filters{display:grid;grid-template-columns:minmax(230px,2fr) minmax(110px,.8fr) minmax(135px,1fr) minmax(200px,1.5fr);gap:12px;align-items:end;margin:16px 0}
 .audit-filters .audit-actions{grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap;align-items:center}
@@ -163,6 +295,14 @@ body.role-viewer .cancel-button{display:none!important}
 @media(max-width:990px){.audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.audit-filters{grid-template-columns:1fr}.audit-filters .audit-actions .btn{flex:1 1 100%}}
 /* /STTU-HISTORICO-UNIFICADO-V1 */
+
+/* STTU — recuperação: registro pela administração */
+.admin-book-grid{display:grid;grid-template-columns:minmax(230px,2fr) auto;align-items:end;gap:12px;margin:14px 0}
+.admin-book-grid>div{min-width:0}.admin-book-grid .admin-book-server{grid-column:1/-1}
+.admin-book-grid .input{width:100%}.admin-book-grid label{display:block;font-size:.81rem;margin-bottom:6px}
+.admin-book-form{margin-top:9px}.admin-book-ack{display:flex;gap:10px;align-items:flex-start;font-size:.87rem;margin:14px 0;line-height:1.5}
+.admin-book-ack input{margin-top:4px;accent-color:#4ba77a;flex-shrink:0}
+@media(max-width:650px){.admin-book-grid{grid-template-columns:1fr}.admin-book-grid>div{grid-column:1/-1}}
 
 </style>
 </head>
@@ -249,6 +389,36 @@ body.role-viewer .cancel-button{display:none!important}
           <div class="table-wrap"><table><thead><tr><th>Nome completo</th><th>Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Registrado por</th><th>Situação</th></tr></thead><tbody id="registry-records"></tbody></table></div>
         </div>
       </section>
+
+      <section class="section card hidden" id="admin-book-panel">
+        <div class="section-bar"><h2>Registrar férias pela administração</h2><span class="tag">THIAGO-HENRIQUE / ANDREA-CASTRO</span></div>
+        <p class="note">O registro será feito em nome do servidor selecionado, com identificação do administrador responsável. A operação respeita vagas, cotas, prazos e o limite de uma solicitação por ano. O servidor terá acesso ao comprovante ao entrar na própria conta.</p>
+        <div class="admin-book-grid">
+          <div><label for="book-search">Pesquisar servidor por nome ou matrícula</label><input class="input" id="book-search" type="search" maxlength="120" placeholder="Ex.: matrícula ou nome"></div>
+          <button class="btn" id="book-lookup" type="button">Localizar servidor</button>
+          <div class="admin-book-server"><label for="book-server">Servidor conferido</label><select class="input" id="book-server" required disabled><option value="">Localize um servidor primeiro</option></select></div>
+        </div>
+        <form id="book-form" class="admin-book-form">
+          <div class="admin-book-grid">
+            <div><label for="book-first">1º período solicitado</label><select class="input" id="book-first" required><option value="">Selecione</option></select></div>
+            <div><label for="book-second">2º período solicitado</label><select class="input" id="book-second" required><option value="">Selecione</option></select></div>
+            <div class="admin-book-server"><label for="book-email">E-mail do responsável pelo registro</label><input class="input" type="email" id="book-email" required maxlength="254" placeholder="E-mail válido para identificação no comprovante"></div>
+          </div>
+          <label class="admin-book-ack"><input id="book-confirm" type="checkbox" required> Confirmo que conferi a identidade do servidor, recebi a solicitação de férias e estou ciente das regras de períodos e vagas ao registrá-la administrativamente.</label>
+          <button id="book-save" class="btn primary" type="submit">Registrar os dois períodos</button>
+        </form>
+        <div class="notice hidden" id="book-result" role="status" aria-live="polite"></div>
+      </section>
+      <section class="section card hidden" id="reset-servidor-panel">
+        <div class="section-bar"><h2>Redefinição de acesso do servidor · DFV</h2><span class="tag">Somente administradores</span></div>
+        <p class="note">Somente após conferir a identidade do titular. Ao redefinir, a senha provisória volta a ser a matrícula e a troca torna-se obrigatória. Todas as sessões anteriores serão invalidadas. <strong>As férias já solicitadas, protocolos e vagas não serão alterados ou cancelados.</strong> A operação será auditada.</p>
+        <form id="reset-servidor-form" class="filters">
+          <div><label for="reset-matricula">Matrícula do servidor</label><input class="input" id="reset-matricula" maxlength="20" placeholder="Ex.: 00.000-0" required autocomplete="off"></div>
+          <div class="search-field"><label for="reset-motivo">Justificativa / conferência de identidade</label><input class="input" id="reset-motivo" maxlength="300" minlength="10" placeholder="Ex.: Titular identificado presencialmente no DFV" required></div>
+          <button class="btn primary" id="reset-servidor-btn" type="submit">Resetar senha</button>
+        </form>
+        <div class="notice hidden" id="reset-servidor-msg" role="status" aria-live="polite"></div>
+      </section>
       <div class="card section"><div class="section-bar"><h2>Consulta mensal</h2><span class="note">Selecione mês e período nos filtros para consultar as solicitações</span></div>
         <form class="filters" id="filters">
           <div><label for="month">Mês</label><select class="input" id="month"></select></div>
@@ -267,7 +437,7 @@ body.role-viewer .cancel-button{display:none!important}
         <div class="section-bar"><h2>Distribuição das vagas por Função/Turno</h2><span class="tag">Totais vinculados à capacidade</span></div>
         <div class="quota-toolbar">
           <div><label for="quota-month">Mês</label><select class="input" id="quota-month"></select></div>
-          <p class="note">Ajuste os números e salve cada período. A soma precisa ser igual ao total definido em <strong>Períodos e vagas</strong>. Insp Chefe é extra.</p>
+          <p class="note">Ajuste as cotas e confirme os dois períodos no botão central. A soma de cada um deve coincidir com o total definido em <strong>Períodos e vagas</strong>. Insp Chefe é extra.</p>
         </div>
         <div id="quota-grid" aria-live="polite"></div>
         <p class="note quota-footer-note">Tarde e Corujão compartilham uma vaga flutuante entre os períodos. As escolhas existentes são preservadas.</p>
@@ -330,6 +500,95 @@ const ALLOWED=Array.from({length:12},(_,i)=>i+1);
 const GROUPS=['Manhã','Adm','Insp','Noite','COTT','Tarde','Corujão','Insp Chefe'];
 const QUOTA_GROUPS=GROUPS.filter(g=>g!=='Insp Chefe');
 const state={ano:2027,mes:0,periodo:0,busca:'',records:[],vagas:[],anos:[],cotas:[],ocupacao_funcao:[],registry:[],registrySearched:false,activeTab:'painel',busy:false,quotaDrafts:{},role:null,username:null};
+
+// ========== ENCERRAMENTO AUTOMÁTICO POR INATIVIDADE (5 MINUTOS) ==========
+const ADMIN_INACTIVITY_MS=5*60*1000;
+const ADMIN_RENEW_INTERVAL_MS=20*1000;
+const ADMIN_ACTIVITY_KEY='sttu-ferias-admin-last-activity-v1';
+const ADMIN_SIGNOUT_KEY='sttu-ferias-admin-signout-v1';
+let adminLastActivity=0,adminLastRenewed=0,adminIdleTicker=null;
+let adminClosing=false,adminRenewPromise=null,adminLocalStoreLast=0;
+function adminStorageGet(key){try{return window.localStorage.getItem(key);}catch{return null;}}
+function adminStorageSet(key,value){try{window.localStorage.setItem(key,String(value));}catch{}}
+function adminStorageRemove(key){try{window.localStorage.removeItem(key);}catch{}}
+function adminReadActivity(){
+ const shared=Number(adminStorageGet(ADMIN_ACTIVITY_KEY));
+ return Math.max(adminLastActivity,Number.isFinite(shared)&&shared>0?shared:0);
+}
+function adminStopIdle(){if(adminIdleTicker!==null){clearInterval(adminIdleTicker);adminIdleTicker=null;}}
+function adminToLogin(message=''){
+ adminStopIdle();adminLastActivity=0;adminLastRenewed=0;
+ clearRegistryResults();configureSession(null);
+ show('dashboard',false);show('login',true);show('logout',false);
+ $('password').value='';
+ $('login-error').textContent=message;
+ show('login-error',Boolean(message));
+}
+async function adminFinishSignout(message='',revoke=true){
+ if(adminClosing)return;
+ adminClosing=true;
+ adminStopIdle();
+ adminStorageRemove(ADMIN_ACTIVITY_KEY);
+ adminStorageSet(ADMIN_SIGNOUT_KEY,Date.now());
+ // Espera uma renovação já iniciada terminar para que seu Set-Cookie não reabra a sessão.
+ const inFlight=adminRenewPromise;
+ adminToLogin(message);
+ if(inFlight)await inFlight.catch(()=>{});
+ if(revoke){
+   try{await fetch('/api/admin-login',{method:'DELETE',credentials:'same-origin',cache:'no-store'});}catch{}
+ }
+}
+function adminCheckIdle(){
+ if(!state.role||adminClosing)return;
+ if(Date.now()-adminReadActivity()>=ADMIN_INACTIVITY_MS){
+   void adminFinishSignout('Sessão encerrada após 5 minutos sem atividade. Faça login novamente.');
+ }
+}
+function adminRenewOnAction(){
+ if(adminClosing||!state.role||adminRenewPromise)return;
+ const now=Date.now();
+ if(now-adminLastRenewed<ADMIN_RENEW_INTERVAL_MS)return;
+ adminLastRenewed=now;
+ adminRenewPromise=fetch('/api/admin-login',{
+   method:'POST',credentials:'same-origin',cache:'no-store',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({acao:'renovar'})
+ }).then(async response=>{
+   if(response.status===401){
+     void adminFinishSignout('Sua sessão expirou. Faça login novamente.');
+   }
+ }).catch(()=>{/* Sem rede, o cookie expira no servidor normalmente. */})
+ .finally(()=>{adminRenewPromise=null;});
+}
+function adminRecordInteraction(){
+ if(!state.role||adminClosing)return;
+ // Um retorno tardio à aba não pode reativar uma sessão que já ficou ociosa.
+ if(Date.now()-adminReadActivity()>=ADMIN_INACTIVITY_MS){adminCheckIdle();return;}
+ const now=Date.now();adminLastActivity=now;
+ // Reduz gravações enquanto o mouse se move sem parar.
+ if(now-adminLocalStoreLast>=1000){adminStorageSet(ADMIN_ACTIVITY_KEY,now);adminLocalStoreLast=now;}
+ adminRenewOnAction();
+}
+function adminStartIdle(restored=false){
+ adminClosing=false;
+ // Em sessão restaurada, a primeira interação pode renovar imediatamente o cookie.
+ adminLastActivity=Date.now();adminLastRenewed=restored?0:Date.now();
+ adminStorageSet(ADMIN_ACTIVITY_KEY,adminLastActivity);adminLocalStoreLast=adminLastActivity;
+ adminStopIdle();adminIdleTicker=setInterval(adminCheckIdle,1000);
+}
+for(const eventName of ['pointerdown','pointermove','keydown','wheel','touchstart','scroll']){
+ window.addEventListener(eventName,adminRecordInteraction,{passive:true});
+}
+window.addEventListener('focus',adminCheckIdle);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)adminCheckIdle();});
+window.addEventListener('storage',event=>{
+ if(event.key===ADMIN_SIGNOUT_KEY&&event.newValue&&state.role){
+   adminClosing=true;adminToLogin('Sessão encerrada em outra aba. Faça login novamente.');
+ }
+ if(event.key===ADMIN_ACTIVITY_KEY&&state.role)adminCheckIdle();
+});
+// ================================================================
+
 const canEdit=()=>state.role==='admin';
 const canCancel=()=>state.role==='admin';
 function configureSession(info){
@@ -345,6 +604,8 @@ function applyReadonly(){
  for(const field of document.querySelectorAll('#tab-periodos input,#tab-cotas input'))field.disabled=readonly||field.disabled;
  const status=$('year-status');if(status)status.disabled=readonly;
  const apply=$('apply-year');if(apply)apply.disabled=readonly;
+ show('reset-servidor-panel',canEdit());
+ show('admin-book-panel',canEdit());
 }
 
 const show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
@@ -352,7 +613,7 @@ function notify(t,ok=false){const e=$('status');e.textContent=t;show('status',Bo
 async function req(url,opts={}){
   const r=await fetch(url,{credentials:'same-origin',cache:'no-store',...opts});
   const data=await r.json().catch(()=>({}));
-  if(!r.ok){if(r.status===401){show('dashboard',false);show('login',true);show('logout',false);}throw Error(data.erro||'Erro ao consultar sistema.');}
+  if(!r.ok){if(r.status===401&&state.role&&!adminClosing){void adminFinishSignout('Sua sessão expirou. Faça login novamente.');}throw Error(data.erro||'Erro ao consultar sistema.');}
   return data;
 }
 function opts(items,selected){
@@ -382,6 +643,16 @@ function overlapDays(iniA,fimA,iniB,fimB){
   const start=Math.max(Date.parse(iniA+'T00:00:00Z'),Date.parse(iniB+'T00:00:00Z'));
   const end=Math.min(Date.parse(fimA+'T00:00:00Z'),Date.parse(fimB+'T00:00:00Z'));
   return Math.max(0,Math.floor((end-start)/86400000)+1);
+}
+// A classificação é derivada das duas escolhas; vagas continuam individualizadas.
+function modalidadeDeFerias(ano,escolhas){
+  if(!Array.isArray(escolhas)||escolhas.length!==2)return '2 períodos de 15 dias';
+  const xs=escolhas.map(s=>({mes:Number(s.mes),periodo:Number(s.periodo)}));
+  const primeiro=xs.find(s=>s.periodo===2),seguinte=xs.find(s=>s.periodo===1);
+  if(!primeiro||!seguinte||seguinte.mes!==primeiro.mes+1)return '2 períodos de 15 dias';
+  if(Number(ano)===2027&&((primeiro.mes===1&&seguinte.mes===2)||(primeiro.mes===8&&seguinte.mes===9)))
+    return '2 períodos de 15 dias · exceção de 2027';
+  return '30 dias (2 × 15)';
 }
 const dateLabel=(data)=>data?.data_inicio&&data?.data_fim?(formatDate(data.data_inicio)+' a '+formatDate(data.data_fim)):'Datas a definir';
 const period=(m,p)=>{const x=state.vagas.find(v=>v.mes===Number(m)&&v.periodo===Number(p));return `${fmt(m)} · ${p}º período (15 dias; ${dateLabel(x)})`;};
@@ -538,119 +809,131 @@ function renderPeriodSettings(){
   for(let mes=1;mes<=12;mes++){
     const card=document.createElement('div');card.className='config-month';
     const heading=document.createElement('h3');heading.textContent=fmt(mes);card.append(heading);
+    const monthFields=[];
     for(let periodo=1;periodo<=2;periodo++){
       const p=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
       const line=document.createElement('div');line.className='config-line';
-      const desc=document.createElement('div');const label=document.createElement('strong');label.textContent=periodo+'º período · 15 dias';
-      const draft=state.quotaDrafts[quotaDraftKey(mes,periodo)];
-      const storedCapacity=Number(p?.capacidade??10);
-      const previewCapacity=Number(draft?.capacidade??storedCapacity);
-      const normale=Number(p?.normais??0),extra=Number(p?.chefes??0);
-      const note=document.createElement('small');
-      note.textContent=p?`${normale} vagas normais ocupadas + ${extra} Insp Chefe (extra) · ${Math.max(0,previewCapacity-normale)} normais restantes${draft?' (PRÉVIA NÃO SALVA)':''}`:'Carregando';
-      if(draft)note.className='config-preview';
-      desc.append(label,note);
-      if(draft){
-        const saved=document.createElement('small');saved.className='config-saved';
-        saved.textContent=`Capacidade confirmada no banco: ${storedCapacity} · Em edição: ${previewCapacity}. Confirme na aba Vagas por Função/Turno.`;
-        desc.append(saved);
-      }
-      const actions=document.createElement('div');actions.className='config-actions';
-      const flag=span(p?.habilitado?'Liberado':'Bloqueado','config-indicator'+(!p?.habilitado?' off':''));
-      const button=document.createElement('button');button.type='button';button.className='btn mini'+(p?.habilitado?' danger':'');
-      button.textContent=p?.habilitado?'Bloquear':'Liberar';button.disabled=!p||state.busy;
-      button.setAttribute('aria-label',`${p?.habilitado?'Bloquear':'Liberar'} ${periodo}º período de ${fmt(mes)} de ${state.ano}`);
-      button.addEventListener('click',()=>changePeriod(p));actions.append(flag,button);
+      const headingRow=document.createElement('div');headingRow.className='config-period-head';
+      const title=document.createElement('strong');title.textContent=periodo+'º período · 15 dias';
+      const block=document.createElement('label');block.className='config-block';
+      const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=Boolean(p&&!p.habilitado);
+      checkbox.disabled=!p||state.busy||!canEdit();
+      checkbox.setAttribute('aria-label',`Bloquear ${periodo}º período de ${fmt(mes)}`);
+      const blockText=document.createElement('span');blockText.className='block-status';
+      const syncBlock=()=>{blockText.textContent=checkbox.checked?'BLOQUEADO':'LIBERADO';block.classList.toggle('is-blocked',checkbox.checked);};
+      checkbox.addEventListener('change',syncBlock);syncBlock();block.append(checkbox,blockText);
+      headingRow.append(title,block);line.append(headingRow);
+      const note=document.createElement('p');note.className='config-compact-note';
+      const occupied=Number(p?.normais??0),extra=Number(p?.chefes??0);
+      note.textContent=`${occupied} normal(is) + ${extra} Insp Chefe · ${Math.max(0,Number(p?.capacidade??10)-occupied)} vaga(s) normal(is) restante(s)`;
+      line.append(note);
       const cap=document.createElement('div');cap.className='config-capacity';
       const capLabel=document.createElement('label');capLabel.textContent='Limite de vagas:';
       const capInput=document.createElement('input');capInput.className='input';capInput.type='number';
-      capInput.min=String(Math.max(1,p?.normais||0));capInput.max='30';capInput.step='1';
-      capInput.value=String(previewCapacity);capInput.disabled=!p||state.busy;
-      capInput.setAttribute('aria-label',`Limite de vagas do ${periodo}º período de ${fmt(mes)} de ${state.ano}`);
-      const save=document.createElement('button');save.type='button';save.className='btn mini';save.textContent='Distribuir vagas';
-      save.disabled=!p||state.busy;save.addEventListener('click',()=>changeCapacity(p,capInput.value));
-      const help=document.createElement('small');help.className='config-help';help.textContent=`Mínimo: ${Math.max(1,p?.normais||0)} · Máximo: 30. Insp Chefe é extra.`;
-      cap.append(capLabel,capInput,save,help);
-      desc.append(cap);
+      capInput.min=String(Math.max(1,occupied));capInput.max='30';capInput.step='1';
+      capInput.value=String(state.quotaDrafts[quotaDraftKey(mes,periodo)]?.capacidade??p?.capacidade??10);
+      capInput.disabled=!p||state.busy||!canEdit();
+      capInput.setAttribute('aria-label',`Vagas ${periodo}º período de ${fmt(mes)}`);
+      cap.append(capLabel,capInput);line.append(cap);
       const dates=document.createElement('div');dates.className='config-dates';
-      const datesInput=[];
-      for(const [id,lbl,current] of [['inicio','Data inicial',p?.data_inicio],['fim','Data final',p?.data_fim]]){
-        const field=document.createElement('div');const caption=document.createElement('label');
-        caption.textContent=lbl;const input=document.createElement('input');
-        input.type='date';input.className='input';input.value=current||'';
-        input.disabled=!p||state.busy;input.setAttribute('aria-label',`${lbl} do ${periodo}º período de ${fmt(mes)} de ${state.ano}`);
-        if(id==='inicio'){
-          // Impede selecionar inícios que fariam os 15 dias ultrapassarem o mês.
-          const maxStart=new Date(Date.UTC(state.ano,mes,0));
-          maxStart.setUTCDate(maxStart.getUTCDate()-14);
+      const inputs=[];
+      for(const [key,label,value] of [['start','Data inicial',p?.data_inicio],['end','Data final',p?.data_fim]]){
+        const field=document.createElement('div');const caption=document.createElement('label');caption.textContent=label;
+        const input=document.createElement('input');input.className='input';input.type='date';input.value=value||'';
+        input.disabled=!p||state.busy||!canEdit();
+        input.setAttribute('aria-label',`${label} do ${periodo}º período de ${fmt(mes)}`);
+        if(key==='start'){
           input.min=`${state.ano}-${String(mes).padStart(2,'0')}-01`;
-          input.max=maxStart.toISOString().slice(0,10);
-        }else{
-          caption.textContent='Data final';
-          input.readOnly=true;
-          input.title='Calculada automaticamente: data inicial mais 14 dias';
-        }
-        field.append(caption,input);dates.append(field);datesInput.push(input);
+          input.max=new Date(Date.UTC(state.ano,mes,0)).toISOString().slice(0,10);
+        }else{input.readOnly=true;input.title='Preenchida automaticamente ao informar o início';}
+        field.append(caption,input);dates.append(field);inputs.push(input);
       }
-      const syncFinalDate=()=>{datesInput[1].value=datesInput[0].value?isoPlusDays(datesInput[0].value,14):'';};
-      datesInput[0].addEventListener('input',syncFinalDate);
-      datesInput[0].addEventListener('change',syncFinalDate);
-      desc.append(dates);
-      const dateActions=document.createElement('div');dateActions.className='config-date-actions';
-      const saveDates=document.createElement('button');saveDates.type='button';saveDates.className='btn mini primary';
-      saveDates.textContent='Salvar datas';saveDates.disabled=!p||state.busy;
-      saveDates.addEventListener('click',()=>changeDates(p,datesInput[0].value,datesInput[1].value));
-      const unsetDates=document.createElement('button');unsetDates.type='button';unsetDates.className='btn mini';
-      unsetDates.textContent='Deixar a definir';unsetDates.disabled=!p||state.busy;
-      unsetDates.addEventListener('click',()=>changeDates(p,'',''));
-      dateActions.append(saveDates,unsetDates);desc.append(dateActions);
-      line.append(desc,actions);card.append(line);
+      const updateEnd=()=>{inputs[1].value=inputs[0].value?isoPlusDays(inputs[0].value,14):'';};
+      inputs[0].addEventListener('input',updateEnd);inputs[0].addEventListener('change',updateEnd);
+      line.append(dates);card.append(line);
+      monthFields.push({p,periodo,block:checkbox,capacity:capInput,start:inputs[0],end:inputs[1]});
     }
-    root.append(card);
+    const footer=document.createElement('div');footer.className='config-month-actions';
+    const save=document.createElement('button');save.type='button';save.className='btn primary mini';
+    save.textContent='Salvar datas e distribuir vagas';save.disabled=state.busy||!canEdit()||monthFields.some(x=>!x.p);
+    save.addEventListener('click',()=>saveMonthSettings(mes,monthFields));
+    const helper=document.createElement('small');helper.textContent='Data em branco = a definir. Confirme as cotas na próxima aba.';
+    footer.append(save,helper);card.append(footer);root.append(card);
   }
   applyReadonly();
 }
-async function changePeriod(p){
+
+// Um único comando visual por mês; utiliza as APIs existentes, sem criar endpoints.
+async function saveMonthSettings(mes,fields){
   if(!canEdit()){notify('Seu perfil permite apenas consulta.');return;}
-  if(!p||state.busy)return;
-  const liberado=!p.habilitado;
-  const msg=liberado?`LIBERAR o ${p.periodo}º período de ${fmt(p.mes)}/${state.ano} para novas solicitações?`:
-   `BLOQUEAR o ${p.periodo}º período de ${fmt(p.mes)}/${state.ano}?\n\nOs ${p.ocupadas} registros existentes serão mantidos; apenas novas escolhas ficarão proibidas.`;
-  if(!confirm(msg))return;
-  state.busy=true;renderPeriodSettings();notify('Salvando alteração de disponibilidade...');
-  try{
-    await req('/api/admin-periodos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,mes:p.mes,periodo:p.periodo,liberado})});
-    state.busy=false;await load();notify(`${fmt(p.mes)} · ${p.periodo}º período ${liberado?'liberado':'bloqueado'} para novas escolhas.`,true);
-  }catch(e){state.busy=false;renderPeriodSettings();notify(e.message);}
-}
-async function changeDates(p,inicio,fim){
-  if(!canEdit()){notify('Seu perfil permite apenas consulta.');return;}
-  if(!p||state.busy)return;
-  if(Boolean(inicio)!==Boolean(fim)){notify('Preencha as duas datas ou deixe as duas vazias.');return;}
-  if(inicio){
-    const start=new Date(inicio+'T00:00:00Z'),end=new Date(fim+'T00:00:00Z');
-    if(!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||
-       start.getUTCFullYear()!==state.ano||start.getUTCMonth()+1!==p.mes||
-       end.getUTCFullYear()!==state.ano||end.getUTCMonth()+1!==p.mes||
-       Math.round((end-start)/86400000)!==14){
-      notify('Selecione exatamente 15 dias consecutivos dentro do mês escolhido.');return;
+  if(state.busy)return;
+  const rows=fields.map(f=>({p:f.p,mes,periodo:f.periodo,
+    inicio:f.start.value||'',fim:f.end.value||'',bloqueado:f.block.checked,
+    capacidade:Number(f.capacity.value)}));
+  if(rows.some(x=>!x.p)){notify('Os dados dos períodos ainda não foram carregados. Atualize a consulta.');return;}
+  for(const r of rows){
+    if(!Number.isInteger(r.capacidade)||r.capacidade<1||r.capacidade>30||r.capacidade<Number(r.p.normais??0)){
+      notify(`${r.periodo}º período: informe capacidade de 1 a 30, sem reduzir abaixo das reservas já existentes.`);return;
+    }
+    if(r.inicio){
+      const end=isoPlusDays(r.inicio,14);
+      const d=new Date(r.inicio+'T00:00:00Z');
+      if(!end||end!==r.fim||d.getUTCFullYear()!==state.ano||d.getUTCMonth()+1!==mes){
+        notify(`${r.periodo}º período: a data inicial deve pertencer a ${fmt(mes)}; a data final tem de completar 15 dias.`);return;
+      }
     }
   }
-  if(inicio){
-    const outro=state.vagas.find(x=>x.mes===p.mes&&x.periodo!==p.periodo);
-    const dias=overlapDays(inicio,fim,outro?.data_inicio,outro?.data_fim);
-    if(dias>5){notify(`Há ${dias} dias de sobreposição com o outro período. O máximo permitido é 5.`);return;}
+  // Verifique a configuração final dos dois períodos e demais meses antes de salvar.
+  const finalPeriods=state.vagas.map(v=>{
+    const edited=rows.find(r=>r.mes===v.mes&&r.periodo===v.periodo);
+    return edited?{...v,data_inicio:edited.inicio,data_fim:edited.fim}:v;
+  });
+  for(const r of rows){
+    if(!r.inicio)continue;
+    for(const other of finalPeriods){
+      if(other.mes===mes&&other.periodo===r.periodo||!other.data_inicio||!other.data_fim)continue;
+      const days=overlapDays(r.inicio,r.fim,other.data_inicio,other.data_fim);
+      if(days>7){notify(`As datas sobrepõem ${days} dias com ${fmt(other.mes)} · ${other.periodo}º período. Máximo: 7.`);return;}
+    }
   }
-  if((p.data_inicio||'')===inicio&&(p.data_fim||'')===fim){notify('As datas já estão configuradas assim.',true);return;}
-  const atual=dateLabel(p);
-  const novo=inicio?formatDate(inicio)+' a '+formatDate(fim):'Datas a definir';
-  const aviso=Number(p.ocupadas)>0?`\n\nATENÇÃO: já existem ${p.ocupadas} solicitações neste período. A mudança aparecerá também nos relatórios e nos próximos comprovantes. As reservas continuarão válidas.`:'';
-  if(!confirm(`Alterar as datas do ${p.periodo}º período de ${fmt(p.mes)}/${state.ano}?\n\nDe: ${atual}\nPara: ${novo}${aviso}`))return;
-  state.busy=true;renderPeriodSettings();notify('Salvando as datas do período...');
+  const dateChanges=rows.filter(r=>(r.p.data_inicio||'')!==r.inicio||(r.p.data_fim||'')!==r.fim);
+  const blockChanges=rows.filter(r=>r.bloqueado===Boolean(r.p.habilitado));
+  const capacityChanges=rows.filter(r=>r.capacidade!==Number(r.p.capacidade??10));
+  const summary=`${fmt(mes)}/${state.ano} — salvar configurações?\n\nDatas alteradas: ${dateChanges.length}\nBloqueios alterados: ${blockChanges.length}\nCapacidades para distribuir: ${capacityChanges.length}\n\nAs cotas serão confirmadas na próxima aba.`;
+  if(!confirm(summary))return;
+  state.busy=true;notify(`Salvando configurações de ${fmt(mes)}...`);
+  // Captura os dados antes de redesenhar os campos.
   try{
-    await req('/api/admin-periodos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'datas',ano:state.ano,mes:p.mes,periodo:p.periodo,data_inicio:inicio||null,data_fim:fim||null})});
-    state.busy=false;await load();notify(`${fmt(p.mes)} · ${p.periodo}º período: ${novo}.`,true);
-  }catch(e){state.busy=false;renderPeriodSettings();notify(e.message);}
+    // Primeiro, aplicar datas. Em alterações simultâneas, testa a ordem com menos conflitos.
+    if(dateChanges.length===2){
+      const a=dateChanges[0],b=dateChanges[1];
+      const conflicting=(r,other)=>r.inicio&&other.data_inicio&&overlapDays(r.inicio,r.fim,other.data_inicio,other.data_fim)>7;
+      if(conflicting(a,b.p)&&!conflicting(b,a.p))dateChanges.reverse();
+    }
+    for(const r of dateChanges){
+      await req('/api/admin-periodos',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({acao:'datas',ano:state.ano,mes,periodo:r.periodo,data_inicio:r.inicio||null,data_fim:r.fim||null})});
+    }
+    for(const r of blockChanges){
+      await req('/api/admin-periodos',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ano:state.ano,mes,periodo:r.periodo,liberado:!r.bloqueado})});
+    }
+    // Capacidade só entra em vigor junto da distribuição validada na aba de cotas.
+    for(const r of rows){
+      const key=quotaDraftKey(mes,r.periodo),old=state.quotaDrafts[key];
+      if(old||r.capacidade!==Number(r.p.capacidade??10)){
+        state.quotaDrafts[key]={capacidade:r.capacidade,
+          valores:proposeDistribution(mes,r.periodo,r.capacidade,old?.valores||null)};
+      }
+    }
+    state.busy=false;await load();
+    $('quota-month').value=String(mes);activateTab('cotas');renderCotas();
+    notify(`${fmt(mes)}: datas e bloqueios salvos. Confira e confirme a distribuição das cotas de cada período.`,true);
+  }catch(e){
+    state.busy=false;await load();
+    activateTab('periodos');
+    notify('Não foi possível concluir todas as alterações do mês: '+e.message+' Confira os períodos antes de tentar novamente.');
+  }
 }
 function quotaDraftKey(mes,periodo){return `${mes}-${periodo}`;}
 function quotaValues(mes,periodo){
@@ -708,6 +991,8 @@ function renderRecords(){
     const strong=document.createElement('strong');strong.textContent=s.nome_completo;c2.append(strong,document.createElement('div'),span('Matrícula: '+s.matricula,'muted'));
     c3.append(span(s.funcao_turno||'—',s.funcao_turno==='Insp Chefe'?'tag good':'tag'));
     c4.append(span(period(s.mes_1,s.periodo_1),state.mes===s.mes_1?'tag good':''));
+    const tipo=modalidadeDeFerias(s.ano,[{mes:s.mes_1,periodo:s.periodo_1},{mes:s.mes_2,periodo:s.periodo_2}]);
+    if(tipo.startsWith('30 dias'))c4.append(document.createElement('div'),span('30 dias · programação única','tag good'));
     c5.append(span(period(s.mes_2,s.periodo_2),state.mes===s.mes_2?'tag good':''));
     c6.append(span(s.registrado_por_nome||'Não informado','muted'));
     if(s.registrado_por_email){c6.append(document.createElement('div'),span(s.registrado_por_email,'muted'));}
@@ -723,6 +1008,7 @@ async function load(){
   try{
     const data=await req('/api/admin-dados?'+new URLSearchParams({ano:state.ano,mes:state.mes,periodo:state.periodo,busca:state.busca}));
     state.records=data.solicitacoes;state.vagas=data.vagas;state.anos=data.anos;state.cotas=data.cotas||[];state.ocupacao_funcao=data.ocupacao_funcao||[];
+    bookOptions();
     $('title-year').textContent=state.ano;
     $('dashboard-year').textContent=state.ano;
     $('dash-open').textContent=data.vagas.filter(x=>x.aberto).reduce((a,x)=>a+Number(x.restantes||0),0);
@@ -749,7 +1035,7 @@ async function cancel(s){
 }
 function csvEscape(s){let text=String(s??'');if(/^[=+@\-\t\r]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';}
 function exportCSV(){
-  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado por','Email de quem registrou','Registrado em'],...state.records.map(s=>[protocoloPublico(s.ano,s.id),s.ano,s.nome_completo,s.matricula,s.funcao_turno,fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.registrado_por_nome,s.registrado_por_email,s.solicitada_em])];
+  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Modalidade','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado por','Email de quem registrou','Registrado em'],...state.records.map(s=>[protocoloPublico(s.ano,s.id),s.ano,s.nome_completo,s.matricula,s.funcao_turno,modalidadeDeFerias(s.ano,[{mes:s.mes_1,periodo:s.periodo_1},{mes:s.mes_2,periodo:s.periodo_2}]),fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.registrado_por_nome,s.registrado_por_email,s.solicitada_em])];
   const csv='\ufeff'+rows.map(row=>row.map(csvEscape).join(';')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`sttu_ferias_${state.ano}_${state.mes||'todos'}.csv`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
@@ -866,7 +1152,6 @@ function auditExport(){
 }
 // /STTU-HISTORICO-UNIFICADO-V1
 
-
 function activateTab(tab){
   state.activeTab=tab;
   for(const btn of document.querySelectorAll('[data-tab]')){const active=btn.dataset.tab===tab;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));}
@@ -963,64 +1248,175 @@ function renderCotas(){
  const chief=document.createElement('tr');const chiefName=document.createElement('td');chiefName.className='q-name';chiefName.textContent='Insp Chefe';chief.append(chiefName);
  for(const periodo of [1,2]){const td=document.createElement('td');td.append(span(`${occupiedGroup(mes,periodo,'Insp Chefe')} extra(s) · sem limite`,'tag good'));chief.append(td);}body.append(chief);
  table.append(body);wrap.append(table);root.append(wrap);
+
  const actions=document.createElement('div');actions.className='quota-actions';
- for(const periodo of [1,2]){
+ const cardForPeriod=periodo=>{
    const card=document.createElement('div');card.className='quota-action-card';
-   const info=document.createElement('div');info.className='quota-total';info.id='quota-total-'+periodo;card.append(info);
-   const button=document.createElement('button');button.className='btn primary mini';button.type='button';button.textContent=`Confirmar e aplicar ${periodo}º período`;
-   button.id='quota-save-'+periodo;button.addEventListener('click',()=>saveQuotaPeriod(mes,periodo));card.append(button);actions.append(card);
- }root.append(actions);updateQuotaSummary(mes);
-  applyReadonly();
+   const info=document.createElement('div');info.className='quota-total';
+   info.id='quota-total-'+periodo;
+   info.setAttribute('aria-live','polite');
+   card.append(info);return card;
+ };
+ actions.append(cardForPeriod(1));
+ const center=document.createElement('div');center.className='quota-save-center';
+ const saveBoth=document.createElement('button');saveBoth.className='btn primary';
+ saveBoth.type='button';saveBoth.textContent='Confirmar e aplicar os 2 períodos';
+ saveBoth.id='quota-save-month';
+ saveBoth.setAttribute('aria-label',`Confirmar e aplicar os dois períodos de ${fmt(mes)}`);
+ saveBoth.addEventListener('click',()=>saveQuotaMonth(mes));
+ center.append(saveBoth);actions.append(center);
+ actions.append(cardForPeriod(2));
+ root.append(actions);updateQuotaSummary(mes);
+ applyReadonly();
+}
+
+function validQuotaPeriod(mes,periodo){
+ const d=draftForPeriod(mes,periodo);
+ const capacidade=Number(d.capacidade);
+ if(!Number.isInteger(capacidade)||capacidade<1||capacidade>30)
+   return {valid:false,reason:`${periodo}º período: capacidade deve ser de 1 a 30 vagas.`,d};
+ const vals=QUOTA_GROUPS.map(g=>d.valores[g]);
+ if(!vals.every(n=>Number.isInteger(n)&&n>=0&&n<=30))
+   return {valid:false,reason:`${periodo}º período: todas as cotas devem ser números inteiros entre 0 e 30.`,d};
+ const sum=vals.reduce((a,b)=>a+b,0);
+ if(sum!==capacidade)
+   return {valid:false,reason:`${periodo}º período: as cotas somam ${sum}, mas a capacidade é ${capacidade}.`,d,sum};
+ return {valid:true,d,sum};
 }
 function updateQuotaSummary(mes){
+ const checks=[validQuotaPeriod(mes,1),validQuotaPeriod(mes,2)];
  for(const periodo of [1,2]){
-   const d=draftForPeriod(mes,periodo);
-   const nums=QUOTA_GROUPS.map(g=>d.valores[g]);const valid=nums.every(n=>Number.isInteger(n)&&n>=0&&n<=30);
-   const sum=valid?nums.reduce((a,b)=>a+b,0):NaN;
-   const target=d.capacidade;const good=valid&&sum===target;
+   const {d,valid,sum}=checks[periodo-1];
+   const target=d.capacidade;
    const info=$('quota-total-'+periodo);if(!info)continue;info.replaceChildren();
    const title=document.createElement('strong');title.textContent=`${periodo}º período: `;
-   const value=document.createElement('strong');value.className=good?'ok':'bad';
-   value.textContent=valid?`${sum} / ${target} vagas`:'Cota inválida';
+   const value=document.createElement('strong');value.className=valid?'ok':'bad';
+   const numeric=Number.isFinite(sum);
+   value.textContent=numeric?`${sum} / ${target} vagas`:'Cota inválida';
    info.append(title,value);
-   if(valid&&!good)info.append(span(sum<target?`Faltam ${target-sum}`:`Excedem ${sum-target}`,'tag off'));
+   if(numeric&&!valid&&Number.isInteger(target)&&sum!==target)
+     info.append(span(sum<target?`Faltam ${target-sum}`:`Excedem ${sum-target}`,'tag off'));
    if(state.quotaDrafts[quotaDraftKey(mes,periodo)]){
-     info.append(span(`PRÉVIA: no banco ainda são ${Number(state.vagas.find(v=>v.mes===mes&&v.periodo===periodo)?.capacidade??10)} vagas. Clique em Confirmar e aplicar para efetivar.`, 'tag off'));
+     const antiga=Number(state.vagas.find(v=>v.mes===mes&&v.periodo===periodo)?.capacidade??10);
+     info.append(span(`Prévia: ${antiga} vagas no banco até confirmar.`, 'tag off'));
    }
-   const button=$('quota-save-'+periodo);if(button)button.disabled=state.busy||!good;
+ }
+ const button=$('quota-save-month');
+ if(button){
+   button.disabled=state.busy||!canEdit()||!checks.every(x=>x.valid);
+   button.title=checks.every(x=>x.valid)?'Salvar as duas distribuições em uma única transação':checks.find(x=>!x.valid).reason;
  }
 }
-async function saveQuotaPeriod(mes,periodo){
+async function saveQuotaMonth(mes){
  if(!canEdit()){notify('Seu perfil permite apenas consulta.');return;}
  if(state.busy)return;
- const d=draftForPeriod(mes,periodo),values=d.valores;
- if(!QUOTA_GROUPS.every(g=>Number.isInteger(values[g])&&values[g]>=0&&values[g]<=30)){
-   notify('Todas as cotas devem ser números inteiros entre 0 e 30.');return;
- }
- const soma=Object.values(values).reduce((a,b)=>a+b,0);
- if(soma!==d.capacidade){notify(`A soma (${soma}) deve ser exatamente ${d.capacidade} vagas.`);return;}
- const atual=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
- if(!confirm(`Salvar distribuição de ${fmt(mes)}/${state.ano} · ${periodo}º período?
-
-Capacidade: ${atual?.capacidade??10} → ${d.capacidade}
-Soma das cotas: ${soma}
-
-Insp Chefe continua extra.`))return;
- state.busy=true;updateQuotaSummary(mes);notify('Salvando distribuição e capacidade em uma única operação...');
+ const checks=[validQuotaPeriod(mes,1),validQuotaPeriod(mes,2)];
+ const invalid=checks.find(x=>!x.valid);
+ if(invalid){notify(invalid.reason);return;}
+ const current=checks.map((_,i)=>state.vagas.find(v=>v.mes===mes&&v.periodo===i+1));
+ const summary=checks.map((x,i)=>`${i+1}º período: ${current[i]?.capacidade??10} → ${x.d.capacidade} vagas; cotas ${x.sum}/${x.d.capacidade}`).join('\n');
+ if(!confirm(`Confirmar as DUAS distribuições de ${fmt(mes)}/${state.ano}?\n\n${summary}\n\nSe uma delas for recusada, nenhuma será alterada. Insp Chefe permanece como vaga extra.`))return;
+ state.busy=true;updateQuotaSummary(mes);notify(`Salvando os dois períodos de ${fmt(mes)} em uma única operação...`);
  try{
-   await req('/api/admin-cotas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,mes,periodo,capacidade:d.capacidade,cotas:values})});
-   delete state.quotaDrafts[quotaDraftKey(mes,periodo)];state.busy=false;await load();
-   $('quota-month').value=String(mes);renderCotas();
-   const confirmado=state.vagas.find(v=>v.mes===mes&&v.periodo===periodo);
-   if(Number(confirmado?.capacidade)!==Number(d.capacidade)){
-     notify(`O Neon ainda retorna ${confirmado?.capacidade??'—'} vagas. A alteração para ${d.capacidade} não foi confirmada. Consulte os registros da Vercel.`);
+   const distribuicoes=checks.map((x,i)=>({periodo:i+1,capacidade:x.d.capacidade,cotas:{...x.d.valores}}));
+   await req('/api/admin-cotas',{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({ano:state.ano,mes,distribuicoes})});
+   // Recarregar depois do commit; manter os rascunhos até confirmar as duas capacidades.
+   state.busy=false;await load();
+   $('quota-month').value=String(mes);
+   const matched=distribuicoes.every(x=>{
+     const p=state.vagas.find(v=>Number(v.mes)===mes&&Number(v.periodo)===x.periodo);
+     return p&&Number(p.capacidade)===x.capacidade&&
+       QUOTA_GROUPS.every(g=>capBase(mes,x.periodo,g)===x.cotas[g]);
+   });
+   if(!matched){
+     renderCotas();
+     notify('Não foi possível confirmar os dois períodos na nova consulta. Verifique os registros da Vercel e não repita a operação sem conferir o Neon.');
      return;
    }
-   activateTab('periodos');
-   renderPeriodSettings();
-   notify(`${fmt(mes)} · ${periodo}º período: ${confirmado.capacidade} vagas confirmadas no Neon; ${confirmado.normais} ocupadas normais e ${confirmado.restantes} restantes.`,true);
- }catch(e){state.busy=false;updateQuotaSummary(mes);notify(e.message);}
+   delete state.quotaDrafts[quotaDraftKey(mes,1)];
+   delete state.quotaDrafts[quotaDraftKey(mes,2)];
+   renderCotas();
+   notify(`${fmt(mes)}: 1º e 2º períodos salvos e confirmados no Neon.`,true);
+ }catch(e){
+   state.busy=false;updateQuotaSummary(mes);
+   notify('Nenhuma distribuição foi aplicada: '+e.message);
+ }
 }
+
+// STTU — Restauração do registro de férias pelo administrador.
+let bookCandidates=[],bookLoading=false;
+const bookStatus=(msg,ok=false)=>{
+ const e=$('book-result');e.textContent=msg;e.classList.toggle('ok',ok);show('book-result',Boolean(msg));
+};
+function bookOptions(){
+ const beneficiary=bookCandidates.find(s=>s.matricula===$('book-server').value);
+ const leader=beneficiary?.funcao_turno==='Insp Chefe';
+ const allowed=state.vagas.filter(p=>p.aberto && (leader||Number(p.restantes)>0))
+   .sort((a,b)=>Number(a.mes)-Number(b.mes)||Number(a.periodo)-Number(b.periodo));
+ for(const id of ['book-first','book-second']){
+  const s=$(id),previous=s.value;s.replaceChildren(new Option('Selecione mês e período',''));
+  for(const v of allowed){
+   const o=new Option(`${fmt(Number(v.mes))} · ${v.periodo}º período · ${dateLabel(v)} · ${v.restantes} vaga(s) normais`,`${v.mes}-${v.periodo}`);
+   s.add(o);
+  }
+  if([...s.options].some(o=>o.value===previous))s.value=previous;
+ }
+}
+async function bookLookup(){
+ if(!canEdit())return;
+ const text=$('book-search').value.trim();
+ if(text.length<3){bookStatus('Informe pelo menos 3 caracteres do nome ou matrícula.');return;}
+ if(bookLoading)return;
+ bookLoading=true;$('book-lookup').disabled=true;
+ bookCandidates=[];$('book-server').replaceChildren(new Option('Consultando cadastro...',''));
+ $('book-server').disabled=true;bookStatus('Consultando cadastro...');
+ try{
+  const query=new URLSearchParams({ano:String(state.ano),busca:text});
+  const response=await req('/api/admin-servidores?'+query.toString());
+  bookCandidates=(response.servidores||[]).slice(0,114);
+  const sel=$('book-server');sel.replaceChildren(new Option('Selecione o servidor',''));
+  for(const s of bookCandidates){
+   sel.add(new Option(`${s.nome} · ${s.matricula} · ${s.funcao_turno}${s.protocolo?' · JÁ SOLICITADO':''}`,s.matricula));
+  }
+  sel.disabled=bookCandidates.length===0;
+  bookOptions();
+  bookStatus(bookCandidates.length?`${bookCandidates.length} servidor(es) encontrado(s). Confira o nome e a matrícula antes de registrar.`:'Nenhum servidor encontrado.');
+ }catch(e){bookStatus(e.message);}
+ finally{bookLoading=false;$('book-lookup').disabled=false;}
+}
+async function bookSubmit(event){
+ event.preventDefault();
+ if(!canEdit()){bookStatus('Seu perfil não permite registrar férias.');return;}
+ if(state.busy)return;
+ const beneficiary=bookCandidates.find(s=>s.matricula===$('book-server').value);
+ const match=/^(\d{1,2})-([12])$/;
+ const a=match.exec($('book-first').value),b=match.exec($('book-second').value);
+ const email=$('book-email').value.trim();
+ if(!beneficiary){bookStatus('Localize e selecione um servidor do cadastro oficial.');return;}
+ if(beneficiary.protocolo){bookStatus('Este servidor já possui solicitação para o ano selecionado. Consulte o comprovante existente.');return;}
+ if(!a||!b||Number(a[1])===Number(b[1])){bookStatus('Escolha dois períodos em meses diferentes.');return;}
+ if(!$('book-confirm').checked){bookStatus('Confirme o recebimento do pedido e a ciência das regras.');return;}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){bookStatus('Informe um e-mail válido.');return;}
+ const choices=[{mes:Number(a[1]),periodo:Number(a[2])},{mes:Number(b[1]),periodo:Number(b[2])}];
+ if(!confirm(`Registrar férias de ${beneficiary.nome} (${beneficiary.matricula})?\n\nAno: ${state.ano}\n1ª escolha: ${fmt(choices[0].mes)} · ${choices[0].periodo}º período\n2ª escolha: ${fmt(choices[1].mes)} · ${choices[1].periodo}º período\n\nResponsável: ${state.username}\n\nConfirma a solicitação?`))return;
+ const button=$('book-save');button.disabled=true;bookStatus('Registrando a solicitação. Não clique novamente...');
+ try{
+  const saved=await req('/api/admin-servidores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,matricula:beneficiary.matricula,email,aceite_regras:true,selecoes:choices})});
+  // O backend é o responsável pela validação final; recarregamos a ocupação após o registro.
+  bookCandidates=[];$('book-server').replaceChildren(new Option('Localize um servidor para outra solicitação',''));
+  $('book-server').disabled=true;$('book-confirm').checked=false;
+  const protocolo=saved.solicitacao?.protocolo||'gerado pelo sistema';
+  bookStatus(`Solicitação registrada com sucesso. Protocolo: ${protocolo}. O servidor verá o comprovante ao fazer login.`,true);
+  await load();
+ }catch(e){bookStatus('Não foi possível confirmar o registro: '+e.message+'. Confira se já existe solicitação antes de tentar novamente.');}
+ finally{button.disabled=false;}
+}
+$('book-lookup').addEventListener('click',bookLookup);
+$('book-server').addEventListener('change',bookOptions);
+$('book-form').addEventListener('submit',bookSubmit);
+$('book-search').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();bookLookup();}});
+
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));
 $('registry-filter').addEventListener('submit',async e=>{
  e.preventDefault();
@@ -1037,11 +1433,29 @@ $('dash-func-month').addEventListener('change',renderFunctionDistribution);
 $('dash-func-period').addEventListener('change',renderFunctionDistribution);
 $('login-form').addEventListener('submit',async e=>{
   e.preventDefault();const button=$('login-button');button.disabled=true;show('login-error',false);
-  try{const sess=await req('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:$('username').value,senha:$('password').value})});$('password').value='';configureSession(sess);show('login',false);show('dashboard',true);show('logout',true);await load();}
+  try{const sess=await req('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:$('username').value,senha:$('password').value})});$('password').value='';configureSession(sess);adminStartIdle();show('login',false);show('dashboard',true);show('logout',true);await load();}
   catch(e){$('login-error').textContent=e.message;show('login-error',true);}
   finally{button.disabled=false;}
 });
-$('logout').addEventListener('click',async()=>{try{await req('/api/admin-login',{method:'DELETE'});}catch{}clearRegistryResults();configureSession(null);show('dashboard',false);show('login',true);show('logout',false);});
+$('logout').addEventListener('click',()=>{void adminFinishSignout();});
+$('reset-servidor-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(!canCancel())return;
+ const matricula=$('reset-matricula').value.trim();
+ const motivo=$('reset-motivo').value.trim();
+ const aviso=$('reset-servidor-msg');
+ if(matricula.replace(/\D/g,'').length<4||motivo.length<10){aviso.textContent='Informe matrícula e justificativa com pelo menos 10 caracteres.';show('reset-servidor-msg',true);return;}
+ if(!confirm('Você conferiu a identidade do titular?\n\nRedefinir a senha de '+matricula+' para a matrícula provisória?\nAs sessões anteriores serão invalidadas. As férias já solicitadas permanecem inalteradas.'))return;
+ const botao=$('reset-servidor-btn');botao.disabled=true;
+ try{
+   const data=await req('/api/solicitar?acesso=1',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:'reset',matricula,motivo})});
+   aviso.textContent=data.mensagem||'Acesso redefinido.';show('reset-servidor-msg',true);
+   $('reset-matricula').value='';$('reset-motivo').value='';
+ }catch(e){aviso.textContent=e.message;show('reset-servidor-msg',true);}
+ finally{botao.disabled=false;}
+});
+
 $('filters').addEventListener('submit',e=>{e.preventDefault();load();});
 $('refresh').addEventListener('click',load);
 $('export').addEventListener('click',exportCSV);
@@ -1066,7 +1480,7 @@ setOptions('dash-func-period',[[1,'1º período'],[2,'2º período']],1);
 setOptions('registry-role',[['','Todas as funções'],...GROUPS.map(g=>[g,g])],'');
 setOptions('year',[[2027,'2027']],2027);
 setOptions('manage-year',Array.from({length:8},(_,i)=>[2028+i,String(2028+i)]),2028);
-req('/api/admin-login').then(s=>{if(s.autenticado){configureSession(s);show('login',false);show('dashboard',true);show('logout',true);load();}else if(!s.configurado){$('login-error').textContent='A conta principal ainda não foi configurada na Vercel.';show('login-error',true);}}).catch(()=>{});
+req('/api/admin-login').then(s=>{if(s.autenticado){configureSession(s);adminStartIdle(true);show('login',false);show('dashboard',true);show('logout',true);load();}else if(!s.configurado){$('login-error').textContent='A conta principal ainda não foi configurada na Vercel.';show('login-error',true);}}).catch(()=>{});
 </script>
 </body>
 </html>
