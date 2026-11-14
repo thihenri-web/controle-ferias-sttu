@@ -17,13 +17,39 @@ export default async function handler(req,res){
     const found=await sql`
       SELECT c.nome_completo AS nome,c.matricula AS matricula_chave,
         c.matricula_exibicao AS matricula,c.funcao_turno,
-        s.id AS protocolo
+        s.id AS protocolo,s.ano AS solicitacao_ano,s.nome_completo AS solicitacao_nome,
+        COALESCE(s.funcao_turno,c.funcao_turno) AS solicitacao_funcao_turno,
+        s.mes_1,s.periodo_1,s.mes_2,s.periodo_2,
+        s.registrado_por_nome,
+        to_char(s.criada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em,
+        to_char(s.ciencia_regras_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS ciencia_regras_em,
+        to_char(p1.data_inicio,'YYYY-MM-DD') AS inicio_1,
+        to_char(p1.data_fim,'YYYY-MM-DD') AS fim_1,
+        to_char(p2.data_inicio,'YYYY-MM-DD') AS inicio_2,
+        to_char(p2.data_fim,'YYYY-MM-DD') AS fim_2
       FROM sttu_ferias_servidores c
       LEFT JOIN sttu_ferias_solicitacoes s ON s.matricula=c.matricula AND s.ano=${ano}
+      LEFT JOIN sttu_ferias_periodos_config p1
+        ON p1.ano=s.ano AND p1.mes=s.mes_1 AND p1.periodo=s.periodo_1
+      LEFT JOIN sttu_ferias_periodos_config p2
+        ON p2.ano=s.ano AND p2.mes=s.mes_2 AND p2.periodo=s.periodo_2
       WHERE c.matricula=${matricula} AND c.ativo=TRUE
       LIMIT 1`;
     if(found.length===0)return res.status(404).json({erro:'Matrícula não encontrada no cadastro ativo.'});
-    return res.status(200).json({servidor:found[0]});
+    const r=found[0];
+    const servidor={nome:r.nome,matricula_chave:r.matricula_chave,matricula:r.matricula,
+      funcao_turno:r.funcao_turno,protocolo:r.protocolo};
+    const solicitacao=r.protocolo?{
+      id:r.protocolo,ano:r.solicitacao_ano,nome:r.solicitacao_nome||r.nome,
+      matricula:r.matricula,funcao_turno:r.solicitacao_funcao_turno,
+      registrado_por_nome:r.registrado_por_nome,
+      registrada_em:r.registrada_em,ciencia_regras_em:r.ciencia_regras_em,
+      escolhas:[
+        {mes:r.mes_1,periodo:r.periodo_1,data_inicio:r.inicio_1,data_fim:r.fim_1},
+        {mes:r.mes_2,periodo:r.periodo_2,data_inicio:r.inicio_2,data_fim:r.fim_2}
+      ]
+    }:null;
+    return res.status(200).json({servidor,solicitacao});
   }
   const rows=await sql`
     SELECT c.nome_completo AS nome,c.matricula_exibicao AS matricula,c.funcao_turno,
