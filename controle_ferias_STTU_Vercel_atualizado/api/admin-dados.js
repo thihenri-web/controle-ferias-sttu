@@ -69,8 +69,9 @@ export default async function handler(req,res){
 // STTU-HISTORICO-FILTRADO-V1: ramo de consulta exclusiva por categoria.
 async function handleAuditoriaFiltrada(req,res,tipo){
   if(req.method!=='GET')return res.status(405).json({erro:'Método não permitido.'});
-  const categorias=['cancelamentos','capacidade','cotas','datas','periodos','anos'];
+  const categorias=['cancelamentos','capacidade','cotas','datas','periodos','anos','registros_admin','resets'];
   if(!categorias.includes(tipo))return res.status(400).json({erro:'Tipo de histórico inválido.'});
+  if(tipo==='resets'&&!requireAdmin(req,res,'edit'))return;
   const ano=Number(req.query.ano??2027),mes=Number(req.query.mes??0);
   if(!validYear(ano)||!Number.isInteger(mes)||mes<0||mes>12)return res.status(400).json({erro:'Filtros inválidos.'});
   if(!process.env.DATABASE_URL)return res.status(503).json({erro:'Banco não configurado.'});
@@ -80,6 +81,32 @@ async function handleAuditoriaFiltrada(req,res,tipo){
     const sql=neon(process.env.DATABASE_URL),limite=200;
     let registros=[],aviso='';
     switch(tipo){
+      case 'resets':
+        // Auditoria preexistente da redefinição, sem qualquer dado de senha.
+        registros=await sql`
+          SELECT a.matricula,COALESCE(c.matricula_exibicao,a.matricula) AS matricula_exibicao,
+            c.nome_completo,a.realizado_por,a.detalhe,
+            to_char(a.ocorrido_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS data_hora
+          FROM sttu_ferias_servidor_acessos_auditoria a
+          LEFT JOIN sttu_ferias_servidores c ON c.matricula=a.matricula
+          WHERE a.acao='RESET_SENHA'
+          ORDER BY a.ocorrido_em DESC,a.id DESC LIMIT ${limite}`;
+        break;
+      case 'registros_admin':
+        // Consulta das solicitações ATIVAS gravadas pelo perfil administrativo.
+        // Cancelamentos permanecem acessíveis na categoria própria.
+        registros=await sql`
+          SELECT s.id,s.ano,s.nome_completo,COALESCE(c.matricula_exibicao,s.matricula) AS matricula,
+            s.mes_1,s.periodo_1,s.mes_2,s.periodo_2,s.registrado_por_nome,
+            to_char(s.criada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em
+          FROM sttu_ferias_solicitacoes s
+          LEFT JOIN sttu_ferias_servidores c ON c.matricula=s.matricula
+          WHERE s.ano=${ano}
+            AND (${mes}::integer=0 OR s.mes_1=${mes} OR s.mes_2=${mes})
+            AND s.registrado_por_nome LIKE 'Administração STTU - %'
+          ORDER BY s.criada_em DESC,s.id DESC LIMIT ${limite}`;
+        aviso='Esta consulta apresenta solicitações administrativas ainda existentes. As canceladas estão na categoria Cancelamentos de férias.';
+        break;
       case 'cancelamentos':
         registros=await sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,registrado_por_nome,registrado_por_email,cancelado_por_login,
           to_char(registrada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em
