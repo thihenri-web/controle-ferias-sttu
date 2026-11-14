@@ -313,6 +313,13 @@ body.role-viewer .cancel-button{display:none!important}
 .management-button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 #tab-gestao>.section.card{margin-top:16px}
 @media(max-width:540px){.management-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}.management-button{padding:10px 7px;font-size:.84rem}}
+/* Gestão de Servidores — consulta individual por matrícula */
+.identity-result{display:flex;flex-direction:column;gap:5px;padding:14px 16px;margin-top:4px;background:#102a23;border:1px solid #368b67;border-radius:10px;color:#e4f7ec}
+.identity-result.hidden{display:none}.identity-result strong{font-size:1.04rem;line-height:1.4}
+.identity-result span{font-size:.86rem;color:#c6e3d3}
+.reset-identity-box{grid-column:1/-1;min-width:0}.reset-identity-box label{display:block;font-size:.81rem;margin-bottom:6px}
+#reset-servidor-form #reset-consultar{align-self:end}
+#book-identity-placeholder,#reset-identity-placeholder{margin:5px 0}
 </style>
 </head>
 <body>
@@ -416,7 +423,7 @@ body.role-viewer .cancel-button{display:none!important}
     <div class="tab-pane hidden" id="tab-gestao" role="tabpanel" aria-label="Gestão de Servidores">
       <section class="section">
         <div class="section-bar"><h2>Gestão de Servidores</h2><span class="tag">THIAGO-HENRIQUE / ANDREA-CASTRO</span></div>
-        <p class="note">Registre férias ou redefina o acesso dos servidores. Cada operação exige confirmação e continua sujeita às permissões administrativas.</p>
+        <p class="note">Informe a matrícula, clique em <strong>Consultar matrícula</strong> e confira o nome exibido. Não há etapa adicional de confirmação da identidade; as ações finais seguem as regras e permissões administrativas.</p>
         <div class="management-nav" role="tablist" aria-label="Operações com servidores">
           <button type="button" class="management-button active" data-management="ferias" role="tab" aria-selected="true" aria-controls="admin-book-panel">Registrar férias</button>
           <button type="button" class="management-button" data-management="senha" role="tab" aria-selected="false" aria-controls="reset-servidor-panel">Redefinir senha</button>
@@ -424,29 +431,37 @@ body.role-viewer .cancel-button{display:none!important}
       </section>
       <section class="section card hidden" id="admin-book-panel">
         <div class="section-bar"><h2>Registrar férias pela administração</h2><span class="tag">THIAGO-HENRIQUE / ANDREA-CASTRO</span></div>
-        <p class="note">Localize o servidor por <strong>nome ou matrícula</strong> e selecione os dois períodos. Não é necessário informar e-mail. O registro será identificado pelo login administrativo, respeitando vagas, cotas e prazos. O servidor terá acesso ao comprovante ao entrar na própria conta.</p>
+        <p class="note">Digite a <strong>matrícula</strong> e consulte o nome no cadastro oficial. Se for o servidor correto, selecione os períodos logo abaixo. Se não for, digite outra matrícula e consulte novamente. Não é necessário informar e-mail.</p>
         <div class="admin-book-grid">
-          <div><label for="book-search">Pesquisar servidor por nome ou matrícula</label><input class="input" id="book-search" type="search" maxlength="120" placeholder="Ex.: matrícula ou nome"></div>
-          <button class="btn" id="book-lookup" type="button">Localizar servidor</button>
-          <div class="admin-book-server"><label for="book-server">Servidor conferido</label><select class="input" id="book-server" required disabled><option value="">Localize um servidor primeiro</option></select></div>
+          <div><label for="book-search">Matrícula do servidor</label><input class="input" id="book-search" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Ex.: 60.275-2"></div>
+          <button class="btn" id="book-lookup" type="button">Consultar matrícula</button>
+          <div class="admin-book-server"><label>Servidor localizado no cadastro oficial</label>
+            <div id="book-identity" class="identity-result hidden" role="status" aria-live="polite"><strong id="book-identity-name"></strong><span id="book-identity-matricula"></span></div>
+            <p id="book-identity-placeholder" class="note">Informe a matrícula e clique em Consultar matrícula.</p>
+          </div>
         </div>
         <form id="book-form" class="admin-book-form">
           <div class="admin-book-grid">
-            <div><label for="book-first">1º período solicitado</label><select class="input" id="book-first" required><option value="">Selecione</option></select></div>
-            <div><label for="book-second">2º período solicitado</label><select class="input" id="book-second" required><option value="">Selecione</option></select></div>
+            <div><label for="book-first">1º período solicitado</label><select class="input" id="book-first" required disabled><option value="">Consulte a matrícula primeiro</option></select></div>
+            <div><label for="book-second">2º período solicitado</label><select class="input" id="book-second" required disabled><option value="">Consulte a matrícula primeiro</option></select></div>
           </div>
-          <label class="admin-book-ack"><input id="book-confirm" type="checkbox" required> Confirmo que conferi a identidade do servidor, recebi a solicitação de férias e estou ciente das regras de períodos e vagas ao registrá-la administrativamente.</label>
-          <button id="book-save" class="btn primary" type="submit">Registrar os dois períodos</button>
+          <label class="admin-book-ack"><input id="book-confirm" type="checkbox" required disabled> Declaro que recebi a solicitação de férias e estou ciente das regras de períodos e vagas ao registrá-la administrativamente.</label>
+          <button id="book-save" class="btn primary" type="submit" disabled>Registrar os dois períodos</button>
         </form>
         <div class="notice hidden" id="book-result" role="status" aria-live="polite"></div>
       </section>
       <section class="section card hidden" id="reset-servidor-panel">
         <div class="section-bar"><h2>Redefinição de acesso do servidor · DFV</h2><span class="tag">Somente administradores</span></div>
-        <p class="note">Somente após conferir a identidade do titular. Ao redefinir, a senha provisória volta a ser a matrícula e a troca torna-se obrigatória. Todas as sessões anteriores serão invalidadas. <strong>As férias já solicitadas, protocolos e vagas não serão alterados ou cancelados.</strong> A operação será auditada.</p>
+        <p class="note">Digite a matrícula, clique em <strong>Consultar matrícula</strong> e confira o nome apresentado antes de continuar. Ao redefinir, a senha provisória volta a ser a matrícula e a troca torna-se obrigatória. As sessões anteriores serão invalidadas. <strong>Férias, protocolos e vagas permanecerão inalterados.</strong> A operação será auditada.</p>
         <form id="reset-servidor-form" class="filters">
-          <div><label for="reset-matricula">Matrícula do servidor</label><input class="input" id="reset-matricula" maxlength="20" placeholder="Ex.: 00.000-0" required autocomplete="off"></div>
-          <div class="search-field"><label for="reset-motivo">Justificativa / conferência de identidade</label><input class="input" id="reset-motivo" maxlength="300" minlength="10" placeholder="Ex.: Titular identificado presencialmente no DFV" required></div>
-          <button class="btn primary" id="reset-servidor-btn" type="submit">Resetar senha</button>
+          <div><label for="reset-matricula">Matrícula do servidor</label><input class="input" id="reset-matricula" maxlength="20" inputmode="numeric" placeholder="Ex.: 60.275-2" required autocomplete="off"></div>
+          <button class="btn" id="reset-consultar" type="button">Consultar matrícula</button>
+          <div class="reset-identity-box"><label>Servidor localizado no cadastro oficial</label>
+            <div id="reset-identity" class="identity-result hidden" role="status" aria-live="polite"><strong id="reset-identity-name"></strong><span id="reset-identity-matricula"></span></div>
+            <p id="reset-identity-placeholder" class="note">Informe a matrícula e clique em Consultar matrícula.</p>
+          </div>
+          <div class="search-field"><label for="reset-motivo">Justificativa</label><input class="input" id="reset-motivo" maxlength="300" minlength="10" placeholder="Ex.: Titular identificado presencialmente no DFV" required disabled></div>
+          <button class="btn primary" id="reset-servidor-btn" type="submit" disabled>Resetar senha</button>
         </form>
         <div class="notice hidden" id="reset-servidor-msg" role="status" aria-live="polite"></div>
       </section>
@@ -1379,77 +1394,129 @@ async function saveQuotaMonth(mes){
  }
 }
 
-// STTU — Restauração do registro de férias pelo administrador.
-let bookCandidates=[],bookLoading=false;
+// STTU — Gestão de Servidores: matrícula exata e exibição direta do nome.
+const matriculaNumeros=(valor)=>String(valor||'').replace(/\D/g,'');
+let bookServer=null,bookLookupSeq=0,bookLoading=false,bookLookupYear=null;
 const bookStatus=(msg,ok=false)=>{
  const e=$('book-result');e.textContent=msg;e.classList.toggle('ok',ok);show('book-result',Boolean(msg));
 };
-function bookOptions(){
- const beneficiary=bookCandidates.find(s=>s.matricula===$('book-server').value);
- const leader=beneficiary?.funcao_turno==='Insp Chefe';
- const allowed=state.vagas.filter(p=>p.aberto && (leader||Number(p.restantes)>0))
-   .sort((a,b)=>Number(a.mes)-Number(b.mes)||Number(a.periodo)-Number(b.periodo));
+function bookClear(clearNotice=true){
+ bookLookupSeq++;
+ bookServer=null;bookLookupYear=null;
+ show('book-identity',false);
+ show('book-identity-placeholder',true);
+ $('book-confirm').checked=false;
+ $('book-confirm').disabled=true;
+ $('book-save').disabled=true;
  for(const id of ['book-first','book-second']){
-  const s=$(id),previous=s.value;s.replaceChildren(new Option('Selecione mês e período',''));
-  for(const v of allowed){
-   const o=new Option(`${fmt(Number(v.mes))} · ${v.periodo}º período · ${dateLabel(v)} · ${v.restantes} vaga(s) normais`,`${v.mes}-${v.periodo}`);
-   s.add(o);
-  }
-  if([...s.options].some(o=>o.value===previous))s.value=previous;
+  $(id).replaceChildren(new Option('Consulte a matrícula primeiro',''));
+  $(id).disabled=true;
  }
+ if(clearNotice)bookStatus('');
+}
+function bookOptions(){
+ const leader=bookServer?.funcao_turno==='Insp Chefe';
+ const canProceed=Boolean(bookServer&&!bookServer.protocolo&&bookLookupYear===state.ano&&matriculaNumeros($('book-search').value)===bookServer.matricula_chave);
+ const allowed=canProceed?state.vagas.filter(p=>p.aberto&&(leader||Number(p.restantes)>0))
+   .sort((a,b)=>Number(a.mes)-Number(b.mes)||Number(a.periodo)-Number(b.periodo)):[];
+ for(const id of ['book-first','book-second']){
+  const s=$(id),previous=s.value;
+  s.replaceChildren(new Option(canProceed?'Selecione mês e período':'Consulte a matrícula primeiro',''));
+  for(const v of allowed)s.add(new Option(`${fmt(Number(v.mes))} · ${v.periodo}º período · ${dateLabel(v)} · ${v.restantes} vaga(s) normais`,`${v.mes}-${v.periodo}`));
+  if([...s.options].some(o=>o.value===previous))s.value=previous;
+  s.disabled=!canProceed;
+ }
+ $('book-confirm').disabled=!canProceed;
+ $('book-save').disabled=!canProceed;
 }
 async function bookLookup(){
  if(!canEdit())return;
- const text=$('book-search').value.trim();
- if(text.length<3){bookStatus('Informe pelo menos 3 caracteres do nome ou matrícula.');return;}
- if(bookLoading)return;
- bookLoading=true;$('book-lookup').disabled=true;
- bookCandidates=[];$('book-server').replaceChildren(new Option('Consultando cadastro...',''));
- $('book-server').disabled=true;bookStatus('Consultando cadastro...');
+ const mat=matriculaNumeros($('book-search').value);
+ bookClear();
+ if(!/^\d{4,14}$/.test(mat)){bookStatus('Digite a matrícula completa e clique em Consultar matrícula.');return;}
+ if(bookLoading){bookStatus('Aguarde o término da consulta anterior.');return;}
+ bookLoading=true;
+ const token=bookLookupSeq;
+ $('book-lookup').disabled=true;bookStatus('Consultando matrícula no cadastro oficial...');
  try{
-  const query=new URLSearchParams({ano:String(state.ano),busca:text});
-  const response=await req('/api/admin-servidores?'+query.toString());
-  bookCandidates=(response.servidores||[]).slice(0,114);
-  const sel=$('book-server');sel.replaceChildren(new Option('Selecione o servidor',''));
-  for(const s of bookCandidates){
-   sel.add(new Option(`${s.nome} · ${s.matricula} · ${s.funcao_turno}${s.protocolo?' · JÁ SOLICITADO':''}`,s.matricula));
-  }
-  sel.disabled=bookCandidates.length===0;
+  const data=await req('/api/admin-servidores?'+new URLSearchParams({ano:String(state.ano),matricula:mat}));
+  if(token!==bookLookupSeq||matriculaNumeros($('book-search').value)!==mat)return;
+  if(!data.servidor||matriculaNumeros(data.servidor.matricula_chave)!==mat)throw Error('O cadastro retornou uma matrícula diferente. Faça uma nova consulta.');
+  bookServer=data.servidor;bookLookupYear=state.ano;
+  $('book-identity-name').textContent=bookServer.nome;
+  $('book-identity-matricula').textContent=`Matrícula: ${bookServer.matricula} · ${bookServer.funcao_turno||'Função/Turno não informada'}`;
+  show('book-identity',true);show('book-identity-placeholder',false);
   bookOptions();
-  bookStatus(bookCandidates.length?`${bookCandidates.length} servidor(es) encontrado(s). Confira o nome e a matrícula antes de registrar.`:'Nenhum servidor encontrado.');
- }catch(e){bookStatus(e.message);}
+  bookStatus(bookServer.protocolo?'Servidor localizado, mas já possui férias registradas em '+state.ano+'. Não é permitido registrar novamente.':'Servidor localizado. Confira o nome acima e escolha os dois períodos.',!bookServer.protocolo);
+ }catch(e){if(token===bookLookupSeq)bookStatus('Consulta não concluída: '+e.message);}
  finally{bookLoading=false;$('book-lookup').disabled=false;}
 }
 async function bookSubmit(event){
  event.preventDefault();
  if(!canEdit()){bookStatus('Seu perfil não permite registrar férias.');return;}
  if(state.busy)return;
- const beneficiary=bookCandidates.find(s=>s.matricula===$('book-server').value);
+ const beneficiary=bookServer;
+ if(!beneficiary||bookLookupYear!==state.ano||matriculaNumeros($('book-search').value)!==beneficiary.matricula_chave){bookStatus('Consulte a matrícula do servidor antes de prosseguir.');return;}
+ if(beneficiary.protocolo){bookStatus('Este servidor já possui solicitação neste ano.');return;}
  const match=/^(\d{1,2})-([12])$/;
  const a=match.exec($('book-first').value),b=match.exec($('book-second').value);
- if(!beneficiary){bookStatus('Localize e selecione um servidor do cadastro oficial.');return;}
- if(beneficiary.protocolo){bookStatus('Este servidor já possui solicitação para o ano selecionado. Consulte o comprovante existente.');return;}
  if(!a||!b||Number(a[1])===Number(b[1])){bookStatus('Escolha dois períodos em meses diferentes.');return;}
  if(!$('book-confirm').checked){bookStatus('Confirme o recebimento do pedido e a ciência das regras.');return;}
  const choices=[{mes:Number(a[1]),periodo:Number(a[2])},{mes:Number(b[1]),periodo:Number(b[2])}];
  if(!confirm(`Registrar férias de ${beneficiary.nome} (${beneficiary.matricula})?\n\nAno: ${state.ano}\n1ª escolha: ${fmt(choices[0].mes)} · ${choices[0].periodo}º período\n2ª escolha: ${fmt(choices[1].mes)} · ${choices[1].periodo}º período\n\nResponsável: ${state.username}\n\nConfirma a solicitação?`))return;
- const button=$('book-save');button.disabled=true;bookStatus('Registrando a solicitação. Não clique novamente...');
+ const button=$('book-save');button.disabled=true;bookStatus('Registrando solicitação. Não clique novamente...');
  try{
-  const saved=await req('/api/admin-servidores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,matricula:beneficiary.matricula,aceite_regras:true,selecoes:choices})});
-  // O backend é o responsável pela validação final; recarregamos a ocupação após o registro.
-  bookCandidates=[];$('book-server').replaceChildren(new Option('Localize um servidor para outra solicitação',''));
-  $('book-server').disabled=true;$('book-confirm').checked=false;
+  const saved=await req('/api/admin-servidores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,matricula:beneficiary.matricula_chave,aceite_regras:true,selecoes:choices})});
+  bookClear(false);
   const protocolo=saved.solicitacao?.protocolo||'gerado pelo sistema';
   bookStatus(`Solicitação registrada com sucesso. Protocolo: ${protocolo}. O servidor verá o comprovante ao fazer login.`,true);
   await load();
- }catch(e){bookStatus('Não foi possível confirmar o registro: '+e.message+'. Confira se já existe solicitação antes de tentar novamente.');}
- finally{button.disabled=false;}
+ }catch(e){bookStatus('Não foi possível confirmar o registro: '+e.message+'. Verifique se existe solicitação antes de repetir.');}
+ finally{if(bookServer)button.disabled=false;}
 }
 $('book-lookup').addEventListener('click',bookLookup);
-$('book-server').addEventListener('change',bookOptions);
 $('book-form').addEventListener('submit',bookSubmit);
+$('book-search').addEventListener('input',()=>bookClear());
 $('book-search').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();bookLookup();}});
 
+let resetServer=null,resetLookupSeq=0,resetLoading=false;
+function resetClear(clearNotice=true){
+ resetLookupSeq++;
+ resetServer=null;
+ $('reset-motivo').value='';
+ show('reset-identity',false);show('reset-identity-placeholder',true);
+ $('reset-motivo').disabled=true;$('reset-servidor-btn').disabled=true;
+ if(clearNotice)show('reset-servidor-msg',false);
+}
+async function resetLookup(){
+ if(!canEdit())return;
+ const mat=matriculaNumeros($('reset-matricula').value);
+ resetClear();
+ const aviso=$('reset-servidor-msg');
+ if(!/^\d{4,14}$/.test(mat)){
+  aviso.textContent='Informe a matrícula completa para consultar o cadastro.';show('reset-servidor-msg',true);return;
+ }
+ if(resetLoading){aviso.textContent='Aguarde a consulta anterior terminar.';show('reset-servidor-msg',true);return;}
+ resetLoading=true;
+ const token=resetLookupSeq;
+ $('reset-consultar').disabled=true;
+ aviso.textContent='Consultando matrícula no cadastro oficial...';show('reset-servidor-msg',true);
+ try{
+  const data=await req('/api/admin-servidores?'+new URLSearchParams({matricula:mat}));
+  if(token!==resetLookupSeq||matriculaNumeros($('reset-matricula').value)!==mat)return;
+  if(!data.servidor||matriculaNumeros(data.servidor.matricula_chave)!==mat)throw Error('O cadastro retornou uma matrícula diferente. Consulte novamente.');
+  resetServer=data.servidor;
+  $('reset-identity-name').textContent=resetServer.nome;
+  $('reset-identity-matricula').textContent='Matrícula: '+resetServer.matricula;
+  show('reset-identity',true);show('reset-identity-placeholder',false);
+  $('reset-motivo').disabled=false;$('reset-servidor-btn').disabled=false;
+  aviso.textContent='Servidor localizado. Confira o nome e informe a justificativa para prosseguir.';
+ }catch(e){if(token===resetLookupSeq){aviso.textContent='Consulta não concluída: '+e.message;}}
+ finally{resetLoading=false;$('reset-consultar').disabled=false;}
+}
+$('reset-consultar').addEventListener('click',resetLookup);
+$('reset-matricula').addEventListener('input',()=>resetClear());
+$('reset-matricula').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();resetLookup();}});
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));
 document.querySelectorAll('[data-management]').forEach(b=>b.addEventListener('click',()=>activateManagementTab(b.dataset.management)));
 $('registry-filter').addEventListener('submit',async e=>{
@@ -1474,20 +1541,23 @@ $('login-form').addEventListener('submit',async e=>{
 $('logout').addEventListener('click',()=>{void adminFinishSignout();});
 $('reset-servidor-form').addEventListener('submit',async event=>{
  event.preventDefault();
- if(!canCancel())return;
- const matricula=$('reset-matricula').value.trim();
+ if(!canEdit())return;
+ const matricula=matriculaNumeros($('reset-matricula').value);
  const motivo=$('reset-motivo').value.trim();
  const aviso=$('reset-servidor-msg');
- if(matricula.replace(/\D/g,'').length<4||motivo.length<10){aviso.textContent='Informe matrícula e justificativa com pelo menos 10 caracteres.';show('reset-servidor-msg',true);return;}
- if(!confirm('Você conferiu a identidade do titular?\n\nRedefinir a senha de '+matricula+' para a matrícula provisória?\nAs sessões anteriores serão invalidadas. As férias já solicitadas permanecem inalteradas.'))return;
+ if(!resetServer||matricula!==resetServer.matricula_chave){
+  aviso.textContent='Consulte a matrícula do servidor antes de prosseguir.';show('reset-servidor-msg',true);return;
+ }
+ if(motivo.length<10){aviso.textContent='Informe justificativa com pelo menos 10 caracteres.';show('reset-servidor-msg',true);return;}
+ if(!confirm(`Redefinir a senha de ${resetServer.nome} (${resetServer.matricula}) para a matrícula provisória?\nAs sessões anteriores serão invalidadas. As férias registradas não serão alteradas.`))return;
  const botao=$('reset-servidor-btn');botao.disabled=true;
  try{
    const data=await req('/api/solicitar?acesso=1',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({acao:'reset',matricula,motivo})});
    aviso.textContent=data.mensagem||'Acesso redefinido.';show('reset-servidor-msg',true);
-   $('reset-matricula').value='';$('reset-motivo').value='';
+   $('reset-matricula').value='';$('reset-motivo').value='';resetClear(false);
  }catch(e){aviso.textContent=e.message;show('reset-servidor-msg',true);}
- finally{botao.disabled=false;}
+ finally{if(resetServer)botao.disabled=false;}
 });
 
 $('filters').addEventListener('submit',e=>{e.preventDefault();load();});
