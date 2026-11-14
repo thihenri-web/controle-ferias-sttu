@@ -355,6 +355,26 @@ body.admin-receipt-open{overflow:hidden}
   .admin-book-receipt-row{border-color:#ddd!important;break-inside:avoid}
   .admin-book-receipt-actions{display:none!important}
 }
+
+/* Gestão de Servidores — Redefinir senha: layout conforme a referência fornecida. */
+#reset-servidor-form.reset-management-form{display:block;margin-top:18px}
+#reset-servidor-form .reset-top-grid{display:grid;grid-template-columns:162px minmax(0,1fr);gap:18px;align-items:start}
+#reset-servidor-form .reset-search-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+#reset-servidor-form .reset-search-col label{margin:0 0 1px}
+#reset-servidor-form .reset-search-col .input{width:100%;min-width:0}
+#reset-servidor-form #reset-consultar{width:100%;min-height:40px;align-self:stretch;padding:10px 6px}
+#reset-servidor-form .reset-identity-box{min-width:0}
+#reset-servidor-form .reset-identity-box .identity-result{min-height:92px;justify-content:center;margin-top:0}
+#reset-servidor-form .reset-bottom-grid{display:grid;grid-template-columns:minmax(0,1fr) 174px;gap:14px;align-items:end;margin-top:12px}
+#reset-servidor-form .reset-reason-field{min-width:0}
+#reset-servidor-form .reset-reason-field .input{width:100%}
+#reset-servidor-form #reset-servidor-btn{width:100%;min-height:43px}
+@media(max-width:650px){
+  #reset-servidor-form .reset-top-grid{grid-template-columns:1fr;gap:14px}
+  #reset-servidor-form .reset-search-col{max-width:none}
+  #reset-servidor-form .reset-bottom-grid{grid-template-columns:1fr;gap:12px}
+  #reset-servidor-form #reset-servidor-btn{width:100%}
+}
 </style>
 </head>
 <body>
@@ -490,15 +510,26 @@ body.admin-receipt-open{overflow:hidden}
       <section class="section card hidden" id="reset-servidor-panel">
         <div class="section-bar"><h2>Redefinição de acesso do servidor · DFV</h2><span class="tag">Somente administradores</span></div>
         <p class="note">Digite a matrícula, clique em <strong>Consultar matrícula</strong> e confira o nome apresentado antes de continuar. Ao redefinir, a senha provisória volta a ser a matrícula e a troca torna-se obrigatória. As sessões anteriores serão invalidadas. <strong>Férias, protocolos e vagas permanecerão inalterados.</strong> A operação será auditada.</p>
-        <form id="reset-servidor-form" class="filters">
-          <div><label for="reset-matricula">Matrícula do servidor</label><input class="input" id="reset-matricula" maxlength="20" inputmode="numeric" placeholder="Ex.: 60.275-2" required autocomplete="off"></div>
-          <button class="btn" id="reset-consultar" type="button">Consultar matrícula</button>
-          <div class="reset-identity-box"><label>Servidor localizado no cadastro oficial</label>
-            <div id="reset-identity" class="identity-result hidden" role="status" aria-live="polite"><strong id="reset-identity-name"></strong><span id="reset-identity-matricula"></span></div>
-            <p id="reset-identity-placeholder" class="note">Informe a matrícula e clique em Consultar matrícula.</p>
+        <form id="reset-servidor-form" class="reset-management-form">
+          <div class="reset-top-grid">
+            <div class="reset-search-col">
+              <label for="reset-matricula">Matrícula do servidor</label>
+              <input class="input" id="reset-matricula" maxlength="20" inputmode="numeric" placeholder="Ex.: 60.275-2" required autocomplete="off">
+              <button class="btn" id="reset-consultar" type="button">Consultar matrícula</button>
+            </div>
+            <div class="reset-identity-box">
+              <label>Servidor localizado no cadastro oficial</label>
+              <div id="reset-identity" class="identity-result hidden" role="status" aria-live="polite"><strong id="reset-identity-name"></strong><span id="reset-identity-matricula"></span></div>
+              <p id="reset-identity-placeholder" class="note">Informe a matrícula e clique em Consultar matrícula.</p>
+            </div>
           </div>
-          <div class="search-field"><label for="reset-motivo">Justificativa</label><input class="input" id="reset-motivo" maxlength="300" minlength="10" placeholder="Ex.: Titular identificado presencialmente no DFV" required disabled></div>
-          <button class="btn primary" id="reset-servidor-btn" type="submit" disabled>Resetar senha</button>
+          <div class="reset-bottom-grid">
+            <div class="reset-reason-field">
+              <label for="reset-motivo">Justificativa</label>
+              <input class="input" id="reset-motivo" maxlength="300" minlength="10" placeholder="Ex.: Titular identificado presencialmente no DFV" required disabled>
+            </div>
+            <button class="btn primary" id="reset-servidor-btn" type="submit" disabled>Resetar senha</button>
+          </div>
         </form>
         <div class="notice hidden" id="reset-servidor-msg" role="status" aria-live="polite"></div>
       </section>
