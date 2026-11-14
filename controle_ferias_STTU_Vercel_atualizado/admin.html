@@ -304,6 +304,15 @@ body.role-viewer .cancel-button{display:none!important}
 .admin-book-ack input{margin-top:4px;accent-color:#4ba77a;flex-shrink:0}
 @media(max-width:650px){.admin-book-grid{grid-template-columns:1fr}.admin-book-grid>div{grid-column:1/-1}}
 
+
+/* STTU 2027 - Gestão de Servidores: duas operações na mesma aba */
+.management-nav{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;margin-top:14px}
+.management-button{background:#15212e;border:1px solid #465364;border-radius:11px;color:#e6edf5;padding:12px 19px;font-weight:750;min-height:46px}
+.management-button:hover{background:#243446}
+.management-button.active{background:#3c3020;border-color:var(--gold);color:#ffe4a0}
+.management-button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+#tab-gestao>.section.card{margin-top:16px}
+@media(max-width:540px){.management-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}.management-button{padding:10px 7px;font-size:.84rem}}
 </style>
 </head>
 <body>
@@ -335,6 +344,7 @@ body.role-viewer .cancel-button{display:none!important}
     <nav class="admin-tabs" aria-label="Funções da área administrativa" role="tablist">
       <button class="tab-button active" data-tab="painel" role="tab" aria-selected="true">Dashboard</button>
       <button class="tab-button" data-tab="relatorios" role="tab" aria-selected="false">Relatórios</button>
+      <button class="tab-button hidden" id="nav-gestao" data-tab="gestao" role="tab" aria-selected="false">Gestão de Servidores</button>
       <button class="tab-button" data-tab="periodos" role="tab" aria-selected="false">Períodos e vagas</button>
       <button class="tab-button" data-tab="cotas" role="tab" aria-selected="false">Vagas por Função/Turno</button>
       <button class="tab-button" data-tab="anos" role="tab" aria-selected="false">Liberação de anos</button>
@@ -390,9 +400,31 @@ body.role-viewer .cancel-button{display:none!important}
         </div>
       </section>
 
+      <div class="card section"><div class="section-bar"><h2>Consulta mensal</h2><span class="note">Selecione mês e período nos filtros para consultar as solicitações</span></div>
+        <form class="filters" id="filters">
+          <div><label for="month">Mês</label><select class="input" id="month"></select></div>
+          <div class="search-field"><label for="search">Nome ou matrícula</label><input class="input" id="search" maxlength="120" placeholder="Pesquisar"></div>
+          <div><label for="period">Período</label><select class="input" id="period"><option value="0">Ambos</option><option value="1">1º período</option><option value="2">2º período</option></select></div>
+          <button class="btn primary" type="submit">Pesquisar</button>
+        </form>
+      </div>
+      <section class="section"><div class="section-bar"><h2>Solicitações do mês / servidor</h2><button id="export" class="btn" type="button">Exportar CSV</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Protocolo</th><th>Servidor / Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Registrado por</th><th>Registro</th><th>Ação</th></tr></thead><tbody id="records"></tbody></table></div>
+        <div id="records-empty" class="empty hidden">Nenhuma solicitação corresponde aos filtros.</div>
+      </section>
+    </div>
+    <div class="tab-pane hidden" id="tab-gestao" role="tabpanel" aria-label="Gestão de Servidores">
+      <section class="section">
+        <div class="section-bar"><h2>Gestão de Servidores</h2><span class="tag">THIAGO-HENRIQUE / ANDREA-CASTRO</span></div>
+        <p class="note">Registre férias ou redefina o acesso dos servidores. Cada operação exige confirmação e continua sujeita às permissões administrativas.</p>
+        <div class="management-nav" role="tablist" aria-label="Operações com servidores">
+          <button type="button" class="management-button active" data-management="ferias" role="tab" aria-selected="true" aria-controls="admin-book-panel">Registrar férias</button>
+          <button type="button" class="management-button" data-management="senha" role="tab" aria-selected="false" aria-controls="reset-servidor-panel">Redefinir senha</button>
+        </div>
+      </section>
       <section class="section card hidden" id="admin-book-panel">
         <div class="section-bar"><h2>Registrar férias pela administração</h2><span class="tag">THIAGO-HENRIQUE / ANDREA-CASTRO</span></div>
-        <p class="note">O registro será feito em nome do servidor selecionado, com identificação do administrador responsável. A operação respeita vagas, cotas, prazos e o limite de uma solicitação por ano. O servidor terá acesso ao comprovante ao entrar na própria conta.</p>
+        <p class="note">Localize o servidor por <strong>nome ou matrícula</strong> e selecione os dois períodos. Não é necessário informar e-mail. O registro será identificado pelo login administrativo, respeitando vagas, cotas e prazos. O servidor terá acesso ao comprovante ao entrar na própria conta.</p>
         <div class="admin-book-grid">
           <div><label for="book-search">Pesquisar servidor por nome ou matrícula</label><input class="input" id="book-search" type="search" maxlength="120" placeholder="Ex.: matrícula ou nome"></div>
           <button class="btn" id="book-lookup" type="button">Localizar servidor</button>
@@ -402,7 +434,6 @@ body.role-viewer .cancel-button{display:none!important}
           <div class="admin-book-grid">
             <div><label for="book-first">1º período solicitado</label><select class="input" id="book-first" required><option value="">Selecione</option></select></div>
             <div><label for="book-second">2º período solicitado</label><select class="input" id="book-second" required><option value="">Selecione</option></select></div>
-            <div class="admin-book-server"><label for="book-email">E-mail do responsável pelo registro</label><input class="input" type="email" id="book-email" required maxlength="254" placeholder="E-mail válido para identificação no comprovante"></div>
           </div>
           <label class="admin-book-ack"><input id="book-confirm" type="checkbox" required> Confirmo que conferi a identidade do servidor, recebi a solicitação de férias e estou ciente das regras de períodos e vagas ao registrá-la administrativamente.</label>
           <button id="book-save" class="btn primary" type="submit">Registrar os dois períodos</button>
@@ -418,18 +449,6 @@ body.role-viewer .cancel-button{display:none!important}
           <button class="btn primary" id="reset-servidor-btn" type="submit">Resetar senha</button>
         </form>
         <div class="notice hidden" id="reset-servidor-msg" role="status" aria-live="polite"></div>
-      </section>
-      <div class="card section"><div class="section-bar"><h2>Consulta mensal</h2><span class="note">Selecione mês e período nos filtros para consultar as solicitações</span></div>
-        <form class="filters" id="filters">
-          <div><label for="month">Mês</label><select class="input" id="month"></select></div>
-          <div class="search-field"><label for="search">Nome ou matrícula</label><input class="input" id="search" maxlength="120" placeholder="Pesquisar"></div>
-          <div><label for="period">Período</label><select class="input" id="period"><option value="0">Ambos</option><option value="1">1º período</option><option value="2">2º período</option></select></div>
-          <button class="btn primary" type="submit">Pesquisar</button>
-        </form>
-      </div>
-      <section class="section"><div class="section-bar"><h2>Solicitações do mês / servidor</h2><button id="export" class="btn" type="button">Exportar CSV</button></div>
-        <div class="table-wrap"><table><thead><tr><th>Protocolo</th><th>Servidor / Matrícula</th><th>Função/Turno</th><th>1ª escolha</th><th>2ª escolha</th><th>Registrado por</th><th>Registro</th><th>Ação</th></tr></thead><tbody id="records"></tbody></table></div>
-        <div id="records-empty" class="empty hidden">Nenhuma solicitação corresponde aos filtros.</div>
       </section>
     </div>
     <div class="tab-pane hidden" id="tab-cotas" role="tabpanel">
@@ -604,8 +623,9 @@ function applyReadonly(){
  for(const field of document.querySelectorAll('#tab-periodos input,#tab-cotas input'))field.disabled=readonly||field.disabled;
  const status=$('year-status');if(status)status.disabled=readonly;
  const apply=$('apply-year');if(apply)apply.disabled=readonly;
- show('reset-servidor-panel',canEdit());
- show('admin-book-panel',canEdit());
+ show('nav-gestao',canEdit());
+ activateManagementTab(managementView);
+ if(!canEdit()&&state.activeTab==='gestao')activateTab('painel');
 }
 
 const show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
@@ -620,6 +640,7 @@ function opts(items,selected){
   const sel=document.createElement('select');for(const [value,label] of items){const o=document.createElement('option');o.value=String(value);o.textContent=label;sel.append(o);}sel.value=String(selected);return sel;
 }
 function setOptions(id,items,selected){const s=$(id);s.replaceChildren(...Array.from(opts(items,selected).children));s.value=String(selected);}
+const emailVisivel=(x)=>x&&!String(x).endsWith('.invalid')?String(x):'';
 const fmt=(x)=>MONTHS[x-1]||'—';
 // Identificador público: ANO + ID interno de quatro dígitos (mínimo).
 function protocoloPublico(ano,id){
@@ -995,7 +1016,7 @@ function renderRecords(){
     if(tipo.startsWith('30 dias'))c4.append(document.createElement('div'),span('30 dias · programação única','tag good'));
     c5.append(span(period(s.mes_2,s.periodo_2),state.mes===s.mes_2?'tag good':''));
     c6.append(span(s.registrado_por_nome||'Não informado','muted'));
-    if(s.registrado_por_email){c6.append(document.createElement('div'),span(s.registrado_por_email,'muted'));}
+    if(emailVisivel(s.registrado_por_email)){c6.append(document.createElement('div'),span(emailVisivel(s.registrado_por_email),'muted'));}
     c7.textContent=s.solicitada_em;
     const action=document.createElement('button');action.type='button';action.className='btn danger mini';action.textContent='Cancelar';action.classList.add('cancel-button');action.addEventListener('click',()=>cancel(s));if(canCancel())c8.append(action);else c8.append(span('Consulta','muted'));
     tr.append(c1,c2,c3,c4,c5,c6,c7,c8);root.append(tr);
@@ -1035,7 +1056,7 @@ async function cancel(s){
 }
 function csvEscape(s){let text=String(s??'');if(/^[=+@\-\t\r]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';}
 function exportCSV(){
-  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Modalidade','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado por','Email de quem registrou','Registrado em'],...state.records.map(s=>[protocoloPublico(s.ano,s.id),s.ano,s.nome_completo,s.matricula,s.funcao_turno,modalidadeDeFerias(s.ano,[{mes:s.mes_1,periodo:s.periodo_1},{mes:s.mes_2,periodo:s.periodo_2}]),fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.registrado_por_nome,s.registrado_por_email,s.solicitada_em])];
+  const rows=[['Protocolo','Ano','Servidor','Matricula','Função/Turno','Modalidade','Mes 1','Periodo 1','Mes 2','Periodo 2','Registrado por','Email de quem registrou','Registrado em'],...state.records.map(s=>[protocoloPublico(s.ano,s.id),s.ano,s.nome_completo,s.matricula,s.funcao_turno,modalidadeDeFerias(s.ano,[{mes:s.mes_1,periodo:s.periodo_1},{mes:s.mes_2,periodo:s.periodo_2}]),fmt(s.mes_1),s.periodo_1,fmt(s.mes_2),s.periodo_2,s.registrado_por_nome,emailVisivel(s.registrado_por_email),s.solicitada_em])];
   const csv='\ufeff'+rows.map(row=>row.map(csvEscape).join(';')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`sttu_ferias_${state.ano}_${state.mes||'todos'}.csv`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
@@ -1079,7 +1100,7 @@ function auditValues(type,records){
  if(type==='cancelamentos')return {headers:['Protocolo','Servidor / Matrícula','Períodos','Registrado por','Cancelado por','Data/hora','Motivo'],rows:records.map(s=>[
   '#'+protocoloPublico(s.ano,s.solicitacao_id),s.nome_completo+' · '+s.matricula,
   auditPeriod(s.mes_1,s.periodo_1)+' / '+auditPeriod(s.mes_2,s.periodo_2),
-  (s.registrado_por_nome||'—')+' · '+(s.registrado_por_email||'—'),s.cancelado_por_login||'—',s.registrada_em,s.motivo||'—'])};
+  [s.registrado_por_nome,emailVisivel(s.registrado_por_email)].filter(Boolean).join(' · ')||'—',s.cancelado_por_login||'—',s.registrada_em,s.motivo||'—'])};
  if(type==='capacidade')return {headers:['Período','Limite anterior','Novo limite','Ocupadas na alteração','Data/hora'],rows:records.map(x=>[auditPeriod(x.mes,x.periodo),x.capacidade_antes,x.capacidade_depois,x.ocupadas_no_momento,x.alterado_em])};
  if(type==='cotas')return {headers:['Período','Função / Turno','Cota anterior','Nova cota','Data/hora'],rows:records.map(x=>[auditPeriod(x.mes,x.periodo),x.funcao_turno,x.limite_antes,x.limite_depois,x.alterado_em])};
  if(type==='datas')return {headers:['Período','Datas anteriores','Novas datas','Reservas na alteração','Data/hora'],rows:records.map(x=>{
@@ -1152,10 +1173,24 @@ function auditExport(){
 }
 // /STTU-HISTORICO-UNIFICADO-V1
 
+let managementView='ferias';
+function activateManagementTab(view){
+ if(view!=='ferias'&&view!=='senha')return;
+ managementView=view;
+ const allowed=canEdit();
+ for(const button of document.querySelectorAll('[data-management]')){
+  const active=button.dataset.management===view;
+  button.classList.toggle('active',active);
+  button.setAttribute('aria-selected',String(active));
+ }
+ show('admin-book-panel',allowed&&view==='ferias');
+ show('reset-servidor-panel',allowed&&view==='senha');
+}
 function activateTab(tab){
+  if(tab==='gestao'&&!canEdit())return;
   state.activeTab=tab;
   for(const btn of document.querySelectorAll('[data-tab]')){const active=btn.dataset.tab===tab;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));}
-  for(const name of ['painel','relatorios','cotas','periodos','anos','historico'])show('tab-'+name,name===tab);
+  for(const name of ['painel','relatorios','gestao','cotas','periodos','anos','historico'])show('tab-'+name,name===tab);
   if(tab==='historico')audit();
 }
 function clearRegistryResults(){
@@ -1182,7 +1217,7 @@ async function loadRegistry(){
    $('registry-count').textContent=state.registry.length+' servidor(es) encontrado(s)';
    const tbody=$('registry-records');tbody.replaceChildren();
    for(const s of state.registry){const tr=document.createElement('tr');
-     for(const txt of [s.nome,s.matricula,s.funcao_turno||'—',s.mes_1?period(s.mes_1,s.periodo_1):'—',s.mes_2?period(s.mes_2,s.periodo_2):'—',s.registrado_por_nome?(s.registrado_por_nome+' · '+(s.registrado_por_email||'')):'—',s.protocolo?'Solicitado #'+protocoloPublico(state.ano,s.protocolo):'Sem solicitação']){
+     for(const txt of [s.nome,s.matricula,s.funcao_turno||'—',s.mes_1?period(s.mes_1,s.periodo_1):'—',s.mes_2?period(s.mes_2,s.periodo_2):'—',s.registrado_por_nome?[s.registrado_por_nome,emailVisivel(s.registrado_por_email)].filter(Boolean).join(' · '):'—',s.protocolo?'Solicitado #'+protocoloPublico(state.ano,s.protocolo):'Sem solicitação']){
        const td=document.createElement('td');td.textContent=txt;tr.append(td);
      }tbody.append(tr);
    }
@@ -1202,7 +1237,7 @@ async function loadRegistry(){
  }
 }
 function exportRegistry(){
- const rows=[['Servidor','Matricula','Função/Turno','1ª escolha','2ª escolha','Registrado por','Email de quem registrou','Protocolo'],...state.registry.map(s=>[s.nome,s.matricula,s.funcao_turno,s.mes_1?period(s.mes_1,s.periodo_1):'',s.mes_2?period(s.mes_2,s.periodo_2):'',s.registrado_por_nome||'',s.registrado_por_email||'',(s.protocolo?protocoloPublico(state.ano,s.protocolo):'')])];
+ const rows=[['Servidor','Matricula','Função/Turno','1ª escolha','2ª escolha','Registrado por','Email de quem registrou','Protocolo'],...state.registry.map(s=>[s.nome,s.matricula,s.funcao_turno,s.mes_1?period(s.mes_1,s.periodo_1):'',s.mes_2?period(s.mes_2,s.periodo_2):'',s.registrado_por_nome||'',emailVisivel(s.registrado_por_email),(s.protocolo?protocoloPublico(state.ano,s.protocolo):'')])];
  downloadCSV(rows,'sttu_cadastro_'+state.ano+'.csv');
 }
 function downloadCSV(rows,filename){
@@ -1392,17 +1427,15 @@ async function bookSubmit(event){
  const beneficiary=bookCandidates.find(s=>s.matricula===$('book-server').value);
  const match=/^(\d{1,2})-([12])$/;
  const a=match.exec($('book-first').value),b=match.exec($('book-second').value);
- const email=$('book-email').value.trim();
  if(!beneficiary){bookStatus('Localize e selecione um servidor do cadastro oficial.');return;}
  if(beneficiary.protocolo){bookStatus('Este servidor já possui solicitação para o ano selecionado. Consulte o comprovante existente.');return;}
  if(!a||!b||Number(a[1])===Number(b[1])){bookStatus('Escolha dois períodos em meses diferentes.');return;}
  if(!$('book-confirm').checked){bookStatus('Confirme o recebimento do pedido e a ciência das regras.');return;}
- if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){bookStatus('Informe um e-mail válido.');return;}
  const choices=[{mes:Number(a[1]),periodo:Number(a[2])},{mes:Number(b[1]),periodo:Number(b[2])}];
  if(!confirm(`Registrar férias de ${beneficiary.nome} (${beneficiary.matricula})?\n\nAno: ${state.ano}\n1ª escolha: ${fmt(choices[0].mes)} · ${choices[0].periodo}º período\n2ª escolha: ${fmt(choices[1].mes)} · ${choices[1].periodo}º período\n\nResponsável: ${state.username}\n\nConfirma a solicitação?`))return;
  const button=$('book-save');button.disabled=true;bookStatus('Registrando a solicitação. Não clique novamente...');
  try{
-  const saved=await req('/api/admin-servidores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,matricula:beneficiary.matricula,email,aceite_regras:true,selecoes:choices})});
+  const saved=await req('/api/admin-servidores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,matricula:beneficiary.matricula,aceite_regras:true,selecoes:choices})});
   // O backend é o responsável pela validação final; recarregamos a ocupação após o registro.
   bookCandidates=[];$('book-server').replaceChildren(new Option('Localize um servidor para outra solicitação',''));
   $('book-server').disabled=true;$('book-confirm').checked=false;
@@ -1418,6 +1451,7 @@ $('book-form').addEventListener('submit',bookSubmit);
 $('book-search').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();bookLookup();}});
 
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>activateTab(b.dataset.tab)));
+document.querySelectorAll('[data-management]').forEach(b=>b.addEventListener('click',()=>activateManagementTab(b.dataset.management)));
 $('registry-filter').addEventListener('submit',async e=>{
  e.preventDefault();
  state.registrySearched=true;
