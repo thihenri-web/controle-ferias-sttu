@@ -297,12 +297,14 @@ body.role-viewer .cancel-button{display:none!important}
 /* /STTU-HISTORICO-UNIFICADO-V1 */
 
 /* STTU — recuperação: registro pela administração */
-.admin-book-grid{display:grid;grid-template-columns:minmax(230px,2fr) auto;align-items:end;gap:12px;margin:14px 0}
-.admin-book-grid>div{min-width:0}.admin-book-grid .admin-book-server{grid-column:1/-1}
+.admin-book-grid{display:grid;grid-template-columns:180px minmax(0,1fr);align-items:start;gap:18px;margin:14px 0}
+.admin-book-grid>div{min-width:0}.admin-book-grid .admin-book-server{min-width:0}
+.admin-book-grid .lookup-stack{display:grid;gap:10px;align-content:start}
+.admin-book-grid .lookup-stack .btn{width:100%}
 .admin-book-grid .input{width:100%}.admin-book-grid label{display:block;font-size:.81rem;margin-bottom:6px}
 .admin-book-form{margin-top:9px}.admin-book-ack{display:flex;gap:10px;align-items:flex-start;font-size:.87rem;margin:14px 0;line-height:1.5}
 .admin-book-ack input{margin-top:4px;accent-color:#4ba77a;flex-shrink:0}
-@media(max-width:650px){.admin-book-grid{grid-template-columns:1fr}.admin-book-grid>div{grid-column:1/-1}}
+@media(max-width:700px){.admin-book-grid{grid-template-columns:1fr}.admin-book-grid>div{grid-column:1/-1}}
 
 
 /* STTU 2027 - Gestão de Servidores: duas operações na mesma aba */
@@ -466,8 +468,10 @@ body.admin-receipt-open{overflow:hidden}
         <div class="section-bar"><h2>Registrar férias pela administração</h2><span class="tag">THIAGO-HENRIQUE / ANDREA-CASTRO</span></div>
         <p class="note">Digite a <strong>matrícula</strong> e consulte o nome no cadastro oficial. Se for o servidor correto, selecione os períodos logo abaixo. Se não for, digite outra matrícula e consulte novamente. Não é necessário informar e-mail.</p>
         <div class="admin-book-grid">
-          <div><label for="book-search">Matrícula do servidor</label><input class="input" id="book-search" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Ex.: 60.275-2"></div>
-          <button class="btn" id="book-lookup" type="button">Consultar matrícula</button>
+          <div class="lookup-stack">
+            <div><label for="book-search">Matrícula do servidor</label><input class="input" id="book-search" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Ex.: 60.275-2"></div>
+            <button class="btn" id="book-lookup" type="button">Consultar matrícula</button>
+          </div>
           <div class="admin-book-server"><label>Servidor localizado no cadastro oficial</label>
             <div id="book-identity" class="identity-result hidden" role="status" aria-live="polite"><strong id="book-identity-name"></strong><span id="book-identity-matricula"></span></div>
             <p id="book-identity-placeholder" class="note">Informe a matrícula e clique em Consultar matrícula.</p>
