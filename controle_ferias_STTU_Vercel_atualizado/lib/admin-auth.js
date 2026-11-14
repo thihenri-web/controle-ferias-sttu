@@ -6,8 +6,7 @@ export const ADMIN_IDLE_SECONDS = 5 * 60;
 const USERS = () => [
   {username:'THIAGO-HENRIQUE',role:'admin',password:process.env.ADMIN_PASSWORD},
   {username:'ANDREA-CASTRO',role:'admin',password:process.env.ANDREA_PASSWORD},
-  {username:'DFV-CONSULTA',role:'viewer',password:process.env.DFV_CONSULTA_PASSWORD},
-  {username:(process.env.CANCELAMENTO_LOGIN||'DFV-CANCELAMENTO').trim().toUpperCase(),role:'canceller',password:process.env.CANCELAMENTO_PASSWORD}
+  {username:'DFV-CONSULTA',role:'viewer',password:process.env.DFV_CONSULTA_PASSWORD}
 ];
 export function adminConfigured(){
   return Boolean(process.env.ADMIN_PASSWORD?.length >= 8 && process.env.ADMIN_SESSION_SECRET?.length >= 32);
@@ -64,7 +63,7 @@ export function hasPermission(identity,permission='read'){
   if(!identity)return false;
   if(permission==='read')return true;
   if(permission==='edit')return identity.role==='admin';
-  if(permission==='cancel')return identity.role==='admin'||identity.role==='canceller';
+  if(permission==='cancel')return identity.role==='admin';
   return false;
 }
 export function requireAdmin(req,res,permission='read'){

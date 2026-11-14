@@ -61,7 +61,7 @@ export default async function handler(req,res){
     const acao=String(body.acao||'entrar');
     if(acao==='reset'){
       const admin=getAdminSession(req);
-      if(!hasPermission(admin,'cancel'))return json(res,403,{erro:'Acesso restrito ao DFV autorizado.'});
+      if(!hasPermission(admin,'edit'))return json(res,403,{erro:'Acesso restrito aos administradores autorizados.'});
       const matricula=normalizeMatricula(body.matricula);
       const motivo=String(body.motivo||'').trim();
       if(!/^\d{4,14}$/.test(matricula)||motivo.length<10||motivo.length>300)
