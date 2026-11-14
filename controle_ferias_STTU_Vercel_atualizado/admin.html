@@ -576,6 +576,8 @@ body.admin-receipt-open{overflow:hidden}
               <option value="datas">Alterações nas datas dos períodos</option>
               <option value="periodos">Liberação ou bloqueio de períodos</option>
               <option value="anos">Liberação ou bloqueio de anos</option>
+              <option value="registros_admin">Férias registradas pela administração (vigentes)</option>
+              <option id="audit-reset-option" value="resets">Redefinições de senha (administradores)</option>
               <option id="audit-access-option" value="acessos">Acessos administrativos (administradores)</option>
             </select></div>
           <div id="audit-year-wrap"><label for="audit-year">Ano</label><select id="audit-year" class="input"></select></div>
@@ -1189,9 +1191,10 @@ function auditClear(message='Selecione o tipo de ocorrência e clique em Consult
  $('audit-content').textContent=message;$('audit-count').textContent='';$('audit-export').disabled=true;
 }
 function audit(){
- const accessOption=$('audit-access-option');
- if(accessOption){accessOption.disabled=!canEdit();accessOption.hidden=!canEdit();}
- if(!canEdit()&&$('audit-category').value==='acessos'){$('audit-category').value='';auditClear();}
+ for(const id of ['audit-access-option','audit-reset-option']){
+  const option=$(id);if(option){option.disabled=!canEdit();option.hidden=!canEdit();}
+ }
+ if(!canEdit()&&['acessos','resets'].includes($('audit-category').value)){$('audit-category').value='';auditClear();}
  if(!$('audit-year').options.length){
   for(let y=2027;y<=2040;y++){$('audit-year').add(new Option(String(y),String(y)));}
   $('audit-year').value=String(state.ano>=2027&&state.ano<=2040?state.ano:2027);
@@ -1200,9 +1203,9 @@ function audit(){
  auditMode();
 }
 function auditMode(){
- const type=$('audit-category').value,isAccess=type==='acessos',isYears=type==='anos';
- $('audit-year-wrap').classList.toggle('hidden',isAccess);
- $('audit-month-wrap').classList.toggle('hidden',isAccess||isYears);
+ const type=$('audit-category').value,isAccess=type==='acessos',isSecurity=['acessos','resets'].includes(type),isYears=type==='anos';
+ $('audit-year-wrap').classList.toggle('hidden',isSecurity);
+ $('audit-month-wrap').classList.toggle('hidden',isSecurity||isYears);
  $('audit-event-wrap').classList.toggle('hidden',!isAccess);
 }
 function auditValues(type,records){
@@ -1223,6 +1226,13 @@ function auditValues(type,records){
  if(type==='anos')return {headers:['Ano','Situação','Data/hora'],rows:records.map(x=>{
   const v=x.registro||x;return [v.ano,auditStatus(v.liberado),auditDateTime(v.alterado_em??v.atualizado_em??v.registrado_em??v.criada_em)];
  })};
+ if(type==='registros_admin')return {headers:['Protocolo','Servidor / Matrícula','Períodos solicitados','Registrado por','Data/hora'],rows:records.map(x=>[
+  '#'+protocoloPublico(x.ano,x.id),x.nome_completo+' · '+x.matricula,
+  auditPeriod(x.mes_1,x.periodo_1)+' / '+auditPeriod(x.mes_2,x.periodo_2),x.registrado_por_nome||'—',x.registrada_em
+ ])};
+ if(type==='resets')return {headers:['Data/hora (Natal)','Servidor / Matrícula','Administrador','Justificativa'],rows:records.map(x=>[
+  x.data_hora,(x.nome_completo||'Servidor não localizado')+' · '+(x.matricula_exibicao||x.matricula),x.realizado_por||'—',x.detalhe||'—'
+ ])};
  if(type==='acessos')return {headers:['Data/hora (Natal)','Login','Perfil','Evento'],rows:records.map(x=>[x.data_hora,x.usuario,x.perfil||'—',AUDIT_EVENT_LABELS[x.evento]||x.evento])};
  return {headers:[],rows:[]};
 }
@@ -1255,7 +1265,7 @@ function auditFilterResults(){
 async function auditLoad(){
  const type=$('audit-category').value;
  if(!type){auditClear('Escolha primeiro uma ocorrência.');return;}
- if(type==='acessos'&&!canEdit()){auditClear('Apenas os administradores podem consultar os acessos administrativos.');return;}
+ if(['acessos','resets'].includes(type)&&!canEdit()){auditClear('Apenas os administradores podem consultar eventos de segurança.');return;}
  if(auditBusy)return;
  auditBusy=true;const querySeq=++auditQuerySeq;$('audit-refresh').disabled=true;$('audit-export').disabled=true;
  $('audit-content').textContent='Consultando '+$('audit-category').selectedOptions[0].textContent.toLocaleLowerCase('pt-BR')+'...';
