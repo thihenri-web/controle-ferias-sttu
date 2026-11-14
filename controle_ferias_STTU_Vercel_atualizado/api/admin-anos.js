@@ -1,10 +1,12 @@
 import { neon } from '@neondatabase/serverless';
 import { requireAdmin, sameOrigin, validYear } from '../lib/admin-auth.js';
 export default async function handler(req,res){
-  if(!requireAdmin(req,res))return;
+  if(!requireAdmin(req,res,'edit'))return;
   if(req.method!=='POST')return res.status(405).json({erro:'Método não permitido.'});
   if(!sameOrigin(req))return res.status(403).json({erro:'Origem inválida.'});
-  const b=typeof req.body==='string'?JSON.parse(req.body):req.body||{};
+  let b;
+  try{b=typeof req.body==='string'?JSON.parse(req.body):(req.body||{});}
+  catch{return res.status(400).json({erro:'Dados inválidos.'});}
   const ano=Number(b.ano),liberado=b.liberado;
   if(!validYear(ano)||ano<=2027||typeof liberado!=='boolean')return res.status(400).json({erro:'Escolha um ano posterior a 2027 e seu estado.'});
   try{

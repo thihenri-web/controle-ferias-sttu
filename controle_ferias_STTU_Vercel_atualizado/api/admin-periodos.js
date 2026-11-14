@@ -2,7 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import { requireAdmin, sameOrigin, validYear } from '../lib/admin-auth.js';
 
 export default async function handler(req,res){
-  if(!requireAdmin(req,res))return;
+  if(!requireAdmin(req,res,'edit'))return;
   if(req.method!=='POST')return res.status(405).json({erro:'Método não permitido.'});
   if(!sameOrigin(req))return res.status(403).json({erro:'Origem inválida.'});
   let b;
