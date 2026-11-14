@@ -320,6 +320,39 @@ body.role-viewer .cancel-button{display:none!important}
 .reset-identity-box{grid-column:1/-1;min-width:0}.reset-identity-box label{display:block;font-size:.81rem;margin-bottom:6px}
 #reset-servidor-form #reset-consultar{align-self:end}
 #book-identity-placeholder,#reset-identity-placeholder{margin:5px 0}
+
+/* Gestão de Servidores — escolhas proporcionais e comprovante impresso */
+.admin-book-grid.admin-book-periods{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.admin-book-periods>div{min-width:0;width:100%}
+.admin-book-periods select{width:100%;max-width:100%;box-sizing:border-box}
+@media(max-width:650px){.admin-book-grid.admin-book-periods{grid-template-columns:1fr}}
+.admin-book-receipt-screen{position:fixed;inset:0;z-index:3000;background:rgba(7,13,21,.96);display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:24px 16px 40px}
+.admin-book-receipt-sheet{width:min(740px,100%);background:#15212c;color:#edf3f7;border:1px solid #435669;border-radius:18px;padding:26px 30px;box-shadow:0 25px 75px #0009}
+.admin-book-receipt-head{display:flex;gap:14px;align-items:center;border-bottom:1px solid #3f5362;padding-bottom:17px;margin-bottom:20px}
+.admin-book-receipt-logo{width:61px;height:61px;object-fit:contain;border-radius:8px;background:#fff}
+.admin-book-receipt-head .receipt-org{font-size:.82rem;color:#bfcfdc;line-height:1.4}
+.admin-book-receipt-sheet h2{font-size:1.45rem;margin:6px 0 7px}
+.admin-book-receipt-sheet .receipt-lead{font-size:.86rem;color:#bfcfdc;line-height:1.55;margin:0 0 20px}
+.admin-book-receipt-row{display:grid;grid-template-columns:minmax(135px,38%) minmax(0,1fr);gap:12px;align-items:start;border-bottom:1px solid #344552;padding:11px 0}
+.admin-book-receipt-row span{font-size:.84rem;color:#b6c7d4}
+.admin-book-receipt-row strong{font-size:.89rem;text-align:right;overflow-wrap:anywhere}
+.admin-book-receipt-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:21px}
+.admin-book-receipt-actions .btn{min-width:180px}
+.admin-book-receipt-footer{margin-top:22px;padding-top:13px;border-top:1px solid #3f5362;font-size:.76rem;line-height:1.55;color:#b6c7d4}
+body.admin-receipt-open{overflow:hidden}
+@media(max-width:550px){.admin-book-receipt-sheet{padding:20px 17px}.admin-book-receipt-row{grid-template-columns:1fr;gap:3px}.admin-book-receipt-row strong{text-align:left}.admin-book-receipt-actions{flex-direction:column}.admin-book-receipt-actions .btn{width:100%}}
+@media print{
+  @page{size:auto;margin:15mm}
+  body,html{background:#fff!important;color:#111!important}
+  body.admin-receipt-open{overflow:visible!important}
+  body>header,body>main,body>footer{display:none!important}
+  .admin-book-receipt-screen{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;overflow:visible!important}
+  .admin-book-receipt-sheet{width:100%!important;max-width:none!important;padding:0!important;margin:0!important;box-shadow:none!important;border:0!important;border-radius:0!important;color:#111!important;background:#fff!important}
+  .admin-book-receipt-head,.admin-book-receipt-footer{border-color:#bbb!important}
+  .admin-book-receipt-sheet .receipt-org,.admin-book-receipt-sheet .receipt-lead,.admin-book-receipt-row span,.admin-book-receipt-footer{color:#333!important}
+  .admin-book-receipt-row{border-color:#ddd!important;break-inside:avoid}
+  .admin-book-receipt-actions{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -441,7 +474,7 @@ body.role-viewer .cancel-button{display:none!important}
           </div>
         </div>
         <form id="book-form" class="admin-book-form">
-          <div class="admin-book-grid">
+          <div class="admin-book-grid admin-book-periods">
             <div><label for="book-first">1º período solicitado</label><select class="input" id="book-first" required disabled><option value="">Consulte a matrícula primeiro</option></select></div>
             <div><label for="book-second">2º período solicitado</label><select class="input" id="book-second" required disabled><option value="">Consulte a matrícula primeiro</option></select></div>
           </div>
@@ -526,6 +559,25 @@ body.role-viewer .cancel-button{display:none!important}
   </section>
 </main>
 <footer class="footer-credit"><span>STTU · Secretaria Municipal de Mobilidade Urbana · Natal/RN</span><span class="dev-credit"><small>Desenvolvido por</small><strong>THIAGO HENRIQUE FERREIRA DA SILVA</strong></span></footer>
+
+<!-- Comprovante administrativo: consulta ou registro, sem novos protocolos e com impressão dedicada. -->
+<section id="admin-book-receipt-screen" class="admin-book-receipt-screen hidden" role="dialog" aria-modal="true" aria-labelledby="admin-book-receipt-heading" tabindex="-1">
+  <div class="admin-book-receipt-sheet">
+    <div class="admin-book-receipt-head">
+      <img class="admin-book-receipt-logo" src="./assets/brasao-sttu.jpg" alt="Brasão STTU">
+      <div><strong>STTU · Natal/RN</strong><div class="receipt-org">Secretaria Municipal de Mobilidade Urbana<br>Controle anual de solicitação de férias</div></div>
+    </div>
+    <div class="suptitle" id="admin-book-receipt-label">Solicitação registrada</div>
+    <h2 id="admin-book-receipt-heading">Comprovante de registro de férias</h2>
+    <p id="admin-book-receipt-description" class="receipt-lead">Registro confirmado no sistema.</p>
+    <div id="admin-book-receipt-data" aria-label="Dados do comprovante"></div>
+    <div class="admin-book-receipt-footer">Este documento comprova o registro da solicitação de férias e não substitui a aprovação formal pela administração. Datas de períodos poderão ser ajustadas administrativamente.</div>
+    <div class="admin-book-receipt-actions">
+      <button type="button" id="admin-book-receipt-back" class="btn">Voltar à gestão</button>
+      <button type="button" id="admin-book-receipt-print" class="btn primary">Imprimir comprovante</button>
+    </div>
+  </div>
+</section>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -552,6 +604,12 @@ function adminReadActivity(){
 function adminStopIdle(){if(adminIdleTicker!==null){clearInterval(adminIdleTicker);adminIdleTicker=null;}}
 function adminToLogin(message=''){
  adminStopIdle();adminLastActivity=0;adminLastRenewed=0;
+ // Nenhum comprovante deve continuar exposto após o encerramento da sessão.
+ const receiptModal=document.getElementById('admin-book-receipt-screen');
+ if(receiptModal){
+  receiptModal.classList.add('hidden');document.body.classList.remove('admin-receipt-open');
+  $('admin-book-receipt-data').replaceChildren();adminBookReceiptFocus=null;
+ }
  clearRegistryResults();configureSession(null);
  show('dashboard',false);show('login',true);show('logout',false);
  $('password').value='';
@@ -1394,6 +1452,74 @@ async function saveQuotaMonth(mes){
  }
 }
 
+
+// Comprovante administrativo: a consulta e a impressão não alteram vagas, cadastro ou protocolo.
+let adminBookReceiptFocus=null;
+function adminReceiptRow(root,label,value){
+ const line=document.createElement('div');line.className='admin-book-receipt-row';
+ const title=document.createElement('span');title.textContent=label;
+ const text=document.createElement('strong');text.textContent=value??'—';
+ line.append(title,text);root.append(line);
+}
+function adminReceiptPeriod(choice){
+ if(!choice)return '—';
+ const mes=Number(choice.mes),periodoNumero=Number(choice.periodo);
+ const intervalo=choice.data_inicio&&choice.data_fim?
+   formatDate(choice.data_inicio)+' a '+formatDate(choice.data_fim):'Datas a definir';
+ return `${fmt(mes)} · ${periodoNumero}º período · 15 dias (${intervalo})`;
+}
+function adminReceiptOpen(s,previous=false){
+ const choices=s?.escolhas;
+ if(!s||!s.id||!s.ano||!s.nome||!s.matricula||!Array.isArray(choices)||choices.length!==2)
+   throw Error('O sistema não retornou um comprovante completo. Consulte novamente a matrícula.');
+ const currentMat=matriculaNumeros($('book-search').value);
+ if(currentMat!==matriculaNumeros(s.matricula))throw Error('A matrícula do comprovante não corresponde à consultada.');
+ const root=$('admin-book-receipt-data');root.replaceChildren();
+ $('admin-book-receipt-label').textContent=previous?'Solicitação já registrada':'Registro realizado com sucesso';
+ $('admin-book-receipt-heading').textContent='Comprovante de solicitação de férias';
+ $('admin-book-receipt-description').textContent=previous?
+  'Este servidor já possui férias solicitadas no ano indicado. A consulta não criou outra solicitação nem alterou as vagas.':
+  'O registro foi confirmado e está disponível para impressão. Guarde este comprovante para conferência.';
+ const entries=[
+  ['Protocolo',protocoloPublico(s.ano,s.id)],
+  ['Servidor(a)',s.nome],
+  ['Matrícula',s.matricula],
+  ['Função/Turno',s.funcao_turno||'—'],
+  ['Ano',String(s.ano)],
+  ['Modalidade',modalidadeDeFerias(s.ano,choices)],
+  ['1º período solicitado',adminReceiptPeriod(choices[0])],
+  ['2º período solicitado',adminReceiptPeriod(choices[1])],
+  ['Situação','Solicitação registrada'],
+  ['Registrado por',s.registrado_por_nome||'—'],
+  ['Data e hora do registro',s.registrada_em||'—'],
+  ['Ciência das regras',s.ciencia_regras_em||'—']
+ ];
+ for(const [label,value] of entries)adminReceiptRow(root,label,value);
+ adminBookReceiptFocus=document.activeElement;
+ show('admin-book-receipt-screen',true);
+ document.body.classList.add('admin-receipt-open');
+ $('admin-book-receipt-print').focus();
+}
+function adminReceiptClose(){
+ show('admin-book-receipt-screen',false);
+ document.body.classList.remove('admin-receipt-open');
+ if(adminBookReceiptFocus?.isConnected)adminBookReceiptFocus.focus();
+ adminBookReceiptFocus=null;
+}
+$('admin-book-receipt-back').addEventListener('click',adminReceiptClose);
+$('admin-book-receipt-print').addEventListener('click',()=>window.print());
+document.addEventListener('keydown',e=>{
+ if($('admin-book-receipt-screen').classList.contains('hidden'))return;
+ if(e.key==='Escape'){e.preventDefault();adminReceiptClose();}
+ // O diálogo não permite transferir foco aos controles por trás do comprovante.
+ if(e.key==='Tab'){
+  const controls=[$('admin-book-receipt-back'),$('admin-book-receipt-print')];
+  const pos=controls.indexOf(document.activeElement);
+  if(e.shiftKey&&(pos<=0)){e.preventDefault();controls[controls.length-1].focus();}
+  else if(!e.shiftKey&&(pos===controls.length-1||pos===-1)){e.preventDefault();controls[0].focus();}
+ }
+});
+
 // STTU — Gestão de Servidores: matrícula exata e exibição direta do nome.
 const matriculaNumeros=(valor)=>String(valor||'').replace(/\D/g,'');
 let bookServer=null,bookLookupSeq=0,bookLoading=false,bookLookupYear=null;
@@ -1447,7 +1573,11 @@ async function bookLookup(){
   $('book-identity-matricula').textContent=`Matrícula: ${bookServer.matricula} · ${bookServer.funcao_turno||'Função/Turno não informada'}`;
   show('book-identity',true);show('book-identity-placeholder',false);
   bookOptions();
-  bookStatus(bookServer.protocolo?'Servidor localizado, mas já possui férias registradas em '+state.ano+'. Não é permitido registrar novamente.':'Servidor localizado. Confira o nome acima e escolha os dois períodos.',!bookServer.protocolo);
+  if(bookServer.protocolo){
+    bookStatus('Solicitação existente localizada. O comprovante está disponível para impressão.',true);
+    if(!data.solicitacao)throw Error('Não foi possível recuperar os dados do comprovante. Consulte novamente.');
+    adminReceiptOpen(data.solicitacao,true);
+  }else bookStatus('Servidor localizado. Confira o nome acima e escolha os dois períodos.',true);
  }catch(e){if(token===bookLookupSeq)bookStatus('Consulta não concluída: '+e.message);}
  finally{bookLoading=false;$('book-lookup').disabled=false;}
 }
@@ -1467,11 +1597,19 @@ async function bookSubmit(event){
  const button=$('book-save');button.disabled=true;bookStatus('Registrando solicitação. Não clique novamente...');
  try{
   const saved=await req('/api/admin-servidores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ano:state.ano,matricula:beneficiary.matricula_chave,aceite_regras:true,selecoes:choices})});
+  const protocolo=saved.solicitacao?.protocolo;
+  const savedId=saved.solicitacao?.id;
+  if(!savedId)throw Error('O banco confirmou a operação, mas não retornou o protocolo. Consulte a matrícula antes de repetir.');
   bookClear(false);
-  const protocolo=saved.solicitacao?.protocolo||'gerado pelo sistema';
-  bookStatus(`Solicitação registrada com sucesso. Protocolo: ${protocolo}. O servidor verá o comprovante ao fazer login.`,true);
+  bookStatus('Férias registradas sob protocolo '+protocolo+'. Carregando comprovante para impressão...',true);
+  // O GET confirma a leitura da gravação no Neon, sem repetir o POST.
+  const result=await req('/api/admin-servidores?'+new URLSearchParams({ano:String(state.ano),matricula:beneficiary.matricula_chave}));
+  if(!result.solicitacao||Number(result.solicitacao.id)!==Number(savedId))
+    throw Error('O registro foi realizado, mas o comprovante ainda não pôde ser recuperado. Consulte novamente a matrícula; não registre outra vez.');
+  bookStatus('Registro concluído. Comprovante pronto para impressão.',true);
+  adminReceiptOpen(result.solicitacao,false);
   await load();
- }catch(e){bookStatus('Não foi possível confirmar o registro: '+e.message+'. Verifique se existe solicitação antes de repetir.');}
+ }catch(e){bookStatus('Verificação necessária: '+e.message+' Se houve gravação, consulte a matrícula para recuperar o comprovante sem gerar outro registro.');}
  finally{if(bookServer)button.disabled=false;}
 }
 $('book-lookup').addEventListener('click',bookLookup);
