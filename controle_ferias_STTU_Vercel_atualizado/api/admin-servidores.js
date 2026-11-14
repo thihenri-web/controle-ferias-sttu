@@ -8,6 +8,23 @@ export default async function handler(req,res){
  if(!validYear(ano))return res.status(400).json({erro:'Ano inválido.'});
  try{
   const sql=neon(process.env.DATABASE_URL);
+  // Pesquisa direta por matrícula. Resultado único, permitido apenas a quem pode editar.
+  // O cadastro é a fonte oficial; a consulta não altera nenhuma informação.
+  if(req.query.matricula!==undefined){
+    if(!requireAdmin(req,res,'edit'))return;
+    const matricula=String(req.query.matricula||'').replace(/\D/g,'');
+    if(!/^\d{4,14}$/.test(matricula))return res.status(400).json({erro:'Informe uma matrícula válida.'});
+    const found=await sql`
+      SELECT c.nome_completo AS nome,c.matricula AS matricula_chave,
+        c.matricula_exibicao AS matricula,c.funcao_turno,
+        s.id AS protocolo
+      FROM sttu_ferias_servidores c
+      LEFT JOIN sttu_ferias_solicitacoes s ON s.matricula=c.matricula AND s.ano=${ano}
+      WHERE c.matricula=${matricula} AND c.ativo=TRUE
+      LIMIT 1`;
+    if(found.length===0)return res.status(404).json({erro:'Matrícula não encontrada no cadastro ativo.'});
+    return res.status(200).json({servidor:found[0]});
+  }
   const rows=await sql`
     SELECT c.nome_completo AS nome,c.matricula_exibicao AS matricula,c.funcao_turno,
       s.id AS protocolo,s.mes_1,s.periodo_1,s.mes_2,s.periodo_2,
@@ -41,7 +58,7 @@ async function registrarPeloAdmin(req,res){
    !Array.isArray(selecoes)||selecoes.length!==2||
    selecoes.some(s=>!Number.isInteger(s.mes)||s.mes<1||s.mes>12||![1,2].includes(s.periodo))||
    selecoes[0].mes===selecoes[1].mes)
-   return res.status(400).json({erro:'Identifique o servidor por nome ou matrícula, confirme as regras e escolha dois meses diferentes.'});
+   return res.status(400).json({erro:'Identifique o servidor pela matrícula, confirme as regras e escolha dois meses diferentes.'});
  const admin=getAdminSession(req);
  if(!admin)return res.status(401).json({erro:'Sessão administrativa expirada.'});
  try{
