@@ -66,9 +66,76 @@ export default async function handler(req,res){
 }
 
 // Consulta de auditoria compartilha esta função para respeitar o limite Hobby da Vercel.
+// STTU-HISTORICO-FILTRADO-V1: ramo de consulta exclusiva por categoria.
+async function handleAuditoriaFiltrada(req,res,tipo){
+  if(req.method!=='GET')return res.status(405).json({erro:'Método não permitido.'});
+  const categorias=['cancelamentos','capacidade','cotas','datas','periodos','anos'];
+  if(!categorias.includes(tipo))return res.status(400).json({erro:'Tipo de histórico inválido.'});
+  const ano=Number(req.query.ano??2027),mes=Number(req.query.mes??0);
+  if(!validYear(ano)||!Number.isInteger(mes)||mes<0||mes>12)return res.status(400).json({erro:'Filtros inválidos.'});
+  if(!process.env.DATABASE_URL)return res.status(503).json({erro:'Banco não configurado.'});
+  // Esta rota mantém a consulta dos eventos de gestão visível aos perfis de leitura,
+  // mas o histórico de ACESSOS é consultado em admin-login.js (exclusivo para admin).
+  try{
+    const sql=neon(process.env.DATABASE_URL),limite=200;
+    let registros=[],aviso='';
+    switch(tipo){
+      case 'cancelamentos':
+        registros=await sql`SELECT solicitacao_id,ano,nome_completo,matricula,mes_1,periodo_1,mes_2,periodo_2,motivo,registrado_por_nome,registrado_por_email,cancelado_por_login,
+          to_char(registrada_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS registrada_em
+          FROM sttu_ferias_auditoria a
+          WHERE ano=${ano} AND (${mes}::integer=0 OR mes_1=${mes} OR mes_2=${mes})
+          ORDER BY a.registrada_em DESC LIMIT ${limite}`;
+        break;
+      case 'capacidade':
+        registros=await sql`SELECT ano,mes,periodo,capacidade_antes,capacidade_depois,ocupadas_no_momento,
+          to_char(alterado_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS alterado_em
+          FROM sttu_ferias_capacidades_auditoria a WHERE ano=${ano} AND (${mes}::integer=0 OR mes=${mes})
+          ORDER BY a.alterado_em DESC LIMIT ${limite}`;
+        break;
+      case 'cotas':
+        registros=await sql`SELECT mes,periodo,funcao_turno,limite_antes,limite_depois,
+          to_char(alterado_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS alterado_em
+          FROM sttu_ferias_cotas_auditoria a WHERE ano=${ano} AND (${mes}::integer=0 OR mes=${mes})
+          ORDER BY a.alterado_em DESC LIMIT ${limite}`;
+        break;
+      case 'datas':
+        registros=await sql`SELECT ano,mes,periodo,
+          to_char(data_inicio_antes,'YYYY-MM-DD') AS data_inicio_antes,
+          to_char(data_fim_antes,'YYYY-MM-DD') AS data_fim_antes,
+          to_char(data_inicio_depois,'YYYY-MM-DD') AS data_inicio_depois,
+          to_char(data_fim_depois,'YYYY-MM-DD') AS data_fim_depois,
+          reservas_no_momento,to_char(alterado_em AT TIME ZONE 'America/Fortaleza','DD/MM/YYYY HH24:MI') AS alterado_em
+          FROM sttu_ferias_datas_auditoria a WHERE ano=${ano} AND (${mes}::integer=0 OR mes=${mes})
+          ORDER BY a.alterado_em DESC LIMIT ${limite}`;
+        break;
+      case 'periodos':{
+        const exists=await sql`SELECT to_regclass('public.sttu_ferias_periodos_auditoria') IS NOT NULL AS existe`;
+        if(!exists[0]?.existe){aviso='O banco atual não possui tabela de histórico de liberação/bloqueio de períodos. Nenhum registro foi inventado.';break;}
+        registros=await sql`SELECT to_jsonb(a) AS registro FROM sttu_ferias_periodos_auditoria a
+          WHERE (to_jsonb(a)->>'ano')::integer=${ano} AND (${mes}::integer=0 OR (to_jsonb(a)->>'mes')::integer=${mes})
+          ORDER BY (to_jsonb(a)->>'alterado_em') DESC NULLS LAST LIMIT ${limite}`;
+        break;
+      }
+      case 'anos':{
+        const exists=await sql`SELECT to_regclass('public.sttu_ferias_anos_auditoria') IS NOT NULL AS existe`;
+        if(!exists[0]?.existe){aviso='O banco atual não possui tabela de histórico de liberação de anos.';break;}
+        registros=await sql`SELECT to_jsonb(a) AS registro FROM sttu_ferias_anos_auditoria a
+          WHERE (to_jsonb(a)->>'ano')::integer=${ano}
+          ORDER BY (to_jsonb(a)->>'alterado_em') DESC NULLS LAST LIMIT ${limite}`;
+        break;
+      }
+    }
+    return res.status(200).json({tipo,ano,mes,registros,limite,aviso});
+  }catch(e){console.error('Histórico filtrado STTU:',tipo,e);
+    return res.status(503).json({erro:'Não foi possível consultar esta categoria do histórico. Confira a estrutura de auditoria no Neon.'});}
+}
+// /STTU-HISTORICO-FILTRADO-V1
+
 async function handleAuditoria(req,res){
   if(!requireAdmin(req,res))return;
   if(req.method!=='GET')return res.status(405).json({erro:'Método não permitido.'});
+  if(req.query?.tipo)return handleAuditoriaFiltrada(req,res,String(req.query.tipo));
   const ano=Number(req.query.ano??2027);
   if(!validYear(ano))return res.status(400).json({erro:'Ano inválido.'});
   try{
